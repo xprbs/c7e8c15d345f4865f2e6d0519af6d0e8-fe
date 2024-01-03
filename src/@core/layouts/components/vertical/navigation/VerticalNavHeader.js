@@ -114,7 +114,7 @@ const VerticalNavHeader = props => {
         userNavMenuBranding(props)
       ) : (
         <LinkStyled href='/'>
-          <Image src='/images/apple-touch-icon.png' width={38} height={38} alt='Logo' quality={100} />
+          <Image src='/images/apple-touch-icon.png' priority={true} width={38} height={38} alt='Logo' quality={100} />
           <HeaderTitle variant='h6' sx={{ ...menuCollapsedStyles, ...(navCollapsed && !navHover ? {} : { ml: 2 }) }}>
             {themeConfig.templateName}
           </HeaderTitle>

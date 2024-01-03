@@ -124,7 +124,14 @@ const ForgotPassword = () => {
                 justifyContent: 'center'
               }}
             >
-              <Image src='/images/apple-touch-icon.png' width={42} height={42} alt='Logo' quality={100} />
+              <Image
+                src='/images/apple-touch-icon.png'
+                priority={true}
+                width={42}
+                height={42}
+                alt='Logo'
+                quality={100}
+              />
               <Typography variant='h6' sx={{ ml: 2, lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
                 {themeConfig.templateName}
               </Typography>
