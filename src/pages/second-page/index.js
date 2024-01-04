@@ -24,4 +24,9 @@ const SecondPage = () => {
   )
 }
 
+SecondPage.acl = {
+  action: 'manage',
+  subject: 'second-page'
+}
+
 export default SecondPage

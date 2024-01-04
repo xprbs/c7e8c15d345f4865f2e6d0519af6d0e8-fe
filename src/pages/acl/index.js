@@ -40,6 +40,7 @@ const ACLPage = () => {
     </Grid>
   )
 }
+
 ACLPage.acl = {
   action: 'manage',
   subject: 'acl-page'
