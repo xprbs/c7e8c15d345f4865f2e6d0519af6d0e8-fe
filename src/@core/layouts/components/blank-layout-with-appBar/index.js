@@ -45,7 +45,7 @@ const BlankLayoutAppBar = () => {
         }}
       >
         <LinkStyled href='/'>
-          <Image src='/images/apple-touch-icon.png' width={38} height={38} alt='Logo' quality={100} />
+          <Image src='/images/apple-touch-icon.png' priority={true} width={38} height={38} alt='Logo' quality={100} />
           <Typography variant='h6' sx={{ ml: 2, fontWeight: 700, lineHeight: 1.2 }}>
             {themeConfig.templateName}
           </Typography>
