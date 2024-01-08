@@ -63,7 +63,7 @@ const Permission = () => {
   const [permissionParent, setPermissionParent] = useState([])
   const [parentId, setParentId] = useState('')
 
-  console.log(parentId)
+  // console.log(parentId)
 
   const auth = useAuth()
 

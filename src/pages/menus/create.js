@@ -15,7 +15,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText,
+  Autocomplete
 } from '@mui/material'
 
 // ** Custom Components Imports
@@ -23,7 +24,7 @@ import PageHeader from 'src/@core/components/page-header'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, setValue } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Imports
@@ -38,7 +39,8 @@ const schema = yup.object().shape({
   menus_type: yup.string().required(),
   url: yup.string().required(),
   icon: yup.string().required(),
-  parent_id: yup.string(),
+  parent_id: yup.string().required(),
+  level: yup.string().required(),
   order_by: yup.string().required(),
   acl_action: yup.string().required(),
   acl_subject: yup.string().required()
@@ -59,6 +61,8 @@ const CreateMenu = () => {
 
   const [isDisable, setIsDisable] = useState(false)
   const [parentMenu, setParentMenu] = useState([])
+  const [parentId, setParentId] = useState(null)
+  const [isLoadingMenuParent, setIsLoadingMenuParent] = useState(false)
 
   const router = useRouter()
 
@@ -66,6 +70,7 @@ const CreateMenu = () => {
     const name = e.target.name
     const value = e.target.value
 
+    // console.log(name, value)
     setFields({
       ...fields,
       [name]: value
@@ -90,7 +95,7 @@ const CreateMenu = () => {
       url: fields.url,
       icon: fields.icon,
       level: fields.level,
-      parent_id: fields.parent_id,
+      parent_id: parentId.id,
       order_by: fields.order_by,
       acl_action: fields.acl_action,
       acl_subject: fields.acl_subject
@@ -123,9 +128,17 @@ const CreateMenu = () => {
   }
 
   async function getMenuLevel1() {
+    // console.log(fields.menus_type, fields.level)
+    setParentId(null)
+    setIsLoadingMenuParent(true)
+
+    const dataFormMenu = JSON.stringify({
+      level: fields.level
+    })
+
     new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/menu-level-1')
+        .post('/web/master/menu-level-parent', dataFormMenu)
         .then(res => {
           setParentMenu(res.data.data)
           resolve('success')
@@ -134,12 +147,14 @@ const CreateMenu = () => {
           console.log(error)
           reject(error)
         })
+        .finally(e => setIsLoadingMenuParent(false))
     })
   }
 
   useEffect(() => {
     getMenuLevel1()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.menus_type, fields.level])
 
   return (
     <Grid container spacing={6}>
@@ -196,6 +211,7 @@ const CreateMenu = () => {
                           Level
                         </InputLabel>
                         <Select
+                          {...register('level')}
                           label='Level'
                           defaultValue=''
                           size='small'
@@ -204,8 +220,8 @@ const CreateMenu = () => {
                           onChange={fieldHandler}
                           error={Boolean(errors.level)}
                         >
-                          <MenuItem value={1}>1</MenuItem>
-                          <MenuItem value={2}>2</MenuItem>
+                          <MenuItem value={'1'}>1</MenuItem>
+                          <MenuItem value={'2'}>2</MenuItem>
                         </Select>
                         {errors.level && (
                           <FormHelperText sx={{ color: 'error.main' }}>{errors.level.message}</FormHelperText>
@@ -256,10 +272,10 @@ const CreateMenu = () => {
                 <Grid container item md={6} xs={12} rowSpacing={8}>
                   <Grid item xs={12}>
                     <FormControl fullWidth>
-                      <InputLabel shrink error={Boolean(errors.parent_id)}>
+                      {/* <InputLabel shrink error={Boolean(errors.parent_id)}>
                         Parent Menu
-                      </InputLabel>
-                      <Select
+                      </InputLabel> */}
+                      {/* <Select
                         {...register('parent_id')}
                         label='Parent Menu'
                         defaultValue=''
@@ -279,7 +295,27 @@ const CreateMenu = () => {
                             </MenuItem>
                           )
                         })}
-                      </Select>
+                      </Select> */}
+                      <Autocomplete
+                        loading={isLoadingMenuParent}
+                        size='small'
+                        options={parentMenu}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('parent_id')}
+                            label='Parent'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.parent_id)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setParentId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={parentId}
+                      />
                       {errors.parent_id && (
                         <FormHelperText sx={{ color: 'error.main' }}>{errors.parent_id.message}</FormHelperText>
                       )}
@@ -308,6 +344,7 @@ const CreateMenu = () => {
                       label='ACL Action'
                       size='small'
                       placeholder='manage'
+                      defaultValue={'manage'}
                       InputLabelProps={{ shrink: true }}
                       error={Boolean(errors.acl_action)}
                       helperText={errors.acl_action && errors.acl_action.message}
