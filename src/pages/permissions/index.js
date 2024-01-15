@@ -384,7 +384,7 @@ const Permission = () => {
 
 Permission.acl = {
   action: 'manage',
-  subject: 'menus'
+  subject: 'permissions'
 }
 
 export default Permission
