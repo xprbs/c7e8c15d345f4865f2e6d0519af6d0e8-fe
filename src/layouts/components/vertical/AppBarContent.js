@@ -14,46 +14,18 @@ import UserDropdown from 'src/@core/layouts/components/shared-components/UserDro
 
 const notifications = [
   {
-    meta: 'Today',
-    avatarAlt: 'Flora',
-    title: 'Congratulation Flora! 🎉',
+    meta: '15.01',
+    avatarAlt: 'Approval',
+    title: 'Audit #202401000190',
     avatarImg: '/images/avatars/4.png',
-    subtitle: 'Won the monthly best seller badge'
+    subtitle: 'Waiting for your approval'
   },
   {
-    meta: 'Yesterday',
-    avatarColor: 'primary',
-    subtitle: '5 hours ago',
-    avatarText: 'Robert Austin',
-    title: 'New user registered.'
-  },
-  {
-    meta: '11 Aug',
-    avatarAlt: 'message',
-    title: 'New message received 👋🏻',
-    avatarImg: '/images/avatars/5.png',
-    subtitle: 'You have 10 unread messages'
-  },
-  {
-    meta: '25 May',
-    title: 'Paypal',
-    avatarAlt: 'paypal',
-    subtitle: 'Received Payment',
-    avatarImg: '/images/misc/paypal.png'
-  },
-  {
-    meta: '19 Mar',
-    avatarAlt: 'order',
-    title: 'Received Order 📦',
-    avatarImg: '/images/avatars/3.png',
-    subtitle: 'New order received from John'
-  },
-  {
-    meta: '27 Dec',
-    avatarAlt: 'chart',
-    subtitle: '25 hrs ago',
-    avatarImg: '/images/misc/chart.png',
-    title: 'Finance report has been generated'
+    meta: '13.38',
+    avatarAlt: 'Approval',
+    title: 'Audit #202401000191',
+    avatarImg: '/images/avatars/4.png',
+    subtitle: 'Waiting for your approval'
   }
 ]
 
