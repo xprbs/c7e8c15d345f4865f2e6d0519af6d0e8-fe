@@ -52,7 +52,7 @@ function AuditIsoCreate() {
   const [fields, setFields] = useState({
     audit_name: null,
     audit_ref: null,
-    audit_category: null,
+    audit_category: 'ISO',
     audit_location: locationId,
     question_uid: questionId
   })
@@ -85,15 +85,15 @@ function AuditIsoCreate() {
       audit_name: fields.audit_name,
       audit_ref: fields.audit_ref,
       audit_category: fields.audit_category,
-      audit_location: fields.audit_location,
-      question_uid: fields.question_uid
+      audit_location: locationId.id,
+      question_uid: questionId.id
     })
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/audit-checklist/store', dataForm)
+        .post('/web/audit-checklist/store', dataForm)
         .then(res => {
-          router.push('/menus')
+          router.push('/audit-iso')
           resolve('success')
         })
         .catch(error => {

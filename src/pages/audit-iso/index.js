@@ -118,7 +118,7 @@ function AuditIsoPage() {
       })
 
       await backendApi
-        .post('/audit-checklist/list', dataForm)
+        .post('/web/audit-checklist/list', dataForm)
         .then(response => {
           updateData('rowCount', response.data.total)
           setTimeout(() => {
@@ -150,38 +150,45 @@ function AuditIsoPage() {
     {
       flex: 1,
       minWidth: 100,
-      field: 'dataAreaId',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>
+      field: 'audit_name',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Doc Name</Typography>
+    },
+
+    // {
+    //   flex: 1,
+    //   minWidth: 100,
+    //   field: 'dataAreaId',
+    //   renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>
+    // },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'audit_category',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Category</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'audit_ref',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Reference</Typography>
     },
     {
       flex: 1,
       minWidth: 100,
-      field: 'audit_date',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Date</Typography>
-    },
-    {
-      flex: 1,
-      minWidth: 100,
-      field: 'audit_type',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Type</Typography>
-    },
-    {
-      flex: 1,
-      minWidth: 200,
       field: 'audit_number',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
     },
     {
       flex: 1,
-      minWidth: 200,
-      field: 'audit_name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Doc Name</Typography>
+      minWidth: 100,
+      field: 'audit_location',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location</Typography>
     },
     {
       flex: 1,
-      minWidth: 200,
-      field: 'audit_location',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location</Typography>
+      minWidth: 100,
+      field: 'question_uid',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Question Template</Typography>
     },
     {
       flex: 0.15,
@@ -194,11 +201,12 @@ function AuditIsoPage() {
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton>
-            <Icon icon='mdi:pencil-outline' />
+            <Icon icon='ooui:view-details-ltr' />
           </IconButton>
-          <IconButton onClick={() => handleDialogToggleDelete(row)}>
+
+          {/* <IconButton onClick={() => handleDialogToggleDelete(row)}>
             <Icon icon='mdi:delete-outline' />
-          </IconButton>
+          </IconButton> */}
         </Box>
       )
     }
