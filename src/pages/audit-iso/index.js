@@ -148,6 +148,12 @@ function AuditIsoPage() {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>#</Typography>
     },
     {
+      flex: 0.75,
+      minWidth: 100,
+      field: 'audit_number',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
+    },
+    {
       flex: 1,
       minWidth: 100,
       field: 'audit_name',
@@ -171,12 +177,6 @@ function AuditIsoPage() {
       minWidth: 100,
       field: 'audit_ref',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Reference</Typography>
-    },
-    {
-      flex: 1,
-      minWidth: 100,
-      field: 'audit_number',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
     },
     {
       flex: 1,

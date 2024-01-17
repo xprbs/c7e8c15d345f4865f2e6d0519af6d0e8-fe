@@ -83,7 +83,7 @@ const QuestionTemplatePage = () => {
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/audit-checklist/delete', dataForm)
+        .post('/web/master/question-template/delete', dataForm)
         .then(res => {
           resolve('success')
           handleDialogToggleDeleteClose()
@@ -118,7 +118,7 @@ const QuestionTemplatePage = () => {
       })
 
       await backendApi
-        .post('/web/master/question-template-list', dataForm)
+        .post('/web/master/question-template/list', dataForm)
         .then(response => {
           updateData('rowCount', response.data.total)
           setTimeout(() => {
@@ -200,7 +200,7 @@ const QuestionTemplatePage = () => {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>#</Typography>
     },
     {
-      flex: 0.5,
+      flex: 0.4,
       minWidth: 100,
       field: 'question_number',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Template Number</Typography>
