@@ -36,6 +36,7 @@ import Link from 'next/link'
 
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
 
 const QuestionTemplatePage = () => {
@@ -54,6 +55,8 @@ const QuestionTemplatePage = () => {
   const [openDialogAdd, setOpenDialogAdd] = useState(false)
   const [dataDelete, setDataDelete] = useState({})
   const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+
+  const router = useRouter()
 
   const updateData = (k, v) => setData(prev => ({ ...prev, [k]: v }))
 
@@ -136,6 +139,10 @@ const QuestionTemplatePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.page, data.pageSize, data.sort, data.filterData, data.reload])
 
+  const handleSetDetail = e => {
+    router.push(`/question-template/set-detail/${e.question_uid}`)
+  }
+
   const RowOptions = ({ data }) => {
     // ** State
     const [anchorEl, setAnchorEl] = useState(null)
@@ -169,9 +176,9 @@ const QuestionTemplatePage = () => {
           }}
           PaperProps={{ style: { minWidth: '8rem' } }}
         >
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.name}</MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.question_name}</MenuItem>
           <Divider />
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
             <Icon icon='lucide:settings-2' fontSize={20} />
             Set Detail Question
           </MenuItem>
