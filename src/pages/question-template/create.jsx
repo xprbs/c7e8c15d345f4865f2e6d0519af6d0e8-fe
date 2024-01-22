@@ -152,27 +152,6 @@ function AuditIsoCreate() {
                 <Grid container item md={6} xs={12} rowSpacing={8}>
                   <Grid container item spacing={6}>
                     <Grid item xs={6}>
-                      {/* <FormControl fullWidth>
-                        <InputLabel shrink error={Boolean(errors.question_type)}>
-                          Category
-                        </InputLabel>
-                        <Select
-                          {...register('question_type')}
-                          label='Category'
-                          defaultValue=''
-                          notched
-                          name='question_type'
-                          size='small'
-                          onChange={fieldHandler}
-                          error={Boolean(errors.question_type)}
-                        >
-                          <MenuItem value={'ISO'}>ISO</MenuItem>
-                          <MenuItem value={'SHE'}>SHE</MenuItem>
-                        </Select>
-                        {errors.question_type && (
-                          <FormHelperText sx={{ color: 'error.main' }}>{errors.question_type.message}</FormHelperText>
-                        )}
-                      </FormControl> */}
                       <FormControl fullWidth>
                         <Autocomplete
                           size='small'
