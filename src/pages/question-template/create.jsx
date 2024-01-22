@@ -41,10 +41,12 @@ const schema = yup.object().shape({
 
 function AuditIsoCreate() {
   const [isDisable, setIsDisable] = useState(false)
+  const [auditCategory, setAuditCategory] = useState([])
+  const [auditCategoryId, setAuditCategoryId] = useState(null)
 
   const [fields, setFields] = useState({
     question_name: null,
-    question_type: null
+    question_type: auditCategoryId
   })
 
   const router = useRouter()
@@ -73,7 +75,7 @@ function AuditIsoCreate() {
 
     const dataForm = JSON.stringify({
       question_name: fields.question_name,
-      question_type: fields.question_type
+      question_type: auditCategoryId.id
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -101,7 +103,20 @@ function AuditIsoCreate() {
     })
   }
 
-  async function getInit() {}
+  async function getInit() {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-audit-category')
+        .then(res => {
+          setAuditCategory(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+  }
 
   useEffect(() => {
     getInit()
@@ -137,7 +152,7 @@ function AuditIsoCreate() {
                 <Grid container item md={6} xs={12} rowSpacing={8}>
                   <Grid container item spacing={6}>
                     <Grid item xs={6}>
-                      <FormControl fullWidth>
+                      {/* <FormControl fullWidth>
                         <InputLabel shrink error={Boolean(errors.question_type)}>
                           Category
                         </InputLabel>
@@ -154,6 +169,30 @@ function AuditIsoCreate() {
                           <MenuItem value={'ISO'}>ISO</MenuItem>
                           <MenuItem value={'SHE'}>SHE</MenuItem>
                         </Select>
+                        {errors.question_type && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.question_type.message}</FormHelperText>
+                        )}
+                      </FormControl> */}
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          size='small'
+                          options={auditCategory}
+                          fullWidth
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              {...register('question_type')}
+                              label='Question Template'
+                              InputLabelProps={{ shrink: true }}
+                              error={Boolean(errors.question_type)}
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            setAuditCategoryId(newValue)
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={auditCategoryId}
+                        />
                         {errors.question_type && (
                           <FormHelperText sx={{ color: 'error.main' }}>{errors.question_type.message}</FormHelperText>
                         )}
