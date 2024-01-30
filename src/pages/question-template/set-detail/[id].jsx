@@ -27,17 +27,22 @@ import {
   CardContent,
   Menu,
   MenuItem,
-  Divider,
   Skeleton,
   FormControl,
   InputLabel,
   Select,
   Checkbox,
-  FormControlLabel
+  FormControlLabel,
+  DialogContentText,
+  DialogActions,
+  Autocomplete,
+  FormHelperText,
+  Paper
 } from '@mui/material'
 
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
+import Divider from '@mui/material/Divider'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -46,30 +51,271 @@ import Icon from 'src/@core/components/icon'
 import PageHeader from 'src/@core/components/page-header'
 import Link from 'next/link'
 
+// ** Third Party Imports
+import * as yup from 'yup'
+import { useForm, setValue } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
+import dynamic from 'next/dynamic'
+
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
+
+const schema = yup.object().shape({
+  question_answer_description: yup.string().required('Description is a required field'),
+  question_answer_uid: yup.string().required('Answer Master is a required field')
+})
 
 const detailQuestion = () => {
+  const router = useRouter()
+  const { id } = router.query
+
   const [skeleton, setSkeleton] = useState(true)
+  const [skeleton2, setSkeleton2] = useState(true)
   const [isDisable, setIsDisable] = useState(false)
+  const [masterQuestion, setMasterQuestion] = useState([])
+  const [openModal, setOpenModal] = useState(false)
+  const [masterAnswer, setMasterAnswer] = useState([])
+  const [masterAnswerId, setMasterAnswerId] = useState(null)
+  const [description, setDescription] = useState('')
+  const [questionDetail, setQuestionDetail] = useState([])
+  const [reload, setReload] = useState(false)
+
+  const handleClickOpenModal = () => setOpenModal(true)
+  const handleCloseModal = () => setOpenModal(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema)
+  })
+
+  const getData = async () => {
+    setSkeleton(true)
+    setSkeleton2(true)
+
+    const dataForm = JSON.stringify({
+      id: id
+    })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/question-template/get-detail', dataForm)
+        .then(res => {
+          resolve('success')
+          setMasterQuestion(res.data.data)
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(() => {
+          setSkeleton(false)
+        })
+    })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/question-template/get-master-answer')
+        .then(res => {
+          setMasterAnswer(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+  }
+
+  async function createHandler() {
+    setIsDisable(true)
+
+    const dataForm = JSON.stringify({
+      question_uid: masterQuestion.question_uid,
+      question_answer_description: description,
+      question_answer_uid: masterAnswerId.id
+    })
+
+    const myPromise = new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/question-template/question-detail-store', dataForm)
+        .then(res => {
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => {
+          setMasterAnswerId(null)
+          setSkeleton2(true)
+          setIsDisable(false)
+          setOpenModal(false)
+          setReload(!reload)
+        })
+    })
+
+    toast.promise(myPromise, {
+      loading: 'Loading',
+      success: 'Successfully create data',
+      error: error => {
+        if (error.response.status === 500) return error.response.data.response
+
+        return 'Something error'
+      }
+    })
+  }
+
+  useEffect(() => {
+    getData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Get Question Detail
+  useEffect(() => {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/master/question-template/question-detail-list',
+          JSON.stringify({
+            question_uid: id
+          })
+        )
+        .then(res => {
+          setQuestionDetail(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => setSkeleton2(false))
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reload])
 
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={6}>
       <Grid item xs={12}>
-        <PageHeader title={<Typography variant='h5'>Detail Question</Typography>} subtitle={null} />
+        <PageHeader title={<Typography variant='h5'>Master Question Template</Typography>} subtitle={null} />
       </Grid>
       <Grid item xs={12}>
         <Card>
+          <CardHeader title={'Question'} />
           <CardContent>
             {skeleton ? (
               <Grid>
                 <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
                 <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
+              </Grid>
+            ) : (
+              <form>
+                <Grid container spacing={8}>
+                  <Grid container item spacing={6}>
+                    <Grid item md={3} xs={12}>
+                      <TextField
+                        fullWidth
+                        value={masterQuestion.question_number}
+                        aria-readonly
+                        label='Question Number'
+                        size='small'
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                    <Grid item md={3} xs={12}>
+                      <TextField
+                        fullWidth
+                        value={masterQuestion.question_type}
+                        aria-readonly
+                        label='Question Type'
+                        size='small'
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                      <TextField
+                        fullWidth
+                        value={masterQuestion.question_name}
+                        aria-readonly
+                        label='Question Name'
+                        size='small'
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader
+            title={
+              <Grid
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Typography variant='h6'>Question Detail</Typography>
+                <Button variant='contained' size='small' onClick={handleClickOpenModal}>
+                  Create Question
+                </Button>
+              </Grid>
+            }
+          />
+          <CardContent>
+            {skeleton2 ? (
+              <Grid>
                 <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
-
-                <Grid item xs={12} sx={{ mt: 5 }}>
+                <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
+              </Grid>
+            ) : (
+              <Grid container spacing={8}>
+                <Grid item xs={12}>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>#</TableCell>
+                          <TableCell>Question</TableCell>
+                          <TableCell align='right'>Master Answer</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {questionDetail.length ? (
+                          questionDetail.map((data, index) => (
+                            <TableRow key={index}>
+                              <TableCell align='left'>{index + 1}</TableCell>
+                              <TableCell align='left' component='th' scope='row'>
+                                {data.question_answer_description}
+                              </TableCell>
+                              <TableCell align='right'>{data.question_answer_category}</TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
+                            Not data found
+                          </Typography>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+                <Grid item>
                   <Box
                     sx={{
                       gap: 5,
@@ -82,53 +328,90 @@ const detailQuestion = () => {
                     <Button component={Link} href={'/question-template'} variant='outlined' size='small'>
                       Back
                     </Button>
-                    <Button type='submit' variant='contained' size='small' disabled={isDisable}>
-                      Save
-                      {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-                    </Button>
                   </Box>
                 </Grid>
               </Grid>
-            ) : (
-              <form>
-                <Grid container spacing={4}>
-                  <Grid container item>
-                    <Grid item md={6} xs={12}>
-                      <TextField
-                        fullWidth
-                        value={''}
-                        aria-readonly
-                        label='Question Name'
-                        size='small'
-                        InputLabelProps={{ shrink: true }}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box
-                      sx={{
-                        gap: 5,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        justifyContent: 'left'
-                      }}
-                    >
-                      <Button component={Link} href={'/question-template'} variant='outlined' size='small'>
-                        Back
-                      </Button>
-                      <Button type='submit' variant='contained' size='small' disabled={isDisable}>
-                        Save
-                        {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-                      </Button>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </form>
             )}
           </CardContent>
         </Card>
       </Grid>
+
+      {/* Dialog Modal */}
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby='form-dialog-title'
+        fullWidth={true}
+        maxWidth={'md'}
+      >
+        <DialogTitle id='form-dialog-title'>Create Question</DialogTitle>
+
+        <form onSubmit={handleSubmit(createHandler)}>
+          <DialogContent>
+            <DialogContentText sx={{ mb: 1 }}>
+              {/* To subscribe to this website, please enter your email address here. We will send updates occasionally. */}
+            </DialogContentText>
+            <Grid container spacing={6}>
+              <Grid container item spacing={6}>
+                <Grid item md={12} xs={12}>
+                  {/* <Editor /> */}
+                  <TextField
+                    {...register('question_answer_description')}
+                    onChange={e => setDescription(e.target.value)}
+                    fullWidth
+                    name='question_answer_description'
+                    label='Question Description'
+                    size='small'
+                    InputLabelProps={{ shrink: true }}
+                    error={Boolean(errors.question_answer_description)}
+                    helperText={errors.question_answer_description && errors.question_answer_description.message}
+                    multiline
+                    rows={4}
+                    value={description}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container item spacing={6}>
+                <Grid item md={6} xs={12}>
+                  <FormControl fullWidth>
+                    <Autocomplete
+                      size='small'
+                      options={masterAnswer}
+                      fullWidth
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          {...register('question_answer_uid')}
+                          label='Answer Maste'
+                          InputLabelProps={{ shrink: true }}
+                          error={Boolean(errors.question_answer_uid)}
+                        />
+                      )}
+                      onChange={(event, newValue) => {
+                        setMasterAnswerId(newValue)
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      value={masterAnswerId}
+                    />
+                    {errors.question_answer_uid && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.question_answer_uid.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions className='dialog-actions-dense'>
+            <Button type='submit' variant='contained' size='small' disabled={isDisable}>
+              Save Question
+              {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+            </Button>
+            <Button onClick={handleCloseModal} color='error' size='small'>
+              Close
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </Grid>
   )
 }

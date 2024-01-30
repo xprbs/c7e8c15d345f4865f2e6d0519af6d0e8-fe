@@ -161,7 +161,7 @@ function AuditIsoCreate() {
                             <TextField
                               {...params}
                               {...register('question_type')}
-                              label='Question Template'
+                              label='Question Category'
                               InputLabelProps={{ shrink: true }}
                               error={Boolean(errors.question_type)}
                             />
