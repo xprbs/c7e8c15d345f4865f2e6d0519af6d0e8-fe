@@ -156,6 +156,7 @@ const detailQuestion = () => {
           reject(error)
         })
         .finally(e => {
+          setDescription('')
           setMasterAnswerId(null)
           setSkeleton2(true)
           setIsDisable(false)
