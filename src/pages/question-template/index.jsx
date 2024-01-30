@@ -254,15 +254,27 @@ const QuestionTemplatePage = () => {
                 justifyContent: 'space-between'
               }}
             >
-              <Button
-                sx={{ mb: 2.5 }}
-                component={Link}
-                variant='contained'
-                href='/question-template/create'
-                size='small'
-              >
-                Create Template
-              </Button>
+              <Grid>
+                <Button
+                  sx={{ mb: 2.5 }}
+                  component={Link}
+                  variant='contained'
+                  href='/question-template/create'
+                  size='small'
+                >
+                  Create Template
+                </Button>
+                <Button
+                  sx={{ mb: 2.5, ml: 2.5 }}
+                  component={Link}
+                  variant='contained'
+                  href='#'
+                  size='small'
+                  color='warning'
+                >
+                  Import Template
+                </Button>
+              </Grid>
               <TextField
                 type={'search'}
                 size='small'
