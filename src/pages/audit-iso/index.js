@@ -21,7 +21,10 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  CircularProgress
+  CircularProgress,
+  Menu,
+  MenuItem,
+  Divider
 } from '@mui/material'
 
 // ** Icon Imports
@@ -136,6 +139,58 @@ function AuditIsoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.page, data.pageSize, data.sort, data.filterData, data.reload])
 
+  const RowOptions = ({ data }) => {
+    // ** State
+    const [anchorEl, setAnchorEl] = useState(null)
+    const rowOptionsOpen = Boolean(anchorEl)
+
+    const handleRowOptionsClick = e => {
+      setAnchorEl(e.currentTarget)
+    }
+
+    const handleRowOptionsClose = () => {
+      setAnchorEl(null)
+    }
+
+    return (
+      <>
+        <IconButton size='small' onClick={handleRowOptionsClick}>
+          <Icon icon='basil:settings-adjust-solid' />
+        </IconButton>
+        <Menu
+          keepMounted
+          anchorEl={anchorEl}
+          open={rowOptionsOpen}
+          onClose={handleRowOptionsClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          PaperProps={{ style: { minWidth: '8rem' } }}
+        >
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.question_name}</MenuItem>
+          <Divider />
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
+            <Icon icon='lucide:settings-2' fontSize={20} />
+            Set Detail Question
+          </MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+            <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
+            Edit
+          </MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+            <Icon icon='mingcute:delete-2-line' fontSize={20} />
+            Delete
+          </MenuItem>
+        </Menu>
+      </>
+    )
+  }
+
   const columns = [
     {
       field: 'id',
@@ -198,17 +253,7 @@ function AuditIsoPage() {
       field: 'actions',
       disableColumnMenu: true,
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Actions</Typography>,
-      renderCell: ({ row }) => (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton>
-            <Icon icon='ooui:view-details-ltr' />
-          </IconButton>
-
-          {/* <IconButton onClick={() => handleDialogToggleDelete(row)}>
-            <Icon icon='mdi:delete-outline' />
-          </IconButton> */}
-        </Box>
-      )
+      renderCell: ({ row }) => <RowOptions data={row} />
     }
   ]
 
