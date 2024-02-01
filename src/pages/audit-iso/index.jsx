@@ -37,6 +37,7 @@ import Link from 'next/link'
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
+import { useRouter } from 'next/router'
 
 function AuditIsoPage() {
   // ** State
@@ -57,6 +58,7 @@ function AuditIsoPage() {
   const [isLoadingDelete, setIsLoadingDelete] = useState(false)
 
   const auth = useAuth()
+  const router = useRouter()
 
   const updateData = (k, v) => setData(prev => ({ ...prev, [k]: v }))
 
@@ -107,6 +109,10 @@ function AuditIsoPage() {
         return 'Something error'
       }
     })
+  }
+
+  const handleSetDetail = e => {
+    router.push(`/audit-iso/view/${e.audit_uid}`)
   }
 
   useEffect(() => {
@@ -175,17 +181,17 @@ function AuditIsoPage() {
           <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.question_name}</MenuItem>
           <Divider />
           <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
-            <Icon icon='lucide:settings-2' fontSize={20} />
-            Set Detail Question
+            <Icon icon='pajamas:review-checkmark' fontSize={20} />
+            View Audit
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
             Edit
           </MenuItem>
           <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='mingcute:delete-2-line' fontSize={20} />
             Delete
-          </MenuItem>
+          </MenuItem> */}
         </Menu>
       </>
     )
@@ -203,7 +209,7 @@ function AuditIsoPage() {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>#</Typography>
     },
     {
-      flex: 0.75,
+      flex: 0.5,
       minWidth: 100,
       field: 'audit_number',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
@@ -229,12 +235,6 @@ function AuditIsoPage() {
     },
     {
       flex: 0.5,
-      minWidth: 100,
-      field: 'audit_ref',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Reference</Typography>
-    },
-    {
-      flex: 1,
       minWidth: 100,
       field: 'audit_location',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location</Typography>
