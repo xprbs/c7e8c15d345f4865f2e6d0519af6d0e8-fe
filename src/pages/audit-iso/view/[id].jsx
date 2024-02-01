@@ -19,8 +19,11 @@ import {
   Card,
   CardContent,
   CardHeader,
+  FormControlLabel,
   Grid,
   Paper,
+  Radio,
+  RadioGroup,
   Skeleton,
   Table,
   TableBody,
@@ -41,6 +44,7 @@ const AuditIsoViewPage = () => {
   const [isDisable, setIsDisable] = useState(false)
   const [detail, setDetail] = useState([])
   const [questionDetail, setQuestionDetail] = useState([])
+  const [answer, setAnswer] = useState([])
 
   const getData = async () => {
     setSkeleton(true)
@@ -69,7 +73,6 @@ const AuditIsoViewPage = () => {
   }
 
   const getQuestionDetail = async param => {
-    console.log(`param` + param)
     new Promise((resolve, reject) => {
       backendApi
         .post(
@@ -80,6 +83,27 @@ const AuditIsoViewPage = () => {
         )
         .then(res => {
           setQuestionDetail(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => setSkeleton2(false))
+    })
+  }
+
+  const getAnswer = async param => {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/get-master-answer-id',
+          JSON.stringify({
+            id: param ?? null
+          })
+        )
+        .then(res => {
+          setAnswer(res.data.data)
           resolve('success')
         })
         .catch(error => {
@@ -188,7 +212,18 @@ const AuditIsoViewPage = () => {
                               <TableCell align='left' component='th' scope='row'>
                                 {data.question_answer_description}
                               </TableCell>
-                              <TableCell align='right'>{data.question_answer_category}</TableCell>
+                              <TableCell align='right' sx={{ display: 'flex', justifyContent: 'right' }}>
+                                <RadioGroup row aria-label='colored' name='colored' defaultValue='0'>
+                                  {Object.create(data.answer).map(row => (
+                                    <FormControlLabel
+                                      key={row.id}
+                                      value={row.question_answer_key}
+                                      label={row.question_answer_description}
+                                      control={<Radio color={row.color} />}
+                                    />
+                                  ))}
+                                </RadioGroup>
+                              </TableCell>
                             </TableRow>
                           ))
                         ) : (
