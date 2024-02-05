@@ -182,7 +182,15 @@ function AuditIsoPage() {
           <Divider />
           <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
             <Icon icon='pajamas:review-checkmark' fontSize={20} />
-            View Audit
+            Process Audit
+          </MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+            <Icon icon='ic:round-assessment' fontSize={20} />
+            Result Audit
+          </MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+            <Icon icon='lucide:workflow' fontSize={20} />
+            Approval
           </MenuItem>
           {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
