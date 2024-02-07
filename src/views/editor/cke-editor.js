@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
-function Editor({ onChange }) {
+function Editor({ initData, onCKChange, name }) {
   let [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -12,11 +12,12 @@ function Editor({ onChange }) {
   if (loaded) {
     return (
       <CKEditor
+        name={name}
         editor={ClassicEditor}
         config={{
-          toolbar: ['undo', 'redo', 'heading', '|', 'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote']
+          toolbar: ['undo', 'redo', 'heading', '|', 'bold', 'italic', '|', 'bulletedList', 'numberedList']
         }}
-        data={''}
+        data={initData}
         onReady={editor => {
           // You can store the "editor" and use when it is needed.
           //   console.log('Editor is ready to use!', editor)
@@ -24,7 +25,10 @@ function Editor({ onChange }) {
         onChange={(event, editor) => {
           // do something when editor's content changed
           const data = editor.getData()
-          onChange(data)
+
+          onCKChange(data)
+
+          // console.log(data)
 
           //   console.log({ event, editor, data })
         }}
