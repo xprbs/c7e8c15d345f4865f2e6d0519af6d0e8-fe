@@ -68,7 +68,11 @@ var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
 
 const schema = yup.object().shape({
   question_answer_description: yup.string().required('Description is a required field'),
-  question_answer_uid: yup.string().required('Answer Master is a required field')
+  control_point: yup.string().required('Control Point is a required field'),
+  question_answer_uid: yup.string().required('Answer Master is a required field'),
+  klausul: yup.string().required('Ref / Klausul is a required field'),
+  category: yup.string().required('Category is a required field'),
+  subcategory: yup.string().required('Sub Category is a required field')
 })
 
 const detailQuestion = () => {
@@ -83,15 +87,34 @@ const detailQuestion = () => {
   const [masterAnswer, setMasterAnswer] = useState([])
   const [masterAnswerId, setMasterAnswerId] = useState(null)
   const [description, setDescription] = useState('')
+  const [controlPoint, setControlPoint] = useState('')
   const [questionDetail, setQuestionDetail] = useState([])
   const [reload, setReload] = useState(false)
 
   const handleClickOpenModal = () => setOpenModal(true)
   const handleCloseModal = () => setOpenModal(false)
 
+  const [fields, setFields] = useState({
+    klausul: '',
+    category: '',
+    subcategory: ''
+  })
+
+  const fieldHandler = e => {
+    const name = e.target.name
+    const value = e.target.value
+
+    // console.log(name, value)
+    setFields({
+      ...fields,
+      [name]: value
+    })
+  }
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors }
   } = useForm({
     mode: 'onBlur',
@@ -142,7 +165,11 @@ const detailQuestion = () => {
     const dataForm = JSON.stringify({
       question_uid: masterQuestion.question_uid,
       question_answer_description: description,
-      question_answer_uid: masterAnswerId.id
+      control_point: controlPoint,
+      question_answer_uid: masterAnswerId.id,
+      klausul: fields.klausul,
+      question_category1: fields.category,
+      question_category2: fields.subcategory
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -157,6 +184,7 @@ const detailQuestion = () => {
         })
         .finally(e => {
           setDescription('')
+          setControlPoint('')
           setMasterAnswerId(null)
           setSkeleton2(true)
           setIsDisable(false)
@@ -302,7 +330,7 @@ const detailQuestion = () => {
                             <TableRow key={index}>
                               <TableCell align='left'>{index + 1}</TableCell>
                               <TableCell align='left' component='th' scope='row'>
-                                {data.question_answer_description}
+                                <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
                               </TableCell>
                               <TableCell align='right'>{data.question_answer_category}</TableCell>
                             </TableRow>
@@ -343,7 +371,7 @@ const detailQuestion = () => {
         onClose={handleCloseModal}
         aria-labelledby='form-dialog-title'
         fullWidth={true}
-        maxWidth={'md'}
+        maxWidth={'lg'}
       >
         <DialogTitle id='form-dialog-title'>Create Question</DialogTitle>
 
@@ -353,27 +381,47 @@ const detailQuestion = () => {
               {/* To subscribe to this website, please enter your email address here. We will send updates occasionally. */}
             </DialogContentText>
             <Grid container spacing={6}>
-              <Grid container item spacing={6}>
+              <Grid container item md={6} rowSpacing={6}>
                 <Grid item md={12} xs={12}>
-                  {/* <Editor /> */}
                   <TextField
-                    {...register('question_answer_description')}
-                    onChange={e => setDescription(e.target.value)}
+                    {...register('klausul')}
+                    onChange={fieldHandler}
                     fullWidth
-                    name='question_answer_description'
-                    label='Question Description'
+                    name='klausul'
+                    label='Ref / Klausul'
                     size='small'
                     InputLabelProps={{ shrink: true }}
-                    error={Boolean(errors.question_answer_description)}
-                    helperText={errors.question_answer_description && errors.question_answer_description.message}
-                    multiline
-                    rows={4}
-                    value={description}
+                    error={Boolean(errors.klausul)}
+                    helperText={errors.klausul && errors.klausul.message}
                   />
                 </Grid>
-              </Grid>
-              <Grid container item spacing={6}>
-                <Grid item md={6} xs={12}>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    {...register('category')}
+                    onChange={fieldHandler}
+                    fullWidth
+                    name='category'
+                    label='Category'
+                    size='small'
+                    InputLabelProps={{ shrink: true }}
+                    error={Boolean(errors.category)}
+                    helperText={errors.category && errors.category.message}
+                  />
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    {...register('subcategory')}
+                    onChange={fieldHandler}
+                    fullWidth
+                    name='subcategory'
+                    label='Sub Category'
+                    size='small'
+                    InputLabelProps={{ shrink: true }}
+                    error={Boolean(errors.subcategory)}
+                    helperText={errors.subcategory && errors.subcategory.message}
+                  />
+                </Grid>
+                <Grid item md={12} xs={12}>
                   <FormControl fullWidth>
                     <Autocomplete
                       size='small'
@@ -383,7 +431,7 @@ const detailQuestion = () => {
                         <TextField
                           {...params}
                           {...register('question_answer_uid')}
-                          label='Answer Maste'
+                          label='Answer Master'
                           InputLabelProps={{ shrink: true }}
                           error={Boolean(errors.question_answer_uid)}
                         />
@@ -396,6 +444,48 @@ const detailQuestion = () => {
                     />
                     {errors.question_answer_uid && (
                       <FormHelperText sx={{ color: 'error.main' }}>{errors.question_answer_uid.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container item md={6} rowSpacing={6}>
+                <Grid item md={12} xs={12}>
+                  <InputLabel sx={{ mb: 2 }}>
+                    <Typography variant='body1'>Question Description</Typography>
+                  </InputLabel>
+                  <FormControl fullWidth>
+                    <Editor
+                      {...register('question_answer_description')}
+                      name={'question_answer_description'}
+                      initData={''}
+                      onCKChange={data => {
+                        setDescription(data)
+                        setValue('question_answer_description', data)
+                      }}
+                    />
+                    {errors.question_answer_description && (
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errors.question_answer_description.message}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+                <Grid item md={12} xs={12}>
+                  <InputLabel sx={{ mb: 2 }}>
+                    <Typography variant='body1'>Control Point</Typography>
+                  </InputLabel>
+                  <FormControl fullWidth>
+                    <Editor
+                      {...register('control_point')}
+                      name={'control_point'}
+                      initData={''}
+                      onCKChange={data => {
+                        setControlPoint(data)
+                        setValue('control_point', data)
+                      }}
+                    />
+                    {errors.control_point && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.control_point.message}</FormHelperText>
                     )}
                   </FormControl>
                 </Grid>

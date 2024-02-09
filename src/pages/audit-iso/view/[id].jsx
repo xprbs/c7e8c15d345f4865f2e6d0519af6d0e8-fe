@@ -196,11 +196,12 @@ const AuditIsoViewPage = () => {
               <Grid container spacing={6}>
                 <Grid item xs={12}>
                   <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label='simple table' size={'small'}>
+                    <Table aria-label='simple table' size={'small'}>
                       <TableHead>
                         <TableRow>
-                          <TableCell width={'1'}>#</TableCell>
-                          <TableCell>Question</TableCell>
+                          <TableCell>#</TableCell>
+                          <TableCell align='left'>Control Point</TableCell>
+                          <TableCell align='left'>Question</TableCell>
                           <TableCell align='right'>Answer</TableCell>
                         </TableRow>
                       </TableHead>
@@ -208,21 +209,49 @@ const AuditIsoViewPage = () => {
                         {questionDetail.length ? (
                           questionDetail.map((data, index) => (
                             <TableRow key={index}>
-                              <TableCell align='left'>{index + 1}</TableCell>
-                              <TableCell align='left' component='th' scope='row'>
-                                {data.question_answer_description}
+                              <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                {index + 1}
                               </TableCell>
-                              <TableCell align='right' sx={{ display: 'flex', justifyContent: 'right' }}>
-                                <RadioGroup row aria-label='colored' name='colored' defaultValue='0'>
-                                  {Object.create(data.answer).map(row => (
-                                    <FormControlLabel
-                                      key={row.id}
-                                      value={row.question_answer_key}
-                                      label={row.question_answer_description}
-                                      control={<Radio color={row.color} />}
-                                    />
-                                  ))}
-                                </RadioGroup>
+                              <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                <Box>
+                                  <Typography variant='overline'>Klausul : {data.klausul}</Typography>
+                                </Box>
+                                <Box>
+                                  <Typography variant='overline'>Category : {data.question_category1}</Typography>
+                                </Box>
+                                <Box>
+                                  <Typography variant='overline'>Sub Category : {data.question_category2}</Typography>
+                                </Box>
+                                <Box>
+                                  <Typography variant='overline'>Control Point : </Typography>
+                                  <p dangerouslySetInnerHTML={{ __html: data.control_point }}></p>
+                                </Box>
+                              </TableCell>
+                              <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                <Box>
+                                  <Typography variant='overline'>Question : </Typography>
+                                  <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
+                                </Box>
+                              </TableCell>
+                              <TableCell style={{ verticalAlign: 'top' }}>
+                                <Box
+                                  sx={{
+                                    border: 0,
+                                    display: 'flex',
+                                    justifyContent: 'flex-end'
+                                  }}
+                                >
+                                  <RadioGroup row defaultValue='0'>
+                                    {Object.create(data.answer).map(row => (
+                                      <FormControlLabel
+                                        key={row.id}
+                                        value={row.question_answer_key}
+                                        label={row.question_answer_description}
+                                        control={<Radio color={row.color} />}
+                                      />
+                                    ))}
+                                  </RadioGroup>
+                                </Box>
                               </TableCell>
                             </TableRow>
                           ))
@@ -247,6 +276,9 @@ const AuditIsoViewPage = () => {
                   >
                     <Button component={Link} href={'/audit-iso'} variant='outlined' size='small'>
                       Back
+                    </Button>
+                    <Button variant='contained' size='small'>
+                      Save
                     </Button>
                   </Box>
                 </Grid>
