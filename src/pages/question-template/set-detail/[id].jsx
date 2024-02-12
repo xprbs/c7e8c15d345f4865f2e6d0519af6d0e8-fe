@@ -320,7 +320,7 @@ const detailQuestion = () => {
                       <TableHead>
                         <TableRow>
                           <TableCell>#</TableCell>
-                          <TableCell>Question</TableCell>
+                          <TableCell align='left'>Question</TableCell>
                           <TableCell align='right'>Master Answer</TableCell>
                         </TableRow>
                       </TableHead>
@@ -328,8 +328,10 @@ const detailQuestion = () => {
                         {questionDetail.length ? (
                           questionDetail.map((data, index) => (
                             <TableRow key={index}>
-                              <TableCell align='left'>{index + 1}</TableCell>
-                              <TableCell align='left' component='th' scope='row'>
+                              <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                {index + 1}
+                              </TableCell>
+                              <TableCell align='left' style={{ verticalAlign: 'top' }}>
                                 <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
                               </TableCell>
                               <TableCell align='right'>{data.question_answer_category}</TableCell>
