@@ -266,7 +266,7 @@ const RoleSetPermission = () => {
                     </Grid>
                   </Grid>
                   <Grid container item>
-                    <Grid xs={12} lg={6} md={6}>
+                    <Grid item xs={12} lg={6} md={6}>
                       <Box>
                         <Button onClick={handleExpandClick}>
                           {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
