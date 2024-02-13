@@ -48,11 +48,15 @@ function AuditIsoCreate() {
   const [question, setQuestion] = useState([])
   const [locationId, setLocationId] = useState(null)
   const [questionId, setQuestionId] = useState(null)
+  const [auditCategory, setAuditCategory] = useState([])
+  const [auditCategoryId, setAuditCategoryId] = useState(null)
+  const [auditCategoryRef, setAuditCategoryRef] = useState([])
+  const [auditCategoryRefId, setAuditCategoryRefId] = useState(null)
 
   const [fields, setFields] = useState({
     audit_name: null,
     audit_ref: null,
-    audit_category: 'ISO',
+    audit_category: null,
     audit_location: locationId,
     question_uid: questionId
   })
@@ -83,8 +87,8 @@ function AuditIsoCreate() {
 
     const dataForm = JSON.stringify({
       audit_name: fields.audit_name,
-      audit_ref: fields.audit_ref,
-      audit_category: fields.audit_category,
+      audit_ref: auditCategoryRefId.id,
+      audit_category: auditCategoryId.id,
       audit_location: locationId.id,
       question_uid: questionId.id
     })
@@ -93,7 +97,7 @@ function AuditIsoCreate() {
       backendApi
         .post('/web/audit-checklist/store', dataForm)
         .then(res => {
-          router.push('/audit-iso')
+          router.push('/audit-checklist')
           resolve('success')
         })
         .catch(error => {
@@ -140,12 +144,51 @@ function AuditIsoCreate() {
           reject(error)
         })
     })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-audit-category')
+        .then(res => {
+          setAuditCategory(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
   }
 
   useEffect(() => {
     getInit()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  async function getCategoryRef() {
+    setAuditCategoryRefId(null)
+
+    const dataParam = JSON.stringify({
+      key2: auditCategoryId?.id
+    })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-audit-category-ref', dataParam)
+        .then(res => {
+          setAuditCategoryRef(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+  }
+
+  useEffect(() => {
+    getCategoryRef()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auditCategoryId])
 
   return (
     <Grid container spacing={6}>
@@ -174,7 +217,7 @@ function AuditIsoCreate() {
                   </Grid>
                   <Grid container item spacing={6}>
                     <Grid item xs={6}>
-                      <TextField
+                      {/* <TextField
                         {...register('audit_category')}
                         onChange={fieldHandler}
                         fullWidth
@@ -186,10 +229,34 @@ function AuditIsoCreate() {
                         helperText={errors.audit_category && errors.audit_category.message}
                         defaultValue={'ISO'}
                         InputProps={{ readOnly: true }}
-                      />
+                      /> */}
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          size='small'
+                          options={auditCategory}
+                          fullWidth
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              {...register('audit_category')}
+                              label='Audit Category'
+                              InputLabelProps={{ shrink: true }}
+                              error={Boolean(errors.audit_category)}
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            setAuditCategoryId(newValue)
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={auditCategoryId}
+                        />
+                        {errors.audit_category && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_category.message}</FormHelperText>
+                        )}
+                      </FormControl>
                     </Grid>
                     <Grid item xs={6}>
-                      <FormControl fullWidth>
+                      {/* <FormControl fullWidth>
                         <InputLabel shrink error={Boolean(errors.audit_ref)}>
                           Document Refrence
                         </InputLabel>
@@ -207,6 +274,31 @@ function AuditIsoCreate() {
                           <MenuItem value={'45001'}>ISO 45001</MenuItem>
                           <MenuItem value={'22301'}>ISO 22301</MenuItem>
                         </Select>
+                        {errors.audit_ref && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_ref.message}</FormHelperText>
+                        )}
+                      </FormControl> */}
+
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          size='small'
+                          options={auditCategoryRef}
+                          fullWidth
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              {...register('audit_ref')}
+                              label='Audit Refrence'
+                              InputLabelProps={{ shrink: true }}
+                              error={Boolean(errors.audit_ref)}
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            setAuditCategoryRefId(newValue)
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={auditCategoryRefId}
+                        />
                         {errors.audit_ref && (
                           <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_ref.message}</FormHelperText>
                         )}
@@ -278,7 +370,7 @@ function AuditIsoCreate() {
                       justifyContent: 'left'
                     }}
                   >
-                    <Button component={Link} href={'/audit-iso'} variant='outlined' size='small'>
+                    <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
                       Back
                     </Button>
                     <Button type='submit' variant='contained' size='small' disabled={isDisable}>
@@ -298,7 +390,7 @@ function AuditIsoCreate() {
 
 AuditIsoCreate.acl = {
   action: 'manage',
-  subject: 'audit-iso-create'
+  subject: 'audit-checklist-create'
 }
 
 export default AuditIsoCreate

@@ -112,7 +112,7 @@ function AuditIsoPage() {
   }
 
   const handleSetDetail = e => {
-    router.push(`/audit-iso/view/${e.audit_uid}`)
+    router.push(`/audit-checklist/view/${e.audit_uid}`)
   }
 
   useEffect(() => {
@@ -269,7 +269,7 @@ function AuditIsoPage() {
     <>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <PageHeader title={<Typography variant='h5'>Audit ISO</Typography>} subtitle={null} />
+          <PageHeader title={<Typography variant='h5'>Audit Checklist</Typography>} subtitle={null} />
         </Grid>
         <Grid item xs={12}>
           <Card>
@@ -283,7 +283,7 @@ function AuditIsoPage() {
                 justifyContent: 'space-between'
               }}
             >
-              <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/audit-iso/create' size='small'>
+              <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/audit-checklist/create' size='small'>
                 Create Project
               </Button>
               <TextField
@@ -384,7 +384,7 @@ function AuditIsoPage() {
 
 AuditIsoPage.acl = {
   action: 'manage',
-  subject: 'iso'
+  subject: 'audit-checklist'
 }
 
 export default AuditIsoPage
