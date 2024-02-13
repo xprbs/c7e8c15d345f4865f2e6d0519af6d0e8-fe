@@ -332,9 +332,13 @@ const detailQuestion = () => {
                                 {index + 1}
                               </TableCell>
                               <TableCell align='left' style={{ verticalAlign: 'top' }}>
-                                <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
+                                <Box>
+                                  <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
+                                </Box>
                               </TableCell>
-                              <TableCell align='right'>{data.question_answer_category}</TableCell>
+                              <TableCell align='right' sx={{ minWidth: 150 }}>
+                                {data.question_answer_category}
+                              </TableCell>
                             </TableRow>
                           ))
                         ) : (
@@ -511,7 +515,7 @@ const detailQuestion = () => {
 
 detailQuestion.acl = {
   action: 'manage',
-  subject: 'question_detail'
+  subject: 'question-template-detail'
 }
 
 export default detailQuestion
