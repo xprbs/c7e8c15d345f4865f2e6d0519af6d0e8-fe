@@ -320,7 +320,7 @@ const AuditIsoViewPage = () => {
                       <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
                         Back
                       </Button>
-                      <Button type='submit' variant='contained' size='small' disabled={isDisable}>
+                      <Button variant='contained' size='small' disabled={isDisable}>
                         Save
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
