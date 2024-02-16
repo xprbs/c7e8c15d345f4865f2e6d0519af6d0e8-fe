@@ -45,9 +45,8 @@ const AuditIsoViewPage = () => {
   const [isDisable, setIsDisable] = useState(false)
   const [detail, setDetail] = useState([])
   const [questionDetail, setQuestionDetail] = useState([])
-  const [selectedDetail, setSelectedDetail] = useState({})
-  const [selectedAnswers, setSelectedAnswers] = useState({})
-  const [description, setDescription] = useState({})
+
+  const [selectedDetail, setSelectedDetail] = useState([])
 
   const getData = async () => {
     setSkeleton(true)
@@ -102,9 +101,7 @@ const AuditIsoViewPage = () => {
     const dataForm = JSON.stringify({
       audit_uid: detail.audit_uid,
       question_uid: detail.question_uid,
-      question_detail_uid: questionDetail.question_detail_uid,
-      answer: questionDetail.answer,
-      answer_description: questionDetail.answer_description
+      details: selectedDetail
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -118,7 +115,7 @@ const AuditIsoViewPage = () => {
           reject(error)
         })
         .finally(e => {
-          setIsDisable(true)
+          setIsDisable(false)
         })
     })
 
@@ -133,18 +130,35 @@ const AuditIsoViewPage = () => {
     })
   }
 
-  const handleAnswer = (id, answer) => {
-    setSelectedAnswers(pre => ({ ...pre, [id]: answer }))
-  }
-
-  const handleDesc = (id, desc) => {
-    setDescription(pre => ({ ...pre, [id]: desc }))
+  const handleChange = (e, i) => {
+    const { name, value } = e.target
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[i][name] = value
+    setSelectedDetail(onChangeValue)
   }
 
   useEffect(() => {
     getData()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    questionDetail.map((row, i) => {
+      setSelectedDetail(prev => [
+        ...prev,
+        {
+          id: row.question_detail_uid,
+          answer: null,
+          answer_description: null
+        }
+      ])
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questionDetail])
+
+  // console.log(selectedDetail)
 
   return (
     <Grid container spacing={6}>
@@ -153,7 +167,7 @@ const AuditIsoViewPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title={'Question'} />
+          <CardHeader title={'Audit Info'} />
           <CardContent>
             {skeleton ? (
               <Grid>
@@ -218,7 +232,7 @@ const AuditIsoViewPage = () => {
                 <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
               </Grid>
             ) : (
-              <form onSubmit={createHandler}>
+              <form>
                 <Grid container spacing={6}>
                   <Grid item xs={12}>
                     <TableContainer component={Paper}>
@@ -240,22 +254,35 @@ const AuditIsoViewPage = () => {
                                 </TableCell>
                                 <TableCell align='left' style={{ verticalAlign: 'top' }}>
                                   <Box>
-                                    <Typography variant='overline'>Klausul : {data.klausul}</Typography>
+                                    <Typography variant='overline' color={'primary'}>
+                                      Klausul :{' '}
+                                    </Typography>{' '}
+                                    {data.klausul}
                                   </Box>
                                   <Box>
-                                    <Typography variant='overline'>Category : {data.question_category1}</Typography>
+                                    <Typography variant='overline' color={'primary'}>
+                                      Category :{' '}
+                                    </Typography>{' '}
+                                    {data.question_category1}
                                   </Box>
                                   <Box>
-                                    <Typography variant='overline'>Sub Category : {data.question_category2}</Typography>
+                                    <Typography variant='overline' color={'primary'}>
+                                      Sub Category :{' '}
+                                    </Typography>{' '}
+                                    {data.question_category2}
                                   </Box>
                                   <Box sx={{ minWidth: 250 }}>
-                                    <Typography variant='overline'>Question : </Typography>
+                                    <Typography variant='overline' color={'primary'}>
+                                      Question :{' '}
+                                    </Typography>
                                     <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
                                   </Box>
                                 </TableCell>
                                 <TableCell align='left' style={{ verticalAlign: 'top' }}>
                                   <Box sx={{ minWidth: 250 }}>
-                                    <Typography variant='overline'>Control Point : </Typography>
+                                    <Typography variant='overline' color={'primary'}>
+                                      Control Point :{' '}
+                                    </Typography>
                                     <p dangerouslySetInnerHTML={{ __html: data.control_point }}></p>
                                   </Box>
                                 </TableCell>
@@ -273,18 +300,16 @@ const AuditIsoViewPage = () => {
                                       {Object.create(data.answer).map(row => (
                                         <FormControlLabel
                                           key={row.id}
-                                          name={`answer_${row.id}`}
+                                          name={'answer'}
                                           value={row.question_answer_key}
                                           label={row.question_answer_description}
                                           control={<Radio color={row.color} />}
-                                          onChange={() =>
-                                            handleAnswer(data.question_detail_uid, row.question_answer_key)
-                                          }
+                                          onChange={e => handleChange(e, index)}
                                         />
                                       ))}
                                     </RadioGroup>
                                     <TextField
-                                      name={`answer_description_${data.question_detail_uid}`}
+                                      name={'answer_description'}
                                       multiline
                                       rows={3}
                                       fullWidth
@@ -292,7 +317,7 @@ const AuditIsoViewPage = () => {
                                       size='small'
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
-                                      onChange={e => handleDesc(data.question_detail_uid, e.target.value)}
+                                      onChange={e => handleChange(e, index)}
                                     />
                                   </Box>
                                 </TableCell>
@@ -320,7 +345,7 @@ const AuditIsoViewPage = () => {
                       <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
                         Back
                       </Button>
-                      <Button variant='contained' size='small' disabled={isDisable}>
+                      <Button onClick={e => createHandler()} variant='contained' size='small' disabled={isDisable}>
                         Save
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
