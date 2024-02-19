@@ -45,8 +45,11 @@ const AuditIsoViewPage = () => {
   const [isDisable, setIsDisable] = useState(false)
   const [detail, setDetail] = useState([])
   const [questionDetail, setQuestionDetail] = useState([])
-
+  const [auditAnswer, setAuditAnswer] = useState([])
   const [selectedDetail, setSelectedDetail] = useState([])
+
+  // console.log(auditAnswer)
+  // console.log(selectedDetail)
 
   const getData = async () => {
     setSkeleton(true)
@@ -63,6 +66,7 @@ const AuditIsoViewPage = () => {
           resolve('success')
           setDetail(res.data.data)
           getQuestionDetail(res.data.data.question_uid)
+          getAuditAnswer(res.data.data.audit_uid, res.data.data.question_uid)
         })
         .catch(error => {
           console.log(error)
@@ -85,6 +89,28 @@ const AuditIsoViewPage = () => {
         )
         .then(res => {
           setQuestionDetail(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => setSkeleton2(false))
+    })
+  }
+
+  const getAuditAnswer = async (audit_uid, question_uid) => {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/get-answer',
+          JSON.stringify({
+            audit_uid: audit_uid ?? null,
+            question_uid: question_uid ?? null
+          })
+        )
+        .then(res => {
+          setAuditAnswer(res.data.data)
           resolve('success')
         })
         .catch(error => {
@@ -144,19 +170,21 @@ const AuditIsoViewPage = () => {
   }, [])
 
   useEffect(() => {
+    setSelectedDetail([])
     questionDetail.map((row, i) => {
+      const answer_x = auditAnswer.find(e => e.question_detail_uid === row.question_detail_uid)
       setSelectedDetail(prev => [
         ...prev,
         {
           id: row.question_detail_uid,
-          answer: null,
-          answer_description: null
+          answer: answer_x?.answer ?? null,
+          answer_description: answer_x?.answer_description ?? null
         }
       ])
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questionDetail])
+  }, [auditAnswer])
 
   // console.log(selectedDetail)
 
@@ -296,7 +324,14 @@ const AuditIsoViewPage = () => {
                                       alignItems: 'flex-end'
                                     }}
                                   >
-                                    <RadioGroup row>
+                                    <RadioGroup
+                                      row
+                                      value={auditAnswer
+                                        .map(e =>
+                                          e.question_detail_uid === data.question_detail_uid ? e.answer : null
+                                        )
+                                        .join('')}
+                                    >
                                       {Object.create(data.answer).map(row => (
                                         <FormControlLabel
                                           key={row.id}
@@ -318,6 +353,13 @@ const AuditIsoViewPage = () => {
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
                                       onChange={e => handleChange(e, index)}
+                                      defaultValue={auditAnswer
+                                        .map(e =>
+                                          e.question_detail_uid === data.question_detail_uid
+                                            ? e.answer_description
+                                            : null
+                                        )
+                                        .join('')}
                                     />
                                   </Box>
                                 </TableCell>
@@ -346,8 +388,11 @@ const AuditIsoViewPage = () => {
                         Back
                       </Button>
                       <Button onClick={e => createHandler()} variant='contained' size='small' disabled={isDisable}>
-                        Save
+                        Save as Draft
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+                      </Button>
+                      <Button component={Link} href={'#'} variant='contained' size='small'>
+                        Submit
                       </Button>
                     </Box>
                   </Grid>
