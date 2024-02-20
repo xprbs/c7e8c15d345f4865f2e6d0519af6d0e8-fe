@@ -66,7 +66,9 @@ const AuditIsoViewPage = () => {
           resolve('success')
           setDetail(res.data.data)
           getQuestionDetail(res.data.data.question_uid)
-          getAuditAnswer(res.data.data.audit_uid, res.data.data.question_uid)
+          setTimeout(() => {
+            getAuditAnswer(res.data.data.audit_uid, res.data.data.question_uid)
+          }, [1000])
         })
         .catch(error => {
           console.log(error)
