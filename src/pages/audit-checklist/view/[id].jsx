@@ -326,10 +326,8 @@ const AuditIsoViewPage = () => {
                                   >
                                     <RadioGroup
                                       row
-                                      value={auditAnswer
-                                        .map(e =>
-                                          e.question_detail_uid === data.question_detail_uid ? e.answer : null
-                                        )
+                                      value={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer : null))
                                         .join('')}
                                     >
                                       {Object.create(data.answer).map(row => (
@@ -353,12 +351,8 @@ const AuditIsoViewPage = () => {
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
                                       onChange={e => handleChange(e, index)}
-                                      defaultValue={auditAnswer
-                                        .map(e =>
-                                          e.question_detail_uid === data.question_detail_uid
-                                            ? e.answer_description
-                                            : null
-                                        )
+                                      defaultValue={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
                                     />
                                   </Box>
