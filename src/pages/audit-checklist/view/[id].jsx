@@ -188,7 +188,7 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auditAnswer])
 
-  console.log(selectedDetail)
+  // console.log(selectedDetail)
 
   return (
     <Grid container spacing={6}>
