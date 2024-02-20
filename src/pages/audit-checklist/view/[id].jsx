@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
@@ -163,7 +163,7 @@ const AuditIsoViewPage = () => {
     setSelectedDetail(onChangeValue)
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getData()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +186,7 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auditAnswer])
 
-  // console.log(selectedDetail)
+  console.log(selectedDetail)
 
   return (
     <Grid container spacing={6}>
@@ -315,47 +315,61 @@ const AuditIsoViewPage = () => {
                                   </Box>
                                 </TableCell>
                                 <TableCell style={{ verticalAlign: 'top' }}>
-                                  <Box
-                                    sx={{
-                                      border: 0,
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      justifyContent: 'flex-end',
-                                      alignItems: 'flex-end'
-                                    }}
-                                  >
-                                    <RadioGroup
-                                      row
-                                      value={selectedDetail
-                                        .map(e => (e.id === data.question_detail_uid ? e.answer : null))
-                                        .join('')}
+                                  {selectedDetail.length ? (
+                                    <Box
+                                      sx={{
+                                        border: 0,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'flex-end'
+                                      }}
                                     >
-                                      {Object.create(data.answer).map(row => (
-                                        <FormControlLabel
-                                          key={row.id}
-                                          name={'answer'}
-                                          value={row.question_answer_key}
-                                          label={row.question_answer_description}
-                                          control={<Radio color={row.color} />}
-                                          onChange={e => handleChange(e, index)}
-                                        />
-                                      ))}
-                                    </RadioGroup>
-                                    <TextField
-                                      name={'answer_description'}
-                                      multiline
-                                      rows={3}
-                                      fullWidth
-                                      label='Note'
-                                      size='small'
-                                      InputLabelProps={{ shrink: true }}
-                                      sx={{ minWidth: 350, mt: 2 }}
-                                      onChange={e => handleChange(e, index)}
-                                      defaultValue={selectedDetail
-                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
-                                        .join('')}
-                                    />
-                                  </Box>
+                                      <RadioGroup
+                                        row
+                                        value={selectedDetail
+                                          .map(e => (e.id === data.question_detail_uid ? e.answer : null))
+                                          .join('')}
+                                      >
+                                        {Object.create(data.answer).map(row => (
+                                          <FormControlLabel
+                                            key={row.id}
+                                            name={'answer'}
+                                            value={row.question_answer_key}
+                                            label={row.question_answer_description}
+                                            control={<Radio color={row.color} />}
+                                            onChange={e => handleChange(e, index)}
+                                          />
+                                        ))}
+                                      </RadioGroup>
+                                      <TextField
+                                        name={'answer_description'}
+                                        multiline
+                                        rows={3}
+                                        fullWidth
+                                        label='Note'
+                                        size='small'
+                                        InputLabelProps={{ shrink: true }}
+                                        sx={{ minWidth: 350, mt: 2 }}
+                                        onChange={e => handleChange(e, index)}
+                                        defaultValue={selectedDetail
+                                          .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                          .join('')}
+                                      />
+                                    </Box>
+                                  ) : (
+                                    <Grid
+                                      sx={{
+                                        border: 0,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'flex-end',
+                                        alignItems: 'flex-end'
+                                      }}
+                                    >
+                                      <Skeleton variant='text' sx={{ fontSize: '1rem', width: '350px' }} />
+                                    </Grid>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             ))
