@@ -228,13 +228,12 @@ function AuditIsoPage() {
       field: 'audit_name',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Doc Name</Typography>
     },
-
-    // {
-    //   flex: 1,
-    //   minWidth: 100,
-    //   field: 'dataAreaId',
-    //   renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>
-    // },
+    {
+      flex: 1,
+      minWidth: 100,
+      field: 'dataAreaId',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>
+    },
     {
       flex: 0.5,
       minWidth: 100,

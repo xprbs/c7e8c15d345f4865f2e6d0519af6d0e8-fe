@@ -38,6 +38,7 @@ const schema = yup.object().shape({
   audit_name: yup.string().required('Project Name is a required field'),
   audit_ref: yup.string().required('Document Reference is a required field'),
   audit_category: yup.string().required('Category is a required field'),
+  company: yup.string().required('Company is a required field'),
   audit_location: yup.string().required('Department is a required field'),
   question_uid: yup.string().required('Question Template is a required field')
 })
@@ -52,12 +53,15 @@ function AuditIsoCreate() {
   const [auditCategoryId, setAuditCategoryId] = useState(null)
   const [auditCategoryRef, setAuditCategoryRef] = useState([])
   const [auditCategoryRefId, setAuditCategoryRefId] = useState(null)
+  const [company, setCompany] = useState([])
+  const [companyId, setCompanyId] = useState(null)
 
   const [fields, setFields] = useState({
     audit_name: null,
     audit_ref: null,
     audit_category: null,
     audit_location: locationId,
+    company: companyId,
     question_uid: questionId
   })
 
@@ -89,6 +93,7 @@ function AuditIsoCreate() {
       audit_name: fields.audit_name,
       audit_ref: auditCategoryRefId.id,
       audit_category: auditCategoryId.id,
+      company: companyId.id,
       audit_location: locationId.id,
       question_uid: questionId.id
     })
@@ -157,6 +162,19 @@ function AuditIsoCreate() {
           reject(error)
         })
     })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-company')
+        .then(res => {
+          setCompany(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
   }
 
   useEffect(() => {
@@ -217,19 +235,62 @@ function AuditIsoCreate() {
                   </Grid>
                   <Grid container item spacing={6}>
                     <Grid item xs={6}>
-                      {/* <TextField
-                        {...register('audit_category')}
-                        onChange={fieldHandler}
-                        fullWidth
-                        name='audit_category'
-                        label='Category'
-                        size='small'
-                        InputLabelProps={{ shrink: true }}
-                        error={Boolean(errors.audit_category)}
-                        helperText={errors.audit_category && errors.audit_category.message}
-                        defaultValue={'ISO'}
-                        InputProps={{ readOnly: true }}
-                      /> */}
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          size='small'
+                          options={company}
+                          fullWidth
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              {...register('company')}
+                              label='Company'
+                              InputLabelProps={{ shrink: true }}
+                              error={Boolean(errors.company)}
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            setCompanyId(newValue)
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={companyId}
+                        />
+                        {errors.company && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          size='small'
+                          options={department}
+                          fullWidth
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              {...register('audit_location')}
+                              label='Department'
+                              InputLabelProps={{ shrink: true }}
+                              error={Boolean(errors.audit_location)}
+                            />
+                          )}
+                          onChange={(event, newValue) => {
+                            setLocationId(newValue)
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={locationId}
+                        />
+                        {errors.audit_location && (
+                          <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_location.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid container item md={6} xs={12} rowSpacing={8}>
+                  <Grid container item spacing={6}>
+                    <Grid item xs={6}>
                       <FormControl fullWidth>
                         <Autocomplete
                           size='small'
@@ -256,29 +317,6 @@ function AuditIsoCreate() {
                       </FormControl>
                     </Grid>
                     <Grid item xs={6}>
-                      {/* <FormControl fullWidth>
-                        <InputLabel shrink error={Boolean(errors.audit_ref)}>
-                          Document Refrence
-                        </InputLabel>
-                        <Select
-                          {...register('audit_ref')}
-                          label='Document Refrence'
-                          defaultValue=''
-                          notched
-                          name='audit_ref'
-                          size='small'
-                          onChange={fieldHandler}
-                          error={Boolean(errors.audit_ref)}
-                        >
-                          <MenuItem value={'14001'}>ISO 14001</MenuItem>
-                          <MenuItem value={'45001'}>ISO 45001</MenuItem>
-                          <MenuItem value={'22301'}>ISO 22301</MenuItem>
-                        </Select>
-                        {errors.audit_ref && (
-                          <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_ref.message}</FormHelperText>
-                        )}
-                      </FormControl> */}
-
                       <FormControl fullWidth>
                         <Autocomplete
                           size='small'
@@ -304,34 +342,6 @@ function AuditIsoCreate() {
                         )}
                       </FormControl>
                     </Grid>
-                  </Grid>
-                </Grid>
-                <Grid container item md={6} xs={12} rowSpacing={8}>
-                  <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        size='small'
-                        options={department}
-                        fullWidth
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            {...register('audit_location')}
-                            label='Department'
-                            InputLabelProps={{ shrink: true }}
-                            error={Boolean(errors.audit_location)}
-                          />
-                        )}
-                        onChange={(event, newValue) => {
-                          setLocationId(newValue)
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        value={locationId}
-                      />
-                      {errors.audit_location && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_location.message}</FormHelperText>
-                      )}
-                    </FormControl>
                   </Grid>
                   <Grid item xs={12}>
                     <FormControl fullWidth>
