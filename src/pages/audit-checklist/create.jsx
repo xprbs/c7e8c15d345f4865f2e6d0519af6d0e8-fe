@@ -165,7 +165,7 @@ function AuditIsoCreate() {
 
     new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/get-company')
+        .post('/web/master/get-company-trans')
         .then(res => {
           setCompany(res.data.data)
           resolve('success')

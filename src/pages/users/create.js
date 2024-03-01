@@ -14,7 +14,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText,
+  Divider,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material'
 
 // ** Custom Components Imports
@@ -31,6 +34,9 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
+
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
+import BookmarkIcon from '@mui/icons-material/Bookmark'
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -58,6 +64,11 @@ const UserCreate = () => {
 
   const [isDisable, setIsDisable] = useState(false)
   const [parentMenu, setParentMenu] = useState([])
+  const [company, setCompany] = useState([])
+  const [companyAll, setCompanyAll] = useState([])
+  const [checked, setChecked] = useState([])
+
+  // console.log(checked)
 
   const router = useRouter()
 
@@ -90,7 +101,8 @@ const UserCreate = () => {
       email: fields.email,
       password: fields.password,
       password_confirmation: fields.password_confirmation,
-      role_uid: fields.role_uid
+      role_uid: fields.role_uid,
+      checked: checked
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -132,7 +144,7 @@ const UserCreate = () => {
     })
   }
 
-  async function getListRole() {
+  async function initData() {
     new Promise((resolve, reject) => {
       backendApi
         .post('/web/master/list-role')
@@ -145,11 +157,45 @@ const UserCreate = () => {
           reject(error)
         })
     })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-company')
+        .then(res => {
+          setCompany(res.data.data)
+
+          const data1 = res.data.data
+          const data2 = data1.map(item => item.company_uid)
+          setCompanyAll(data2)
+
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
   }
 
   useEffect(() => {
-    getListRole()
+    initData()
   }, [])
+
+  const handleCheckbox = event => {
+    var updatedList = [...checked]
+    if (event.target.checked) {
+      updatedList = [...checked, event.target.value]
+    } else {
+      if (checked.indexOf(event.target.value) !== -1) {
+        updatedList.splice(checked.indexOf(event.target.value), 1)
+      }
+    }
+    setChecked(updatedList)
+  }
+
+  const handleSelectClick = () => {
+    setChecked(oldSelected => (oldSelected.length === 0 ? companyAll : []))
+  }
 
   return (
     <Grid container spacing={6}>
@@ -158,7 +204,7 @@ const UserCreate = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Create' />
+          <CardHeader title='User Info' />
           <CardContent>
             <form onSubmit={handleSubmit(createHandler)}>
               <Grid container spacing={8}>
@@ -262,6 +308,32 @@ const UserCreate = () => {
                       helperText={errors.password_confirmation && errors.password_confirmation.message}
                       type={'password'}
                     />
+                  </Grid>
+                </Grid>
+                <Grid container item>
+                  <Typography variant='h6' sx={{ mb: 2.5, mr: 2.5 }}>
+                    Company Access
+                  </Typography>
+                  <Box>
+                    <Button onClick={handleSelectClick}>{checked.length === 0 ? 'Select all' : 'Unselect all'}</Button>
+                  </Box>
+
+                  <Grid container direction='column' justifyContent='flex-start' alignItems='flex-start'>
+                    {company.map((data, index) => (
+                      <FormControlLabel
+                        key={index}
+                        control={
+                          <Checkbox
+                            value={data.company_uid}
+                            checked={checked.includes(data.company_uid)}
+                            icon={<BookmarkBorderIcon />}
+                            checkedIcon={<BookmarkIcon />}
+                            onChange={handleCheckbox}
+                          />
+                        }
+                        label={`${data.label} - ${data.id} `}
+                      />
+                    ))}
                   </Grid>
                 </Grid>
 

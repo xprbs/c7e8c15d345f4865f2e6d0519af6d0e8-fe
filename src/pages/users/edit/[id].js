@@ -14,7 +14,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Skeleton
+  Skeleton,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material'
 
 // ** Custom Components Imports
@@ -26,6 +28,9 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
 
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
+import BookmarkIcon from '@mui/icons-material/Bookmark'
+
 const UserEdit = () => {
   const [fields, setFields] = useState({
     name: '',
@@ -36,9 +41,15 @@ const UserEdit = () => {
   })
 
   const updateData = (k, v) => setFields(prev => ({ ...prev, [k]: v }))
+
   const [isDisable, setIsDisable] = useState(false)
   const [parentMenu, setParentMenu] = useState([])
   const [isSkeleton, setIsSkeleton] = useState(true)
+  const [company, setCompany] = useState([])
+  const [companyAll, setCompanyAll] = useState([])
+  const [checked, setChecked] = useState([])
+
+  // console.log(checked)
 
   const router = useRouter()
 
@@ -61,7 +72,8 @@ const UserEdit = () => {
       username: fields.username,
       email: fields.email,
       role_uid: fields.role_uid,
-      user_uid: fields.user_uid
+      user_uid: fields.user_uid,
+      checked: checked
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -106,8 +118,31 @@ const UserEdit = () => {
           updateData('email', res.data.data.email)
           updateData('role_uid', res.data.data.role_uid)
           updateData('user_uid', res.data.data.user_uid)
+
+          const data1 = res.data.data.company_access
+          const data2 = data1.map(item => item.company_uid)
+          setChecked(data2)
+
           resolve('success')
           setIsSkeleton(false)
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-company')
+        .then(res => {
+          setCompany(res.data.data)
+
+          const data1 = res.data.data
+          const data2 = data1.map(item => item.company_uid)
+          setCompanyAll(data2)
+
+          resolve('success')
         })
         .catch(error => {
           console.log(error)
@@ -132,10 +167,26 @@ const UserEdit = () => {
   }
 
   useEffect(() => {
-    getData()
     getListRole()
+    getData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handleCheckbox = event => {
+    var updatedList = [...checked]
+    if (event.target.checked) {
+      updatedList = [...checked, event.target.value]
+    } else {
+      if (checked.indexOf(event.target.value) !== -1) {
+        updatedList.splice(checked.indexOf(event.target.value), 1)
+      }
+    }
+    setChecked(updatedList)
+  }
+
+  const handleSelectClick = () => {
+    setChecked(oldSelected => (oldSelected.length === 0 ? companyAll : []))
+  }
 
   return (
     <Grid container spacing={6}>
@@ -144,7 +195,7 @@ const UserEdit = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Edit' />
+          <CardHeader title='User Info' />
           <CardContent>
             {isSkeleton ? (
               <Grid>
@@ -214,6 +265,35 @@ const UserEdit = () => {
                         label='Email'
                         InputLabelProps={{ shrink: true }}
                       />
+                    </Grid>
+                  </Grid>
+
+                  <Grid container item>
+                    <Typography variant='h6' sx={{ mb: 2.5, mr: 2.5 }}>
+                      Company Access
+                    </Typography>
+                    <Box>
+                      <Button onClick={handleSelectClick}>
+                        {checked.length === 0 ? 'Select all' : 'Unselect all'}
+                      </Button>
+                    </Box>
+
+                    <Grid container direction='column' justifyContent='flex-start' alignItems='flex-start'>
+                      {company.map((data, index) => (
+                        <FormControlLabel
+                          key={index}
+                          control={
+                            <Checkbox
+                              value={data.company_uid}
+                              checked={checked.includes(data.company_uid)}
+                              icon={<BookmarkBorderIcon />}
+                              checkedIcon={<BookmarkIcon />}
+                              onChange={handleCheckbox}
+                            />
+                          }
+                          label={`${data.label} - ${data.id} `}
+                        />
+                      ))}
                     </Grid>
                   </Grid>
 
