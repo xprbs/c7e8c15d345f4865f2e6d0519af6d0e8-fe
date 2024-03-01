@@ -217,7 +217,7 @@ function AuditIsoPage() {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>#</Typography>
     },
     {
-      flex: 0.5,
+      flex: 0.75,
       minWidth: 100,
       field: 'audit_number',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
@@ -229,7 +229,7 @@ function AuditIsoPage() {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Doc Name</Typography>
     },
     {
-      flex: 1,
+      flex: 0.5,
       minWidth: 100,
       field: 'dataAreaId',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>

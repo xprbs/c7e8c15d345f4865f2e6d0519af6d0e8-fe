@@ -207,6 +207,16 @@ const AuditIsoViewPage = () => {
             ) : (
               <Grid container spacing={6}>
                 <Grid container item spacing={6}>
+                  <Grid item md={1} xs={12}>
+                    <TextField
+                      fullWidth
+                      value={detail.dataAreaId}
+                      aria-readonly
+                      label='Company'
+                      size='small'
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
                   <Grid item md={2} xs={12}>
                     <TextField
                       fullWidth
@@ -217,7 +227,7 @@ const AuditIsoViewPage = () => {
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
-                  <Grid item md={4} xs={12}>
+                  <Grid item md={3} xs={12}>
                     <TextField
                       fullWidth
                       value={detail.audit_name}
