@@ -8,7 +8,7 @@ import Link from 'next/link'
 import * as yup from 'yup'
 import { useForm, setValue } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-
+import { DataGrid } from '@mui/x-data-grid'
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
@@ -190,6 +190,80 @@ const AuditIsoViewPage = () => {
 
   // console.log(selectedDetail)
 
+    const [auditorData, setAuditorData] = useState([]);
+    const [auditeeData, setAuditeeData] = useState([]);
+  
+    const datakeyForm = JSON.stringify({
+      id: id
+    })
+
+    const fetchData = async () => {
+      try {
+        const response = await backendApi.post('/web/audit-checklist/get-detail', datakeyForm);
+        const { auditor, auditee } = response.data.data;
+
+        // Proses data auditee
+        const processedAuditeeData = auditee.map((item, index) => ({
+          id: index, // Atau gunakan properti unik lainnya
+          auditee_name: item.auditee_name,
+          auditee_type: item.auditee_type
+        }));
+
+        // Proses data auditor
+        const processedAuditorData = auditor.map((item, index) => ({
+          id: index, // Atau gunakan properti unik lainnya
+          auditor_name: item.auditor_name,
+          auditor_type: item.auditor_type
+        }));
+
+        setAuditorData(processedAuditorData);
+        setAuditeeData(processedAuditeeData);
+        setSkeleton(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    useEffect(() => {
+      fetchData();
+    }, []);
+
+    const columnsAuditor = [
+      {
+        flex: 0.75,
+        minWidth: 100,
+        field: 'auditor_name',
+        headerName: 'Auditor Name',
+        renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditor Name</Typography>
+      },
+      {
+        flex: 0.75,
+        minWidth: 100,
+        field: 'auditor_type',
+        headerName: 'Auditor Type',
+        renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditor Type</Typography>
+      }
+    ];
+
+    const columnsAuditee = [
+      {
+        flex: 0.75,
+        minWidth: 100,
+        field: 'auditee_name',
+        headerName: 'Auditee Name',
+        renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditee Name</Typography>
+      },
+      {
+        flex: 0.75,
+        minWidth: 100,
+        field: 'auditee_type',
+        headerName: 'Auditee Type',
+        renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditee Type</Typography>
+      }
+    ];
+  
+  const CustomPagination = () => null;
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -256,6 +330,50 @@ const AuditIsoViewPage = () => {
                       size='small'
                       InputLabelProps={{ shrink: true }}
                     />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title={'Auditor & Auditee Info'} />
+          <CardContent>
+            {skeleton ? (
+              <Grid>
+                <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
+                <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
+              </Grid>
+            ) : (
+              <Grid container spacing={6}>
+                <Grid container item spacing={6}>
+                  <Grid item md={6} xs={12}>
+                  <DataGrid
+                    autoHeight
+                    rowHeight={40}
+                    columns={columnsAuditor}
+                    getRowId={row => row.id}
+                    rows={auditorData}
+                    pagination={false}
+                    components={{
+                      Pagination: CustomPagination,
+                    }}
+                  />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                      <DataGrid
+                        autoHeight
+                        rowHeight={40}
+                        columns={columnsAuditee}
+                        getRowId={row => row.id}
+                        rows={auditeeData}
+                        pagination={false}
+                        components={{
+                          Pagination: CustomPagination,
+                        }}
+                  />
                   </Grid>
                 </Grid>
               </Grid>
