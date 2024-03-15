@@ -50,7 +50,7 @@ const schema = yup.object().shape({
   company: yup.string().required('Company is a required field'),
   finding: yup.string().required('Finding is a required field'),
   recommendation: yup.string().required('Recommendation is a required field'),
-  risk: yup.string().required('Risk is a required field'),
+  risk: yup.string().required('Risk is a required field')
 })
 
 const videoConstraints = {
@@ -76,7 +76,7 @@ function SurveillanceCreate() {
     question_name: null,
     finding: null,
     recommendation: null,
-    risk: null,
+    risk: null
   })
 
   const router = useRouter()
@@ -339,7 +339,6 @@ function SurveillanceCreate() {
                         label='Geo Location'
                         size='small'
                         error={Boolean(errors.location)}
-                        // helperText={errors.location && errors.location.message}
                         endAdornment={
                           <InputAdornment position='end'>
                             <IconButton onClick={() => getLocation()}>

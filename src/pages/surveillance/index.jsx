@@ -255,13 +255,7 @@ const SurveillancePage = () => {
               }}
             >
               <Grid>
-                <Button
-                  sx={{ mb: 2.5 }}
-                  component={Link}
-                  variant='contained'
-                  href='/surveillance/create'
-                  size='small'
-                >
+                <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/surveillance/create' size='small'>
                   Create
                 </Button>
                 <Button
@@ -373,7 +367,6 @@ const SurveillancePage = () => {
 
 SurveillancePage.acl = {
   action: 'manage',
-  // subject: 'question-template'
   subject: 'surveillance'
 }
 
