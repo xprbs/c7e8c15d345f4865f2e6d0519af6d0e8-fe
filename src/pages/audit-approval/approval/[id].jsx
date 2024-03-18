@@ -47,6 +47,7 @@ const AuditIsoViewPage = () => {
   const [questionDetail, setQuestionDetail] = useState([])
   const [auditAnswer, setAuditAnswer] = useState([])
   const [selectedDetail, setSelectedDetail] = useState([])
+  const [approval, setApproval] = useState([])
 
   // console.log(auditAnswer)
   // console.log(selectedDetail)
@@ -68,6 +69,7 @@ const AuditIsoViewPage = () => {
           getQuestionDetail(res.data.data.question_uid)
           setTimeout(() => {
             getAuditAnswer(res.data.data.audit_uid, res.data.data.question_uid)
+            getAuditApproval(res.data.data.audit_uid)
           }, [1000])
         })
         .catch(error => {
@@ -233,6 +235,29 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const getAuditApproval = async id => {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/get-approval',
+          JSON.stringify({
+            audit_uid: id
+          })
+        )
+        .then(res => {
+          resolve('success')
+          setApproval(res.data.data)
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(() => {
+          setSkeleton2(false)
+        })
+    })
+  }
+
   const columnsAuditor = [
     {
       flex: 0.75,
@@ -272,7 +297,7 @@ const AuditIsoViewPage = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <PageHeader title={<Typography variant='h5'>Process Audit</Typography>}></PageHeader>
+        <PageHeader title={<Typography variant='h5'>Detail Audit</Typography>}></PageHeader>
       </Grid>
       <Grid item xs={12}>
         <Card>
@@ -388,6 +413,62 @@ const AuditIsoViewPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
+          <CardHeader title={'Approval Info'} />
+          <CardContent>
+            {skeleton2 ? (
+              <Grid>
+                <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
+                <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
+              </Grid>
+            ) : (
+              <Grid container spacing={6}>
+                <Grid container item spacing={6}>
+                  <Grid item md={12} xs={12}>
+                    <TableContainer component={Paper}>
+                      <Table aria-label='simple table' size={'small'}>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell width={20}>#</TableCell>
+                            <TableCell align='left'>Name</TableCell>
+                            <TableCell align='right'>Workflow</TableCell>
+                            <TableCell align='right'>Status</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {approval.length ? (
+                            approval.map((data, index) => (
+                              <TableRow key={index}>
+                                <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                  {index + 1}
+                                </TableCell>
+                                <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                                  {data.user_name}
+                                </TableCell>
+                                <TableCell align='right' style={{ verticalAlign: 'top' }}>
+                                  {data.priority}
+                                </TableCell>
+                                <TableCell align='right' style={{ verticalAlign: 'top' }}>
+                                  {data.approval_name}
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
+                              Not data found
+                            </Typography>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
           <CardContent>
             {skeleton2 ? (
               <Grid>
@@ -474,10 +555,12 @@ const AuditIsoViewPage = () => {
                                             label={row.question_answer_description}
                                             control={<Radio color={row.color} />}
                                             onChange={e => handleChange(e, index)}
+                                            disabled
                                           />
                                         ))}
                                       </RadioGroup>
                                       <TextField
+                                        disabled
                                         name={'answer_description'}
                                         multiline
                                         rows={3}
@@ -527,15 +610,15 @@ const AuditIsoViewPage = () => {
                         justifyContent: 'left'
                       }}
                     >
-                      <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
+                      <Button component={Link} href={'/audit-approval'} variant='outlined' size='small'>
                         Back
                       </Button>
-                      <Button onClick={e => createHandler(0)} variant='contained' size='small' disabled={isDisable}>
-                        Save as Draft
+                      <Button color='error' variant='contained' size='small' disabled={isDisable}>
+                        Reject
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
-                      <Button onClick={e => createHandler(1)} variant='contained' size='small' disabled={isDisable}>
-                        Submit for approval
+                      <Button variant='contained' size='small' disabled={isDisable}>
+                        Approve
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
                     </Box>
@@ -552,7 +635,7 @@ const AuditIsoViewPage = () => {
 
 AuditIsoViewPage.acl = {
   action: 'manage',
-  subject: 'audit-checklist-view'
+  subject: 'audit-approval'
 }
 
 export default AuditIsoViewPage

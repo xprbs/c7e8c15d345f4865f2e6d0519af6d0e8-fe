@@ -425,7 +425,7 @@ function SurveillanceCreate() {
             <CardContent>
               <Grid container spacing={8} sx={{ paddingTop: 2 }}>
                 <Grid container item md={6} xs={6} rowSpacing={8}>
-                  <Button component={Link} href={'/question-template'} variant='outlined' size='small'>
+                  <Button component={Link} href={'/surveillance'} variant='outlined' size='small'>
                     Back
                   </Button>
                 </Grid>
