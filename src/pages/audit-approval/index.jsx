@@ -22,9 +22,11 @@ import {
   TableRow,
   TableCell,
   CircularProgress,
-  Menu,
   MenuItem,
-  Divider
+  Divider,
+  Menu,
+  CardHeader,
+  CardContent
 } from '@mui/material'
 
 // ** Icon Imports
@@ -36,11 +38,10 @@ import Link from 'next/link'
 
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
-import { backendApi } from 'src/configs/axios'
 import { useRouter } from 'next/router'
+import { backendApi } from 'src/configs/axios'
 
-function AuditIsoPage() {
-  // ** State
+const AuditApprovalPage = () => {
   const [data, setData] = useState({
     loading: true,
     rows: [],
@@ -53,75 +54,14 @@ function AuditIsoPage() {
     reload: false
   })
 
-  const [openDialogAdd, setOpenDialogAdd] = useState(false)
-  const [dataDelete, setDataDelete] = useState({})
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false)
-
-  const auth = useAuth()
   const router = useRouter()
 
   const updateData = (k, v) => setData(prev => ({ ...prev, [k]: v }))
-
-  const handleDialogToggleDelete = data => {
-    setDataDelete(data)
-    setIsLoadingDelete(false)
-    setOpenDialogAdd(!openDialogAdd)
-  }
-
-  const handleDialogToggleDeleteClose = () => {
-    setIsLoadingDelete(false)
-    setOpenDialogAdd(!openDialogAdd)
-  }
 
   const handleFilter = useCallback(val => {
     updateData('filterData', val)
     updateData('page', 1)
   }, [])
-
-  const deleteHandler = e => {
-    e.preventDefault()
-    setIsLoadingDelete(true)
-
-    const dataForm = JSON.stringify({
-      row_id: dataDelete.acl_subject
-    })
-
-    const myPromise = new Promise((resolve, reject) => {
-      backendApi
-        .post('/audit-checklist/delete', dataForm)
-        .then(res => {
-          resolve('success')
-          handleDialogToggleDeleteClose()
-          updateData('reload', !data.reload)
-        })
-        .catch(error => {
-          reject(error)
-          handleDialogToggleDeleteClose()
-        })
-    })
-
-    toast.promise(myPromise, {
-      loading: 'Loading',
-      success: 'Successfully delete data',
-      error: error => {
-        if (error.response.status === 500) return error.response.data.response
-
-        return 'Something error'
-      }
-    })
-  }
-
-  const handleSetDetail = e => {
-    router.push(`/audit-checklist/view/${e.audit_uid}`)
-  }
-
-  const handleSetApproval = e => {
-    router.push(`/audit-checklist/approval/${e.audit_uid}`)
-  }
-
-  const handleSetResult = e => {
-    router.push(`/audit-checklist/result/${e.audit_uid}`)
-  }
 
   useEffect(() => {
     const initData = async () => {
@@ -135,7 +75,7 @@ function AuditIsoPage() {
       })
 
       await backendApi
-        .post('/web/audit-checklist/list', dataForm)
+        .post('/web/approval/audit', dataForm)
         .then(response => {
           updateData('rowCount', response.data.total)
           setTimeout(() => {
@@ -152,6 +92,10 @@ function AuditIsoPage() {
     initData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.page, data.pageSize, data.sort, data.filterData, data.reload])
+
+  const handleSetApproval = e => {
+    router.push(`/audit-approval/approval/${e.audit_uid}`)
+  }
 
   const RowOptions = ({ data }) => {
     // ** State
@@ -186,30 +130,10 @@ function AuditIsoPage() {
           }}
           PaperProps={{ style: { minWidth: '8rem' } }}
         >
-          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.audit_number}</MenuItem> */}
-          {/* <Divider /> */}
-          {data.status === '0' || data.status === '10' ? (
-            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
-              <Icon icon='icon-park-outline:checklist' fontSize={20} />
-              Process Audit
-            </MenuItem>
-          ) : null}
-          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetResult(data)}>
-            <Icon icon='pajamas:review-checkmark' fontSize={20} />
-            Result Audit
-          </MenuItem>
           <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetApproval(data)}>
             <Icon icon='ant-design:audit-outlined' fontSize={20} />
             Approval
           </MenuItem>
-          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
-            Edit
-          </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='mingcute:delete-2-line' fontSize={20} />
-            Delete
-          </MenuItem> */}
         </Menu>
       </>
     )
@@ -257,12 +181,6 @@ function AuditIsoPage() {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location</Typography>
     },
     {
-      flex: 1,
-      minWidth: 100,
-      field: 'question_uid',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Question Template</Typography>
-    },
-    {
       flex: 0.5,
       minWidth: 100,
       field: 'status_name',
@@ -284,7 +202,7 @@ function AuditIsoPage() {
     <>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <PageHeader title={<Typography variant='h5'>Audit Checklist</Typography>} subtitle={null} />
+          <PageHeader title={<Typography variant='h5'>Approval</Typography>} subtitle={null} />
         </Grid>
         <Grid item xs={12}>
           <Card>
@@ -298,9 +216,7 @@ function AuditIsoPage() {
                 justifyContent: 'space-between'
               }}
             >
-              <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/audit-checklist/create' size='small'>
-                Create Project
-              </Button>
+              <Typography variant='h6'>Pending Approval</Typography>
               <TextField
                 type={'search'}
                 size='small'
@@ -349,57 +265,13 @@ function AuditIsoPage() {
           </Card>
         </Grid>
       </Grid>
-
-      <Dialog fullWidth onClose={handleDialogToggleDeleteClose} open={openDialogAdd}>
-        <DialogTitle sx={{ pt: 6, mx: 'auto', textAlign: 'center' }}>
-          <Typography variant='h5' component='span' sx={{ mb: 2 }}>
-            Are you sure to delete data ?
-          </Typography>
-          <Typography variant='body2'>After you delete, you can not undo this data.</Typography>
-        </DialogTitle>
-        <DialogContent sx={{ pb: 6, mx: 'auto' }}>
-          <form onSubmit={deleteHandler}>
-            <TableContainer sx={{ mb: 6 }}>
-              <Table size='small'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Menu Type</TableCell>
-                    <TableCell>Menu Name</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow key={dataDelete.row_id}>
-                    <TableCell>{dataDelete.menus_type}</TableCell>
-                    <TableCell>{dataDelete.menus_name}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Box className='demo-space-x' sx={{ '& > :last-child': { mr: '0 !important', mt: 2 } }}>
-              <Button size='large' type='submit' variant='contained' color='error' disabled={isLoadingDelete}>
-                Delete
-                {isLoadingDelete && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-              </Button>
-              <Button
-                type='reset'
-                size='large'
-                variant='outlined'
-                color='secondary'
-                onClick={handleDialogToggleDeleteClose}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </form>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }
 
-AuditIsoPage.acl = {
+AuditApprovalPage.acl = {
   action: 'manage',
-  subject: 'audit-checklist'
+  subject: 'audit-approval'
 }
 
-export default AuditIsoPage
+export default AuditApprovalPage
