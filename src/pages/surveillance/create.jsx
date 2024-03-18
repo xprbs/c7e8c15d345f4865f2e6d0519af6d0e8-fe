@@ -7,14 +7,11 @@ import {
   Grid,
   Card,
   TextField,
-  Box,
   Button,
   Typography,
   CircularProgress,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
   FormHelperText,
   Autocomplete,
   OutlinedInput,
@@ -34,7 +31,7 @@ import PageHeader from 'src/@core/components/page-header'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, setValue } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Imports
@@ -44,13 +41,21 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
 import Webcam from 'react-webcam'
+import dynamic from 'next/dynamic'
+
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
 
 const schema = yup.object().shape({
   project_name: yup.string().required('Project Name is a required field'),
   company: yup.string().required('Company is a required field'),
   finding: yup.string().required('Finding is a required field'),
   recommendation: yup.string().required('Recommendation is a required field'),
-  risk: yup.string().required('Risk is a required field')
+  risk: yup.string().required('Risk is a required field'),
+  due_date: yup.string().required('Due Date is a required field'),
+  project_date: yup.string().required('Project Date is a required field'),
+  due_date: yup.string().required('Due Date is a required field')
 })
 
 const videoConstraints = {
@@ -65,19 +70,32 @@ function SurveillanceCreate() {
   const [company, setCompany] = useState([])
   const [companyId, setCompanyId] = useState(null)
   const [location, setLocation] = useState('')
-  const [description, setDescription] = useState('')
   const [imgSrc, setImgSrc] = useState(null)
+  const [img, setImg] = useState(null)
   const [isCamera, setIsCamera] = useState(false)
+  const [finding, setFinding] = useState(false)
+  const [risk, setRisk] = useState(false)
+  const [recommendation, setRecommendation] = useState(false)
+  const [dataImage, setDataImage] = useState([])
+  const [description, setDescription] = useState('')
+  const [typeCapture, setTypeCapture] = useState(null)
 
   const handleOpen = () => setIsCamera(true)
   const handleClose = () => setIsCamera(false)
 
   const [fields, setFields] = useState({
-    question_name: null,
-    finding: null,
-    recommendation: null,
-    risk: null
+    project_name: null,
+    project_date: null,
+    due_date: null
   })
+
+  const clearImage = () => {
+    setImgSrc(null)
+    setLocation('')
+    setImg(null)
+    setTypeCapture('')
+    setDescription('')
+  }
 
   const router = useRouter()
 
@@ -94,6 +112,7 @@ function SurveillanceCreate() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors }
   } = useForm({
     mode: 'onBlur',
@@ -104,15 +123,28 @@ function SurveillanceCreate() {
     setIsDisable(true)
 
     const dataForm = JSON.stringify({
-      question_name: fields.question_name,
-      question_type: auditCategoryId.id
+      dataAreaId: companyId.id,
+      project_location: 'DEPT',
+      project_name: fields.project_name,
+      project_category: 'Surveillance',
+      project_date: fields.project_date,
+      due_date: fields.due_date,
+      risk,
+      recommendation,
+      finding,
+      details: dataImage
     })
 
     const myPromise = new Promise((resolve, reject) => {
+      // backendApi.interceptors.request.use(config => {
+      //   config.headers['Content-Type'] = `multipart/form-data`
+      //   return config
+      // })
+
       backendApi
-        .post('/web/master/question-template/store', dataForm)
+        .post('/web/surveillance/store', dataForm)
         .then(res => {
-          router.push('/question-template')
+          router.push('/surveillance')
           resolve('success')
         })
         .catch(error => {
@@ -161,19 +193,42 @@ function SurveillanceCreate() {
     })
   }
 
+  const addImage = () => {
+    setDataImage([
+      ...dataImage,
+      {
+        id: Math.random(),
+        imgSrc,
+        geo_location: location,
+        image: "uhuy",
+        description,
+        comment01: typeCapture,
+        comment02: ""
+      }
+    ])
+
+    clearImage()
+  }
+
+  const removeImage = id => {
+    const filterDataImage = dataImage.filter(d => d.id !== id)
+    setDataImage(filterDataImage)
+  }
+
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
     setImgSrc(imageSrc)
+    setImg(imageSrc.replace(/^data:image\/\w+;base64,/, ''))
     setIsCamera(false)
     getLocation()
-  }, [webcamRef, setImgSrc, setIsCamera])
+    setTypeCapture('CAPTURE')
+  }, [webcamRef, setImgSrc, setIsCamera, setImg])
 
   const getLocation = () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(({ coords }) => {
         const { latitude, longitude } = coords
-        setLocation(`${latitude}, ${longitude} `)
-        console.log(latitude, longitude)
+        setLocation(`${latitude},${longitude}`)
       })
     } else {
       toast('Failed to get geolocation.')
@@ -181,14 +236,34 @@ function SurveillanceCreate() {
   }
 
   const preview = target => {
-    console.log(target.files)
     setImgSrc(URL.createObjectURL(target.target.files[0]))
+    setImg(target.target.files[0])
+    getLocation()
+    setTypeCapture('FILE')
   }
 
   useEffect(() => {
     getInit()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const listImage = dataImage.map(d => {
+    return (
+      <TableRow key={d.id}>
+        <TableCell>{d.description}</TableCell>
+        <TableCell>{d.geo_location}</TableCell>
+        <TableCell>
+          <img style={{ width: '50px' }} src={d.imgSrc} alt='img' />
+        </TableCell>
+        <TableCell>{d.comment01}</TableCell>
+        <TableCell>
+          <Button onClick={() => removeImage(d.id)} color='error' size='small'>
+            <Icon icon={'material-symbols:delete'} />
+          </Button>
+        </TableCell>
+      </TableRow>
+    )
+  })
 
   return (
     <form onSubmit={handleSubmit(createHandler)}>
@@ -247,7 +322,7 @@ function SurveillanceCreate() {
                       helperText={errors.project_name && errors.project_name.message}
                     />
                   </Grid>
-                  <Grid item md={3}>
+                  <Grid item md={6}>
                     <FormControl fullWidth>
                       <Autocomplete
                         size='small'
@@ -273,44 +348,90 @@ function SurveillanceCreate() {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item md={3}>
+                  <Grid item md={6}>
                     <TextField
-                      {...register('finding')}
+                      {...register('project_date')}
                       onChange={fieldHandler}
                       fullWidth
-                      name='finding'
-                      label='Finding'
+                      name='project_date'
+                      label='Project Date'
                       size='small'
+                      type='date'
                       InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.finding)}
-                      helperText={errors.finding && errors.finding.message}
+                      error={Boolean(errors.project_date)}
+                      helperText={errors.project_date && errors.project_date.message}
                     />
                   </Grid>
                   <Grid item md={6}>
                     <TextField
-                      {...register('recommendation')}
+                      {...register('due_date')}
                       onChange={fieldHandler}
                       fullWidth
-                      name='recommendation'
-                      label='Recommendation'
+                      name='due_date'
+                      label='Due Date'
                       size='small'
+                      type='date'
                       InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.recommendation)}
-                      helperText={errors.recommendation && errors.recommendation.message}
+                      error={Boolean(errors.due_date)}
+                      helperText={errors.due_date && errors.due_date.message}
                     />
                   </Grid>
-                  <Grid item md={3}>
-                    <TextField
-                      {...register('risk')}
-                      onChange={fieldHandler}
-                      fullWidth
-                      name='risk'
-                      label='Risk'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.risk)}
-                      helperText={errors.risk && errors.risk.message}
-                    />
+                  <Grid item md={6}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Finding</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('finding')}
+                        name={'finding'}
+                        initData={''}
+                        onCKChange={data => {
+                          setFinding(data)
+                          setValue('finding', data)
+                        }}
+                      />
+                      {errors.finding && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Risk</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('risk')}
+                        name={'risk'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRisk(data)
+                          setValue('risk', data)
+                        }}
+                      />
+                      {errors.risk && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.risk.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Recommendation</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('recommendation')}
+                        name={'recommendation'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRecommendation(data)
+                          setValue('recommendation', data)
+                        }}
+                      />
+                      {errors.recommendation && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.recommendation.message}</FormHelperText>
+                      )}
+                    </FormControl>
                   </Grid>
                 </Grid>
               </Grid>
@@ -330,7 +451,9 @@ function SurveillanceCreate() {
                       </InputLabel>
                       <OutlinedInput
                         {...register('location')}
-                        onChange={fieldHandler}
+                        onChange={e => {
+                          setLocation(e.target.value)
+                        }}
                         value={location}
                         fullWidth
                         notched
@@ -352,12 +475,12 @@ function SurveillanceCreate() {
                   <Grid item md={12}>
                     <TextField
                       {...register('description')}
-                      onChange={fieldHandler}
+                      onChange={e => setDescription(e.target.value)}
                       fullWidth
-                      value={description}
                       name='description'
                       label='Description'
                       size='small'
+                      value={description}
                       InputLabelProps={{ shrink: true }}
                       error={Boolean(errors.description)}
                       helperText={errors.description && errors.description.message}
@@ -392,7 +515,7 @@ function SurveillanceCreate() {
                       type='button'
                       variant='contained'
                       size='small'
-                      disabled={isDisable}
+                      onClick={() => addImage()}
                     >
                       Add
                     </Button>
@@ -407,13 +530,14 @@ function SurveillanceCreate() {
                 <Table sx={{ minWidth: 650 }} aria-label='simple table'>
                   <TableHead>
                     <TableRow>
-                      <TableCell>#</TableCell>
                       <TableCell>Description</TableCell>
                       <TableCell>Geo Location</TableCell>
                       <TableCell>Foto</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Action</TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody></TableBody>
+                  <TableBody>{listImage}</TableBody>
                 </Table>
               </TableContainer>
             </CardContent>
