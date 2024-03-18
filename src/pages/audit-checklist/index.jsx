@@ -115,6 +115,10 @@ function AuditIsoPage() {
     router.push(`/audit-checklist/view/${e.audit_uid}`)
   }
 
+  const handleSetApproval = e => {
+    router.push(`/audit-checklist/approval/${e.audit_uid}`)
+  }
+
   useEffect(() => {
     const initData = async () => {
       updateData('loading', true)
@@ -178,18 +182,20 @@ function AuditIsoPage() {
           }}
           PaperProps={{ style: { minWidth: '8rem' } }}
         >
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.question_name}</MenuItem>
-          <Divider />
-          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
-            <Icon icon='pajamas:review-checkmark' fontSize={20} />
-            Process Audit
-          </MenuItem>
+          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.audit_number}</MenuItem> */}
+          {/* <Divider /> */}
+          {data.status === '0' || data.status === '10' ? (
+            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
+              <Icon icon='icon-park-outline:checklist' fontSize={20} />
+              Process Audit
+            </MenuItem>
+          ) : null}
           <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='ic:round-assessment' fontSize={20} />
+            <Icon icon='pajamas:review-checkmark' fontSize={20} />
             Result Audit
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='lucide:workflow' fontSize={20} />
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetApproval(data)}>
+            <Icon icon='ant-design:audit-outlined' fontSize={20} />
             Approval
           </MenuItem>
           {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
@@ -251,6 +257,12 @@ function AuditIsoPage() {
       minWidth: 100,
       field: 'question_uid',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Question Template</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'status_name',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Status</Typography>
     },
     {
       flex: 0.15,

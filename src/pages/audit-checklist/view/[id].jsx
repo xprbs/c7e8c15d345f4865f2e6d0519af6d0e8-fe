@@ -123,12 +123,13 @@ const AuditIsoViewPage = () => {
     })
   }
 
-  const createHandler = async () => {
+  const createHandler = async is_submit => {
     setIsDisable(true)
 
     const dataForm = JSON.stringify({
       audit_uid: detail.audit_uid,
       question_uid: detail.question_uid,
+      is_submit: is_submit,
       details: selectedDetail
     })
 
@@ -136,6 +137,9 @@ const AuditIsoViewPage = () => {
       backendApi
         .post('/web/audit-checklist/answer-store', dataForm)
         .then(res => {
+          if (is_submit === 1) {
+            router.push('/audit-checklist')
+          }
           resolve('success')
         })
         .catch(error => {
@@ -149,7 +153,7 @@ const AuditIsoViewPage = () => {
 
     toast.promise(myPromise, {
       loading: 'Loading',
-      success: 'Successfully create data',
+      success: 'Successfully saved',
       error: error => {
         if (error.response.status === 500) return error.response.data.response
 
@@ -282,7 +286,7 @@ const AuditIsoViewPage = () => {
             ) : (
               <Grid container spacing={6}>
                 <Grid container item spacing={6}>
-                  <Grid item md={1} xs={12}>
+                  <Grid item md={1.5} xs={12}>
                     <TextField
                       fullWidth
                       value={detail.dataAreaId}
@@ -322,7 +326,7 @@ const AuditIsoViewPage = () => {
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
-                  <Grid item md={3} xs={12}>
+                  <Grid item md={2.5} xs={12}>
                     <TextField
                       fullWidth
                       value={detail.question_name}
@@ -526,12 +530,13 @@ const AuditIsoViewPage = () => {
                       <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
                         Back
                       </Button>
-                      <Button onClick={e => createHandler()} variant='contained' size='small' disabled={isDisable}>
+                      <Button onClick={e => createHandler(0)} variant='contained' size='small' disabled={isDisable}>
                         Save as Draft
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
-                      <Button component={Link} href={'#'} variant='contained' size='small'>
-                        Submit
+                      <Button onClick={e => createHandler(1)} variant='contained' size='small' disabled={isDisable}>
+                        Submit for approval
+                        {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
                     </Box>
                   </Grid>
