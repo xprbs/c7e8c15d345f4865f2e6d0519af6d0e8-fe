@@ -20,8 +20,16 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
+  InputLabel,
   Paper,
   Radio,
   RadioGroup,
@@ -36,6 +44,12 @@ import {
   Typography
 } from '@mui/material'
 
+import dynamic from 'next/dynamic'
+
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
+
 const AuditIsoViewPage = () => {
   const router = useRouter()
   const { id } = router.query
@@ -48,6 +62,7 @@ const AuditIsoViewPage = () => {
   const [auditAnswer, setAuditAnswer] = useState([])
   const [selectedDetail, setSelectedDetail] = useState([])
   const [approval, setApproval] = useState([])
+  const [note, setNote] = useState()
 
   // console.log(auditAnswer)
   // console.log(selectedDetail)
@@ -125,23 +140,19 @@ const AuditIsoViewPage = () => {
     })
   }
 
-  const createHandler = async is_submit => {
+  const approveHandler = async => {
     setIsDisable(true)
 
     const dataForm = JSON.stringify({
       audit_uid: detail.audit_uid,
-      question_uid: detail.question_uid,
-      is_submit: is_submit,
-      details: selectedDetail
+      note: note
     })
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/audit-checklist/answer-store', dataForm)
+        .post('/web/approval/approve', dataForm)
         .then(res => {
-          if (is_submit === 1) {
-            router.push('/audit-checklist')
-          }
+          router.push('/audit-approval')
           resolve('success')
         })
         .catch(error => {
@@ -155,7 +166,7 @@ const AuditIsoViewPage = () => {
 
     toast.promise(myPromise, {
       loading: 'Loading',
-      success: 'Successfully saved',
+      success: 'Successfully approved',
       error: error => {
         if (error.response.status === 500) return error.response.data.response
 
@@ -600,6 +611,20 @@ const AuditIsoViewPage = () => {
                       </Table>
                     </TableContainer>
                   </Grid>
+                  <Grid item md={12} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='h6'>Note For Approval</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        name={'note'}
+                        initData={''}
+                        onCKChange={data => {
+                          setNote(data)
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item>
                     <Box
                       sx={{
@@ -617,7 +642,7 @@ const AuditIsoViewPage = () => {
                         Reject
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
-                      <Button variant='contained' size='small' disabled={isDisable}>
+                      <Button onClick={e => approveHandler(1)} variant='contained' size='small' disabled={isDisable}>
                         Approve
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
