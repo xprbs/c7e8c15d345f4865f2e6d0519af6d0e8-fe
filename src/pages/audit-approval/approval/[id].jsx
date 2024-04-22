@@ -24,6 +24,7 @@ import dynamic from 'next/dynamic'
 import AuditInfo from 'src/views/pages/audit/AuditInfo'
 import ApprovalList from 'src/views/pages/audit/ApprovalList'
 import QuestionDetailView from 'src/views/pages/audit/QuestionDetailView'
+import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
 
 var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
   ssr: false
@@ -118,6 +119,7 @@ const AuditApproval = () => {
         <PageHeader title={<Typography variant='h5'>Detail Audit</Typography>}></PageHeader>
       </Grid>
       <AuditInfo id={id} />
+      <AuditorAuditee id={id} />
       <ApprovalList id={id} />
       <QuestionDetailView id={id} />
 
