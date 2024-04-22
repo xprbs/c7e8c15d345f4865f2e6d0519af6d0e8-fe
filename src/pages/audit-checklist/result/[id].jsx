@@ -10,6 +10,7 @@ import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material'
 import ApprovalList from 'src/views/pages/audit/ApprovalList'
 import AuditInfo from 'src/views/pages/audit/AuditInfo'
 import QuestionDetailView from 'src/views/pages/audit/QuestionDetailView'
+import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
 
 const AuditResultView = () => {
   const router = useRouter()
@@ -21,6 +22,7 @@ const AuditResultView = () => {
         <PageHeader title={<Typography variant='h5'>Result Audit</Typography>}></PageHeader>
       </Grid>
       <AuditInfo id={id} />
+      <AuditorAuditee id={id} />
       <ApprovalList id={id} />
       <QuestionDetailView id={id} />
 

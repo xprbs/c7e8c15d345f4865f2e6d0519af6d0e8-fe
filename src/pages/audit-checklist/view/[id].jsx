@@ -35,6 +35,9 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import AuditInfo from 'src/views/pages/audit/AuditInfo'
+import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
+import ApprovalList from 'src/views/pages/audit/ApprovalList'
 
 const AuditIsoViewPage = () => {
   const router = useRouter()
@@ -274,7 +277,7 @@ const AuditIsoViewPage = () => {
       <Grid item xs={12}>
         <PageHeader title={<Typography variant='h5'>Process Audit</Typography>}></PageHeader>
       </Grid>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Card>
           <CardHeader title={'Audit Info'} />
           <CardContent>
@@ -385,7 +388,10 @@ const AuditIsoViewPage = () => {
             )}
           </CardContent>
         </Card>
-      </Grid>
+      </Grid> */}
+      <AuditInfo id={id} />
+      <AuditorAuditee id={id} />
+      <ApprovalList id={id} />
       <Grid item xs={12}>
         <Card>
           <CardContent>
