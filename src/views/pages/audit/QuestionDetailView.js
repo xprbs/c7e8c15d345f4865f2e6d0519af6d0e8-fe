@@ -146,7 +146,7 @@ const QuestionDetailView = props => {
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auditAnswer, note])
+  }, [auditAnswer])
 
   const Timeline = styled(MuiTimeline)({
     paddingLeft: 0,
@@ -219,6 +219,7 @@ const QuestionDetailView = props => {
           setNoteDescription('')
           setIsDisable(false)
           getNote(audit_uid, question_uid, question_detail_uid)
+          getQuestionDetail(audit_uid, question_uid)
         })
     })
 
