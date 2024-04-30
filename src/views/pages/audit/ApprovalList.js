@@ -68,8 +68,8 @@ const ApprovalList = props => {
                           <TableCell align='left'>Name</TableCell>
                           <TableCell align='right'>Workflow</TableCell>
                           <TableCell align='right'>Status</TableCell>
-                          <TableCell align=''>Date</TableCell>
-                          <TableCell align=''>Message</TableCell>
+                          <TableCell>Date</TableCell>
+                          <TableCell>Message</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
