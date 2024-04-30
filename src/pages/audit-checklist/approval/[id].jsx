@@ -8,6 +8,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material'
 import ApprovalList from 'src/views/pages/audit/ApprovalList'
+import AuditInfo from 'src/views/pages/audit/AuditInfo'
+import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
 
 const AuditApprovalView = () => {
   const router = useRouter()
@@ -18,6 +20,8 @@ const AuditApprovalView = () => {
       <Grid item xs={12}>
         <PageHeader title={<Typography variant='h5'>Approval Audit</Typography>}></PageHeader>
       </Grid>
+      {/* <AuditInfo id={id} />
+      <AuditorAuditee id={id} /> */}
       <ApprovalList id={id} />
 
       <Grid item xs={12}>

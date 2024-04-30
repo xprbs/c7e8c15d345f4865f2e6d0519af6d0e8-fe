@@ -35,6 +35,14 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import AuditInfo from 'src/views/pages/audit/AuditInfo'
+import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
+import ApprovalList from 'src/views/pages/audit/ApprovalList'
+import FileUploaderRestrictions from 'src/views/file-uploader/FileUploaderRestrictions'
+import CardSnippet from 'src/@core/components/card-snippet'
+
+// ** Source code imports
+import * as source from 'src/views/file-uploader/FileUploaderSourceCode'
 
 const AuditIsoViewPage = () => {
   const router = useRouter()
@@ -274,118 +282,8 @@ const AuditIsoViewPage = () => {
       <Grid item xs={12}>
         <PageHeader title={<Typography variant='h5'>Process Audit</Typography>}></PageHeader>
       </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title={'Audit Info'} />
-          <CardContent>
-            {skeleton ? (
-              <Grid>
-                <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
-                <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
-              </Grid>
-            ) : (
-              <Grid container spacing={6}>
-                <Grid container item spacing={6}>
-                  <Grid item md={1.5} xs={12}>
-                    <TextField
-                      fullWidth
-                      value={detail.dataAreaId}
-                      aria-readonly
-                      label='Company'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item md={2} xs={12}>
-                    <TextField
-                      fullWidth
-                      value={detail.audit_number}
-                      aria-readonly
-                      label='Audit Number'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item md={3} xs={12}>
-                    <TextField
-                      fullWidth
-                      value={detail.audit_name}
-                      aria-readonly
-                      label='Audit Name'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item md={3} xs={12}>
-                    <TextField
-                      fullWidth
-                      value={detail.audit_location}
-                      aria-readonly
-                      label='Audit Location'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item md={2.5} xs={12}>
-                    <TextField
-                      fullWidth
-                      value={detail.question_name}
-                      aria-readonly
-                      label='Question Template'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title={'Auditor & Auditee Info'} />
-          <CardContent>
-            {skeleton ? (
-              <Grid>
-                <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
-                <Skeleton variant='text' sx={{ fontSize: '3rem' }} />
-              </Grid>
-            ) : (
-              <Grid container spacing={6}>
-                <Grid container item spacing={6}>
-                  <Grid item md={6} xs={12}>
-                    <DataGrid
-                      autoHeight
-                      rowHeight={40}
-                      columns={columnsAuditor}
-                      getRowId={row => row.id}
-                      rows={auditorData}
-                      pagination={false}
-                      components={{
-                        Pagination: CustomPagination
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <DataGrid
-                      autoHeight
-                      rowHeight={40}
-                      columns={columnsAuditee}
-                      getRowId={row => row.id}
-                      rows={auditeeData}
-                      pagination={false}
-                      components={{
-                        Pagination: CustomPagination
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
+      <AuditInfo id={id} />
+      <AuditorAuditee id={id} />
       <Grid item xs={12}>
         <Card>
           <CardContent>
@@ -491,6 +389,20 @@ const AuditIsoViewPage = () => {
                                           .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                           .join('')}
                                       />
+                                      <Grid item sx={{ mt: 2 }}>
+                                        <Card
+                                          title='Upload Files'
+                                          code={{
+                                            tsx: null,
+                                            jsx: source.FileUploaderRestrictionsJSXCode
+                                          }}
+                                          sx={{ border: 1 }}
+                                        >
+                                          <CardContent>
+                                            <FileUploaderRestrictions />
+                                          </CardContent>
+                                        </Card>
+                                      </Grid>
                                     </Box>
                                   ) : (
                                     <Grid

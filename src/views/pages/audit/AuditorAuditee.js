@@ -51,7 +51,7 @@ const AuditorAuditee = props => {
   return (
     <Grid item xs={12}>
       <Card>
-        <CardHeader title={'Auditor Auditee'} />
+        <CardHeader title={'Auditee & Auditor'} />
         <CardContent>
           {skeleton ? (
             <Grid>

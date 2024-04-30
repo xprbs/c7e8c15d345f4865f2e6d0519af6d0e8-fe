@@ -34,7 +34,6 @@ import Icon from 'src/@core/components/icon'
 import PageHeader from 'src/@core/components/page-header'
 import Link from 'next/link'
 
-import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
@@ -198,8 +197,8 @@ const QuestionTemplatePage = () => {
   const columns = [
     {
       field: 'id',
-      flex: 0.25,
-      minWidth: 75,
+      flex: 0.15,
+      minWidth: 25,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
@@ -210,19 +209,31 @@ const QuestionTemplatePage = () => {
       flex: 0.4,
       minWidth: 100,
       field: 'question_number',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Template Number</Typography>
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Number</Typography>
     },
     {
       flex: 1,
       minWidth: 100,
       field: 'question_name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Template Name</Typography>
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Name</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'question_dept',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Department</Typography>
     },
     {
       flex: 0.5,
       minWidth: 100,
       field: 'question_type',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Category</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'question_ref',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Refrence</Typography>
     },
     {
       flex: 0.15,

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import {
   CardHeader,
   CardContent,
-  InputAdornment,
   Grid,
   Card,
   TextField,
@@ -12,9 +11,6 @@ import {
   Typography,
   CircularProgress,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormHelperText,
   Autocomplete
 } from '@mui/material'
@@ -32,7 +28,6 @@ import { useForm, setValue } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Imports
-import Icon from 'src/@core/components/icon'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -40,8 +35,6 @@ import { backendApi } from 'src/configs/axios'
 
 const schema = yup.object().shape({
   audit_name: yup.string().required('Project Name is a required field'),
-  audit_ref: yup.string().required('Document Reference is a required field'),
-  audit_category: yup.string().required('Category is a required field'),
   company: yup.string().required('Company is a required field'),
   audit_location: yup.string().required('Department is a required field'),
   question_uid: yup.string().required('Question Template is a required field')
@@ -66,8 +59,9 @@ function AuditIsoCreate() {
 
   const [fields, setFields] = useState({
     audit_name: null,
-    audit_ref: null,
-    audit_category: null,
+
+    // audit_ref: null,
+    // audit_category: null,
     audit_location: locationId,
     company: companyId,
     question_uid: questionId,
@@ -108,8 +102,8 @@ function AuditIsoCreate() {
 
     const dataForm = JSON.stringify({
       audit_name: fields.audit_name,
-      audit_ref: auditCategoryRefId.id,
-      audit_category: auditCategoryId.id,
+      audit_ref: auditCategoryRefId?.id,
+      audit_category: auditCategoryId?.id,
       company: companyId.id,
       audit_location: locationId.id,
       question_uid: questionId.id,
@@ -151,6 +145,7 @@ function AuditIsoCreate() {
   }
 
   async function getInit() {
+    // Dept
     new Promise((resolve, reject) => {
       backendApi
         .post('/web/master/get-dept')
@@ -164,18 +159,19 @@ function AuditIsoCreate() {
         })
     })
 
-    new Promise((resolve, reject) => {
-      backendApi
-        .post('/web/master/get-question')
-        .then(res => {
-          setQuestion(res.data.data)
-          resolve('success')
-        })
-        .catch(error => {
-          console.log(error)
-          reject(error)
-        })
-    })
+    // Question
+    // new Promise((resolve, reject) => {
+    //   backendApi
+    //     .post('/web/master/get-question')
+    //     .then(res => {
+    //       setQuestion(res.data.data)
+    //       resolve('success')
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //       reject(error)
+    //     })
+    // })
 
     new Promise((resolve, reject) => {
       backendApi
@@ -229,18 +225,18 @@ function AuditIsoCreate() {
         })
     })
 
-    new Promise((resolve, reject) => {
-      backendApi
-        .post('/web/master/get-audit-category')
-        .then(res => {
-          setAuditCategory(res.data.data)
-          resolve('success')
-        })
-        .catch(error => {
-          console.log(error)
-          reject(error)
-        })
-    })
+    // new Promise((resolve, reject) => {
+    //   backendApi
+    //     .post('/web/master/get-audit-category')
+    //     .then(res => {
+    //       setAuditCategory(res.data.data)
+    //       resolve('success')
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //       reject(error)
+    //     })
+    // })
 
     new Promise((resolve, reject) => {
       backendApi
@@ -261,18 +257,45 @@ function AuditIsoCreate() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function getCategoryRef() {
-    setAuditCategoryRefId(null)
+  // async function getCategoryRef() {
+  //   setAuditCategoryRefId(null)
 
-    const dataParam = JSON.stringify({
-      key2: auditCategoryId?.id
-    })
+  //   const dataParam = JSON.stringify({
+  //     key2: auditCategoryId?.id
+  //   })
+
+  //   new Promise((resolve, reject) => {
+  //     backendApi
+  //       .post('/web/master/get-audit-category-ref', dataParam)
+  //       .then(res => {
+  //         setAuditCategoryRef(res.data.data)
+  //         resolve('success')
+  //       })
+  //       .catch(error => {
+  //         console.log(error)
+  //         reject(error)
+  //       })
+  //   })
+  // }
+
+  // useEffect(() => {
+  //   getCategoryRef()
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [auditCategoryId])
+
+  function getQuestion() {
+    setQuestionId(null)
 
     new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/get-audit-category-ref', dataParam)
+        .post(
+          '/web/master/get-question-v2',
+          JSON.stringify({
+            question_dept: locationId?.id
+          })
+        )
         .then(res => {
-          setAuditCategoryRef(res.data.data)
+          setQuestion(res.data.data)
           resolve('success')
         })
         .catch(error => {
@@ -283,9 +306,9 @@ function AuditIsoCreate() {
   }
 
   useEffect(() => {
-    getCategoryRef()
+    getQuestion()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auditCategoryId])
+  }, [locationId])
 
   const handleAddAuditorRow = () => {
     setAuditorRows([...auditorRows, { auditor_uid: '', auditor_name: '', auditor_type: '' }])
@@ -338,11 +361,11 @@ function AuditIsoCreate() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title={null} />
+          <CardHeader title={<Typography variant='h6'>Audit Info</Typography>} />
           <CardContent>
             <form onSubmit={handleSubmit(createHandler)}>
-              <Grid container spacing={8}>
-                <Grid container item md={6} xs={12} rowSpacing={8}>
+              <Grid container spacing={6}>
+                <Grid container item md={6} xs={12} rowSpacing={4}>
                   <Grid item xs={12}>
                     <TextField
                       {...register('audit_name')}
@@ -411,8 +434,8 @@ function AuditIsoCreate() {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid container item md={6} xs={12} rowSpacing={8}>
-                  <Grid container item spacing={6}>
+                <Grid container item md={6} xs={12} rowSpacing={4}>
+                  {/* <Grid container item spacing={6}>
                     <Grid item xs={6}>
                       <FormControl fullWidth>
                         <Autocomplete
@@ -465,7 +488,7 @@ function AuditIsoCreate() {
                         )}
                       </FormControl>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <FormControl fullWidth>
                       <Autocomplete
@@ -494,12 +517,10 @@ function AuditIsoCreate() {
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button onClick={handleAddAuditorRow} variant='outlined' size='small'>
-                    <GroupAddIcon sx={{ marginRight: '8px' }} /> Auditor
-                  </Button>
+                  <Typography variant='h6'>Auditor</Typography>
                 </Grid>
                 {auditorRows.map((row, index) => (
-                  <Grid key={index} container item md={12} xs={12} rowSpacing={8}>
+                  <Grid key={index} container item md={12} xs={12} rowSpacing={4}>
                     <Grid container item spacing={6}>
                       <Grid item xs={6}>
                         <Autocomplete
@@ -539,7 +560,7 @@ function AuditIsoCreate() {
                           )}
                         />
                       </Grid>
-                      {index > 0 && (
+                      {index > 0 ? (
                         <Grid item xs={2}>
                           <Button
                             onClick={() => {
@@ -549,8 +570,15 @@ function AuditIsoCreate() {
                             }}
                             variant='outlined'
                             size='small'
+                            color='error'
                           >
-                            <PersonRemoveIcon sx={{ marginRight: '8px' }} /> Auditor
+                            <PersonRemoveIcon sx={{ marginRight: '8px' }} />
+                          </Button>
+                        </Grid>
+                      ) : (
+                        <Grid item xs={2}>
+                          <Button onClick={handleAddAuditorRow} variant='outlined' size='small'>
+                            <GroupAddIcon sx={{ marginRight: '8px' }} />
                           </Button>
                         </Grid>
                       )}
@@ -558,13 +586,10 @@ function AuditIsoCreate() {
                   </Grid>
                 ))}
                 <Grid item xs={12}>
-                  <Button onClick={handleAddAuditeeRow} variant='outlined' size='small'>
-                    <GroupAddIcon sx={{ marginRight: '8px' }} /> Auditee
-                  </Button>
+                  <Typography variant='h6'>Auditee</Typography>
                 </Grid>
-
                 {auditeeRows.map((row, index) => (
-                  <Grid key={index} container item md={12} xs={12} rowSpacing={8}>
+                  <Grid key={index} container item md={12} xs={12} rowSpacing={4}>
                     <Grid container item spacing={6}>
                       <Grid item xs={6}>
                         <Autocomplete
@@ -604,7 +629,7 @@ function AuditIsoCreate() {
                           )}
                         />
                       </Grid>
-                      {index > 0 && (
+                      {index > 0 ? (
                         <Grid item xs={2}>
                           <Button
                             onClick={() => {
@@ -614,8 +639,15 @@ function AuditIsoCreate() {
                             }}
                             variant='outlined'
                             size='small'
+                            color='error'
                           >
-                            <PersonRemoveIcon sx={{ marginRight: '8px' }} /> Auditor
+                            <PersonRemoveIcon sx={{ marginRight: '8px' }} />
+                          </Button>
+                        </Grid>
+                      ) : (
+                        <Grid item xs={2}>
+                          <Button onClick={handleAddAuditeeRow} variant='outlined' size='small'>
+                            <GroupAddIcon sx={{ marginRight: '8px' }} />
                           </Button>
                         </Grid>
                       )}
