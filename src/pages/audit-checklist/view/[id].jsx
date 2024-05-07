@@ -275,8 +275,6 @@ const AuditIsoViewPage = () => {
     }
   ]
 
-  const CustomPagination = () => null
-
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
