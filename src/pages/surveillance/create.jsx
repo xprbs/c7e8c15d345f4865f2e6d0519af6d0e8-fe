@@ -55,6 +55,7 @@ const schema = yup.object().shape({
   risk: yup.string().required('Risk is a required field'),
   due_date: yup.string().required('Due Date is a required field'),
   project_date: yup.string().required('Project Date is a required field'),
+  project_location: yup.string().required('Department is a required field'),
   due_date: yup.string().required('Due Date is a required field')
 })
 
@@ -66,6 +67,7 @@ const videoConstraints = {
 
 function SurveillanceCreate() {
   const webcamRef = useRef(null)
+  const [department, setDepartment] = useState([])
   const [isDisable, setIsDisable] = useState(false)
   const [company, setCompany] = useState([])
   const [companyId, setCompanyId] = useState(null)
@@ -79,6 +81,7 @@ function SurveillanceCreate() {
   const [dataImage, setDataImage] = useState([])
   const [description, setDescription] = useState('')
   const [typeCapture, setTypeCapture] = useState(null)
+  const [locationId, setLocationId] = useState(null)
 
   const handleOpen = () => setIsCamera(true)
   const handleClose = () => setIsCamera(false)
@@ -124,7 +127,7 @@ function SurveillanceCreate() {
 
     const dataForm = JSON.stringify({
       dataAreaId: companyId.id,
-      project_location: 'DEPT',
+      project_location: locationId.id,
       project_name: fields.project_name,
       project_category: 'Surveillance',
       project_date: fields.project_date,
@@ -181,6 +184,19 @@ function SurveillanceCreate() {
 
     new Promise((resolve, reject) => {
       backendApi
+        .post('/web/master/get-dept')
+        .then(res => {
+          setDepartment(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+
+    new Promise((resolve, reject) => {
+      backendApi
         .post('/web/master/get-company-trans')
         .then(res => {
           setCompany(res.data.data)
@@ -200,10 +216,10 @@ function SurveillanceCreate() {
         id: Math.random(),
         imgSrc,
         geo_location: location,
-        image: "uhuy",
+        image: 'uhuy',
         description,
         comment01: typeCapture,
-        comment02: ""
+        comment02: ''
       }
     ])
 
@@ -322,7 +338,7 @@ function SurveillanceCreate() {
                       helperText={errors.project_name && errors.project_name.message}
                     />
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={3}>
                     <FormControl fullWidth>
                       <Autocomplete
                         size='small'
@@ -345,6 +361,32 @@ function SurveillanceCreate() {
                       />
                       {errors.company && (
                         <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={department}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('project_location')}
+                            label='PIC Department'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.project_location)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setLocationId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={locationId}
+                      />
+                      {errors.project_location && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
                       )}
                     </FormControl>
                   </Grid>
