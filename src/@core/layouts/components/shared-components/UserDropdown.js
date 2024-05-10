@@ -76,7 +76,7 @@ const UserDropdown = props => {
 
   return (
     <Fragment>
-      <Icon icon='ph:user-list' width='38' height='38' onClick={handleDropdownOpen} />
+      <Icon icon='ph:user-list' width='36' height='36' onClick={handleDropdownOpen} />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
