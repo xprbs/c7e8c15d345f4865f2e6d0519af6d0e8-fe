@@ -267,25 +267,25 @@ const QuestionDetailView = props => {
                               <TableCell align='left' style={{ verticalAlign: 'top' }}>
                                 <Box>
                                   <Typography variant='overline' color={'primary'}>
-                                    Klausul :{' '}
-                                  </Typography>{' '}
+                                    Klausul :
+                                  </Typography>
                                   {data.klausul}
                                 </Box>
                                 <Box>
                                   <Typography variant='overline' color={'primary'}>
-                                    Category :{' '}
-                                  </Typography>{' '}
+                                    Category :
+                                  </Typography>
                                   {data.question_category1}
                                 </Box>
                                 <Box>
                                   <Typography variant='overline' color={'primary'}>
-                                    Sub Category :{' '}
-                                  </Typography>{' '}
+                                    Sub Category :
+                                  </Typography>
                                   {data.question_category2}
                                 </Box>
                                 <Box sx={{ minWidth: 250 }}>
                                   <Typography variant='overline' color={'primary'}>
-                                    Question :{' '}
+                                    Question :
                                   </Typography>
                                   <p dangerouslySetInnerHTML={{ __html: data.question_answer_description }}></p>
                                 </Box>
@@ -293,7 +293,7 @@ const QuestionDetailView = props => {
                               <TableCell align='left' style={{ verticalAlign: 'top' }}>
                                 <Box sx={{ minWidth: 250 }}>
                                   <Typography variant='overline' color={'primary'}>
-                                    Control Point :{' '}
+                                    Control Point :
                                   </Typography>
                                   <p dangerouslySetInnerHTML={{ __html: data.control_point }}></p>
                                 </Box>
@@ -371,9 +371,13 @@ const QuestionDetailView = props => {
                             </TableRow>
                           ))
                         ) : (
-                          <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
-                            Not data found
-                          </Typography>
+                          <TableRow>
+                            <TableCell align='left' style={{ verticalAlign: 'top' }}>
+                              <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
+                                Not data found
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
                         )}
                       </TableBody>
                     </Table>
