@@ -141,9 +141,16 @@ const AuditIsoViewPage = () => {
       details: selectedDetail
     })
 
+    const formData = new FormData()
+    formData.append('files', imgsSrc)
+
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/audit-checklist/answer-store', dataForm)
+        .post('/web/audit-checklist/answer-store', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         .then(res => {
           if (is_submit === 1) {
             router.push('/audit-checklist')
@@ -200,80 +207,26 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auditAnswer])
 
-  // console.log(selectedDetail)
+  console.log(selectedDetail)
 
-  const [auditorData, setAuditorData] = useState([])
-  const [auditeeData, setAuditeeData] = useState([])
+  const [imgsSrc, setImgsSrc] = useState([])
 
-  const datakeyForm = JSON.stringify({
-    id: id
-  })
+  const onChangeUploadFile = (e, i) => {
+    // console.log(i)
+    for (const file of e.target.files) {
+      // const prev = [...imgsSrc]
+      // prev[i] = file
+      // setImgsSrc(prev)
 
-  const fetchData = async () => {
-    try {
-      const response = await backendApi.post('/web/audit-checklist/get-detail', datakeyForm)
-      const { auditor, auditee } = response.data.data
-
-      // Proses data auditee
-      const processedAuditeeData = auditee.map((item, index) => ({
-        id: index, // Atau gunakan properti unik lainnya
-        auditee_name: item.auditee_name,
-        auditee_type: item.auditee_type
-      }))
-
-      // Proses data auditor
-      const processedAuditorData = auditor.map((item, index) => ({
-        id: index, // Atau gunakan properti unik lainnya
-        auditor_name: item.auditor_name,
-        auditor_type: item.auditor_type
-      }))
-
-      setAuditorData(processedAuditorData)
-      setAuditeeData(processedAuditeeData)
-      setSkeleton(false)
-    } catch (error) {
-      console.log(error)
+      setImgsSrc(imgs => [...imgs, file])
     }
+
+    // console.log(imgsSrc)
+
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[i]['file_uploads'] = imgsSrc
+    setSelectedDetail(onChangeValue)
   }
-
-  useEffect(() => {
-    fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const columnsAuditor = [
-    {
-      flex: 0.75,
-      minWidth: 100,
-      field: 'auditor_name',
-      headerName: 'Auditor Name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditor Name</Typography>
-    },
-    {
-      flex: 0.75,
-      minWidth: 100,
-      field: 'auditor_type',
-      headerName: 'Auditor Type',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditor Type</Typography>
-    }
-  ]
-
-  const columnsAuditee = [
-    {
-      flex: 0.75,
-      minWidth: 100,
-      field: 'auditee_name',
-      headerName: 'Auditee Name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditee Name</Typography>
-    },
-    {
-      flex: 0.75,
-      minWidth: 100,
-      field: 'auditee_type',
-      headerName: 'Auditee Type',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditee Type</Typography>
-    }
-  ]
 
   return (
     <Grid container spacing={6}>
@@ -387,8 +340,8 @@ const AuditIsoViewPage = () => {
                                           .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                           .join('')}
                                       />
-                                      <Grid item sx={{ mt: 2 }}>
-                                        <Card
+                                      <Grid item sx={{ mt: 2, border: 1 }}>
+                                        {/* <Card
                                           title='Upload Files'
                                           code={{
                                             tsx: null,
@@ -399,7 +352,23 @@ const AuditIsoViewPage = () => {
                                           <CardContent>
                                             <FileUploaderRestrictions />
                                           </CardContent>
-                                        </Card>
+                                        </Card> */}
+
+                                        {/* <input onChange={onChange} type='file' name='file' multiple /> */}
+                                        <input
+                                          onChange={e => onChangeUploadFile(e, index)}
+                                          type='file'
+                                          name='file'
+                                          multiple
+                                        />
+
+                                        {/* {imgsSrc.map((link, index) => (
+                                          // eslint-disable-next-line jsx-a11y/alt-text
+                                          // <Image key={index} src={link} alt={index} />
+                                        ))} */}
+                                        {/* {imgsSrc.map((index, link) => (
+                                            <span key={index} src={link} />
+                                          ))} */}
                                       </Grid>
                                     </Box>
                                   ) : (
