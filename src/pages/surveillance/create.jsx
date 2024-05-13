@@ -83,6 +83,7 @@ function SurveillanceCreate() {
   const [typeCapture, setTypeCapture] = useState(null)
   const [locationId, setLocationId] = useState(null)
   const [sheId, setSHE] = useState(null)
+
   const [dataSHE, setDataSHE] = useState([
     { id: 'NONE', label: 'NONE' },
     { id: 'SHE', label: 'SHE' }
@@ -156,6 +157,7 @@ function SurveillanceCreate() {
     form.append('recommendation', recommendation)
     form.append('finding', finding)
     form.append('is_she', sheId.id)
+
     // form.append('details', JSON.stringify(dataImage))
 
     dataImage.forEach((d, i) => {

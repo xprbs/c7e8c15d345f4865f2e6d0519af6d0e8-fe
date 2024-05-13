@@ -159,6 +159,7 @@ const AuditIsoViewPage = () => {
           idx++
         }
       }
+
       // d.file_uploads.forEach((dt, idx) => {
       // d.file_uploads.some((dt, idx) => {
       //   formData.append(`details[${i}][file_uploads][${idx}][files]`, dt)
