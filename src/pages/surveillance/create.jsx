@@ -56,7 +56,7 @@ const schema = yup.object().shape({
   due_date: yup.string().required('Due Date is a required field'),
   project_date: yup.string().required('Project Date is a required field'),
   project_location: yup.string().required('Department is a required field'),
-  due_date: yup.string().required('Due Date is a required field')
+  is_she: yup.string().required('SHE is a required field')
 })
 
 const videoConstraints = {
@@ -82,6 +82,11 @@ function SurveillanceCreate() {
   const [description, setDescription] = useState('')
   const [typeCapture, setTypeCapture] = useState(null)
   const [locationId, setLocationId] = useState(null)
+  const [sheId, setSHE] = useState(null)
+  const [dataSHE, setDataSHE] = useState([
+    { id: 'NONE', label: 'NONE' },
+    { id: 'SHE', label: 'SHE' }
+  ])
 
   const handleOpen = () => setIsCamera(true)
   const handleClose = () => setIsCamera(false)
@@ -135,7 +140,34 @@ function SurveillanceCreate() {
       risk,
       recommendation,
       finding,
+      is_she: sheId.id,
       details: dataImage
+    })
+
+    const form = new FormData()
+
+    form.append('dataAreaId', companyId.id)
+    form.append('project_location', locationId.id)
+    form.append('project_name', fields.project_name)
+    form.append('project_category', 'Surveillance')
+    form.append('project_date', fields.project_date)
+    form.append('due_date', fields.due_date)
+    form.append('risk', risk)
+    form.append('recommendation', recommendation)
+    form.append('finding', finding)
+    form.append('is_she', sheId.id)
+    // form.append('details', JSON.stringify(dataImage))
+
+    dataImage.forEach((d, i) => {
+      const file = new File([Uint8Array.from(btoa(d.image), m => m.codePointAt(0))], Math.random() + '.jpeg', {
+        type: 'image/jpeg'
+      })
+
+      form.append(`details[${i}][image]`, file)
+      form.append(`details[${i}][geo_location]`, d.geo_location)
+      form.append(`details[${i}][description]`, d.description)
+      form.append(`details[${i}][comment01]`, d.comment01)
+      form.append(`details[${i}][comment02]`, d.comment02)
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -145,7 +177,11 @@ function SurveillanceCreate() {
       // })
 
       backendApi
-        .post('/web/surveillance/store', dataForm)
+        .post('/web/surveillance/store', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
         .then(res => {
           router.push('/surveillance')
           resolve('success')
@@ -169,19 +205,6 @@ function SurveillanceCreate() {
   }
 
   async function getInit() {
-    new Promise((resolve, reject) => {
-      backendApi
-        .post('/web/master/get-audit-category')
-        .then(res => {
-          // setAuditCategory(res.data.data)
-          resolve('success')
-        })
-        .catch(error => {
-          console.log(error)
-          reject(error)
-        })
-    })
-
     new Promise((resolve, reject) => {
       backendApi
         .post('/web/master/get-dept')
@@ -216,7 +239,7 @@ function SurveillanceCreate() {
         id: Math.random(),
         imgSrc,
         geo_location: location,
-        image: 'uhuy',
+        image: imgSrc,
         description,
         comment01: typeCapture,
         comment02: ''
@@ -325,7 +348,7 @@ function SurveillanceCreate() {
             <CardContent>
               <Grid container spacing={8}>
                 <Grid container item md={12} xs={12} spacing={5}>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       {...register('project_name')}
                       onChange={fieldHandler}
@@ -338,7 +361,7 @@ function SurveillanceCreate() {
                       helperText={errors.project_name && errors.project_name.message}
                     />
                   </Grid>
-                  <Grid item md={3}>
+                  <Grid item md={6} xs={12}>
                     <FormControl fullWidth>
                       <Autocomplete
                         size='small'
@@ -364,7 +387,7 @@ function SurveillanceCreate() {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item md={6} xs={12}>
                     <FormControl fullWidth>
                       <Autocomplete
                         size='small'
@@ -390,7 +413,33 @@ function SurveillanceCreate() {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={dataSHE}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('is_she')}
+                            label='SHE'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.is_she)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setSHE(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={sheId}
+                      />
+                      {errors.is_she && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       {...register('project_date')}
                       onChange={fieldHandler}
@@ -404,7 +453,7 @@ function SurveillanceCreate() {
                       helperText={errors.project_date && errors.project_date.message}
                     />
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       {...register('due_date')}
                       onChange={fieldHandler}
@@ -418,7 +467,7 @@ function SurveillanceCreate() {
                       helperText={errors.due_date && errors.due_date.message}
                     />
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
                     <InputLabel sx={{ mb: 2 }}>
                       <Typography variant='body1'>Finding</Typography>
                     </InputLabel>
@@ -437,7 +486,7 @@ function SurveillanceCreate() {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
                     <InputLabel sx={{ mb: 2 }}>
                       <Typography variant='body1'>Risk</Typography>
                     </InputLabel>
@@ -456,7 +505,7 @@ function SurveillanceCreate() {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} xs={12}>
                     <InputLabel sx={{ mb: 2 }}>
                       <Typography variant='body1'>Recommendation</Typography>
                     </InputLabel>

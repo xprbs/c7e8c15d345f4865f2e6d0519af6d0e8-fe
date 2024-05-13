@@ -142,7 +142,30 @@ const AuditIsoViewPage = () => {
     })
 
     const formData = new FormData()
-    formData.append('files', imgsSrc)
+
+    formData.append('audit_uid', detail.audit_uid)
+    formData.append('question_uid', detail.question_uid)
+    formData.append('is_submit', is_submit)
+
+    selectedDetail.forEach((d, i) => {
+      formData.append(`details[${i}][id]`, d.id)
+      formData.append(`details[${i}][answer]`, d.answer)
+      formData.append(`details[${i}][answer_description]`, d.answer_description)
+
+      if (d.file_uploads) {
+        let idx = 0
+        for (const dt of d.file_uploads) {
+          formData.append(`details[${i}][file_uploads][${idx}][files]`, dt)
+          idx++
+        }
+      }
+      // d.file_uploads.forEach((dt, idx) => {
+      // d.file_uploads.some((dt, idx) => {
+      //   formData.append(`details[${i}][file_uploads][${idx}][files]`, dt)
+      // })
+    })
+
+    // formData.append('files', imgsSrc)
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
@@ -207,24 +230,15 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auditAnswer])
 
-  console.log(selectedDetail)
-
-  const [imgsSrc, setImgsSrc] = useState([])
+  // console.log(selectedDetail)
 
   const onChangeUploadFile = (e, i) => {
-    // console.log(i)
-    for (const file of e.target.files) {
-      // const prev = [...imgsSrc]
-      // prev[i] = file
-      // setImgsSrc(prev)
-
-      setImgsSrc(imgs => [...imgs, file])
-    }
-
-    // console.log(imgsSrc)
+    // for (const file of e.target.files) {
+    //   setImgsSrc(imgs => [...imgs, file])
+    // }
 
     const onChangeValue = [...selectedDetail]
-    onChangeValue[i]['file_uploads'] = imgsSrc
+    onChangeValue[i]['file_uploads'] = e.target.files
     setSelectedDetail(onChangeValue)
   }
 
