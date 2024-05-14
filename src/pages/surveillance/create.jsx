@@ -437,7 +437,7 @@ function SurveillanceCreate() {
                         value={sheId}
                       />
                       {errors.is_she && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
                       )}
                     </FormControl>
                   </Grid>
