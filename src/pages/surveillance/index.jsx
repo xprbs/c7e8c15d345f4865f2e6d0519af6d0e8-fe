@@ -140,7 +140,11 @@ const SurveillancePage = () => {
   }, [data.page, data.pageSize, data.sort, data.filterData, data.reload])
 
   const handleSetDetail = e => {
-    router.push(`/surveillance/set-detail/${e.surveillance_uid}`)
+    router.push(`/surveillance/detail/${e.project_uid}`)
+  }
+
+  const handleFollowUp = e => {
+    router.push(`/surveillance/follow-up/${e.project_uid}`)
   }
 
   const RowOptions = ({ data }) => {
@@ -179,17 +183,17 @@ const SurveillancePage = () => {
           <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.project_name}</MenuItem>
           <Divider />
           <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
-            <Icon icon='lucide:settings-2' fontSize={20} />
+            <Icon icon='bx:detail' fontSize={20} />
             Detail
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
-            Edit
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleFollowUp(data)}>
+            <Icon icon='hugeicons:recycle-03' fontSize={20} />
+            Follow Up
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='mingcute:delete-2-line' fontSize={20} />
             Delete
-          </MenuItem>
+          </MenuItem> */}
         </Menu>
       </>
     )
@@ -221,7 +225,19 @@ const SurveillancePage = () => {
     {
       flex: 0.5,
       minWidth: 100,
-      field: 'project_category',
+      field: 'project_location',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location </Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'status',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Status</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'is_she',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Category</Typography>
     },
     {
