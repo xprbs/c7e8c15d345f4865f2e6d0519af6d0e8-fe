@@ -218,13 +218,12 @@ const LoginPage = () => {
                 <TextField
                   autoFocus
                   label='Email'
-                  placeholder='admin@samoragroup.co.id'
+                  placeholder='Email'
                   {...register('email')}
                   onChange={e => setEmail(e.target.value)}
                   error={Boolean(errors.email)}
                   helperText={errors.email && errors.email.message}
                   name='email'
-                  defaultValue={'webapi@samoragroup.co.id'}
                 />
               </FormControl>
               <FormControl fullWidth>
@@ -236,7 +235,7 @@ const LoginPage = () => {
                   onChange={e => setPassword(e.target.value)}
                   type={showPassword ? 'text' : 'password'}
                   name='password'
-                  defaultValue={'api!@#'}
+                  placeholder='Password'
                   endAdornment={
                     <InputAdornment position='end'>
                       <IconButton
