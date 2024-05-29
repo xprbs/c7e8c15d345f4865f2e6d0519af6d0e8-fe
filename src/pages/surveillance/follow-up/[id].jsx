@@ -107,7 +107,7 @@ const detailSurveillance = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <PageHeader title={<Typography variant='h5'>Surveillance Detail</Typography>} subtitle={null} />
+        <PageHeader title={<Typography variant='h5'>Surveillance Follow Up</Typography>} subtitle={null} />
         {skeleton ? (
           <Grid>
             <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
@@ -117,13 +117,52 @@ const detailSurveillance = () => {
           <SurveillanceDetail detail={dataSurveillance} />
         )}
       </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardContent>
+            <TextField
+              name={'answer_description'}
+              multiline
+              rows={3}
+              fullWidth
+              label='Note'
+              size='small'
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 350, mt: 2 }}
+              // onChange={e => handleChange(e, index)}
+              // defaultValue={selectedDetail
+              //   .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+              //   .join('')}
+            />
+            <input onChange={e => onChangeUploadFile(e, index)} type='file' name='file' multiple />
+            <Box
+              sx={{
+                gap: 5,
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'left',
+                marginTop:5
+              }}
+            >
+              <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
+                Back
+              </Button>
+              <Button variant='contained' size='small' disabled={isDisable}>
+                Follow Up
+                {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   )
 }
 
 detailSurveillance.acl = {
   action: 'manage',
-  subject: 'surveillance-detail'
+  subject: 'surveillance-follow-up'
 }
 
 export default detailSurveillance
