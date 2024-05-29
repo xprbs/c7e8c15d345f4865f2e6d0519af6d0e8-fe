@@ -231,7 +231,7 @@ const AuditIsoViewPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auditAnswer])
 
-  console.log(selectedDetail)
+  // console.log(selectedDetail)
 
   const onChangeUploadFile = (e, i) => {
     // for (const file of e.target.files) {

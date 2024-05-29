@@ -342,9 +342,13 @@ const detailQuestion = () => {
                             </TableRow>
                           ))
                         ) : (
-                          <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
-                            Not data found
-                          </Typography>
+                          <TableRow>
+                            <TableCell>
+                              <Typography variant='subtitle2' sx={{ display: 'flex', p: 2 }}>
+                                Not data found
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
                         )}
                       </TableBody>
                     </Table>
