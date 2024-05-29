@@ -129,6 +129,7 @@ const detailSurveillance = () => {
               size='small'
               InputLabelProps={{ shrink: true }}
               sx={{ minWidth: 350, mt: 2 }}
+              
               // onChange={e => handleChange(e, index)}
               // defaultValue={selectedDetail
               //   .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
