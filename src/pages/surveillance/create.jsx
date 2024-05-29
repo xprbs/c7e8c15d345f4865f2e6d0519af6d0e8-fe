@@ -142,8 +142,8 @@ function SurveillanceCreate() {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <PageHeader title={<Typography variant='h5'>Create Project</Typography>} subtitle={null} />
+        <SurveillanceForm createHandler={createHandler} isDisable={isDisable} />
       </Grid>
-      <SurveillanceForm createHandler={createHandler} isDisable={isDisable} />
     </Grid>
   )
 }
