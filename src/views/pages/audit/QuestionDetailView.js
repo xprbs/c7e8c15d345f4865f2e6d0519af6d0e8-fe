@@ -353,6 +353,17 @@ const QuestionDetailView = props => {
                                         <Icon icon='tabler:message-dots' />
                                       </Badge>
                                     </Grid>
+                                    {data.files.map(d => (
+                                      <Grid sx={{ p: 2, py: 3 }}>
+                                        <a
+                                          href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
+                                          target='_blank'
+                                          rel='noopener noreferrer'
+                                        >
+                                          {d.filename}
+                                        </a>
+                                      </Grid>
+                                    ))}
                                   </Box>
                                 ) : (
                                   <Grid

@@ -184,7 +184,7 @@ const SurveillanceForm = props => {
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot()
-    console.log(imageSrc);
+
     const file = new File([Uint8Array.from(btoa(imageSrc), m => m.codePointAt(0))], Math.random() + '.jpeg', {
       type: 'image/jpeg'
     })
@@ -288,315 +288,319 @@ const SurveillanceForm = props => {
           </Grid>
         </Grid>
       </Modal>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title={null} />
-          <CardContent>
-            <Grid container spacing={8}>
-              <Grid container item md={12} xs={12} spacing={5}>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    {...register('project_name')}
-                    onChange={fieldHandler}
-                    fullWidth
-                    name='project_name'
-                    label='Project Name'
-                    size='small'
-                    InputLabelProps={{ shrink: true }}
-                    error={Boolean(errors.project_name)}
-                    helperText={errors.project_name && errors.project_name.message}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <FormControl fullWidth>
-                    <Autocomplete
-                      size='small'
-                      options={company}
+      <Grid container xs={12} spacing={6}>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title={null} />
+            <CardContent>
+              <Grid container spacing={8}>
+                <Grid container item md={12} xs={12} spacing={5}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('project_name')}
+                      onChange={fieldHandler}
                       fullWidth
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          {...register('company')}
-                          label='Company'
-                          InputLabelProps={{ shrink: true }}
-                          error={Boolean(errors.company)}
-                        />
-                      )}
-                      onChange={(event, newValue) => {
-                        setCompanyId(newValue)
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      value={companyId}
-                    />
-                    {errors.company && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <FormControl fullWidth>
-                    <Autocomplete
+                      name='project_name'
+                      label='Project Name'
                       size='small'
-                      options={department}
-                      fullWidth
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          {...register('project_location')}
-                          label='PIC Department'
-                          InputLabelProps={{ shrink: true }}
-                          error={Boolean(errors.project_location)}
-                        />
-                      )}
-                      onChange={(event, newValue) => {
-                        setLocationId(newValue)
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      value={locationId}
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.project_name)}
+                      helperText={errors.project_name && errors.project_name.message}
                     />
-                    {errors.project_location && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <FormControl fullWidth>
-                    <Autocomplete
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={company}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('company')}
+                            label='Company'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.company)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setCompanyId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={companyId}
+                      />
+                      {errors.company && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={department}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('project_location')}
+                            label='PIC Department'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.project_location)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setLocationId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={locationId}
+                      />
+                      {errors.project_location && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={dataSHE}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('is_she')}
+                            label='SHE'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.is_she)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setSHE(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={sheId}
+                      />
+                      {errors.is_she && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('project_date')}
+                      onChange={fieldHandler}
+                      fullWidth
+                      name='project_date'
+                      label='Project Date'
                       size='small'
-                      options={dataSHE}
+                      type='date'
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.project_date)}
+                      helperText={errors.project_date && errors.project_date.message}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('due_date')}
+                      onChange={fieldHandler}
                       fullWidth
-                      renderInput={params => (
-                        <TextField
-                          {...params}
-                          {...register('is_she')}
-                          label='SHE'
-                          InputLabelProps={{ shrink: true }}
-                          error={Boolean(errors.is_she)}
-                        />
-                      )}
-                      onChange={(event, newValue) => {
-                        setSHE(newValue)
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      value={sheId}
+                      name='due_date'
+                      label='Due Date'
+                      size='small'
+                      type='date'
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.due_date)}
+                      helperText={errors.due_date && errors.due_date.message}
                     />
-                    {errors.is_she && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    {...register('project_date')}
-                    onChange={fieldHandler}
-                    fullWidth
-                    name='project_date'
-                    label='Project Date'
-                    size='small'
-                    type='date'
-                    InputLabelProps={{ shrink: true }}
-                    error={Boolean(errors.project_date)}
-                    helperText={errors.project_date && errors.project_date.message}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    {...register('due_date')}
-                    onChange={fieldHandler}
-                    fullWidth
-                    name='due_date'
-                    label='Due Date'
-                    size='small'
-                    type='date'
-                    InputLabelProps={{ shrink: true }}
-                    error={Boolean(errors.due_date)}
-                    helperText={errors.due_date && errors.due_date.message}
-                  />
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <InputLabel sx={{ mb: 2 }}>
-                    <Typography variant='body1'>Finding</Typography>
-                  </InputLabel>
-                  <FormControl fullWidth>
-                    <Editor
-                      {...register('finding')}
-                      name={'finding'}
-                      initData={''}
-                      onCKChange={data => {
-                        setFinding(data)
-                        setValue('finding', data)
-                      }}
-                    />
-                    {errors.finding && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <InputLabel sx={{ mb: 2 }}>
-                    <Typography variant='body1'>Risk</Typography>
-                  </InputLabel>
-                  <FormControl fullWidth>
-                    <Editor
-                      {...register('risk')}
-                      name={'risk'}
-                      initData={''}
-                      onCKChange={data => {
-                        setRisk(data)
-                        setValue('risk', data)
-                      }}
-                    />
-                    {errors.risk && <FormHelperText sx={{ color: 'error.main' }}>{errors.risk.message}</FormHelperText>}
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                  <InputLabel sx={{ mb: 2 }}>
-                    <Typography variant='body1'>Recommendation</Typography>
-                  </InputLabel>
-                  <FormControl fullWidth>
-                    <Editor
-                      {...register('recommendation')}
-                      name={'recommendation'}
-                      initData={''}
-                      onCKChange={data => {
-                        setRecommendation(data)
-                        setValue('recommendation', data)
-                      }}
-                    />
-                    {errors.recommendation && (
-                      <FormHelperText sx={{ color: 'error.main' }}>{errors.recommendation.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title={'Location'} />
-          <CardContent>
-            <Grid container spacing={8}>
-              <Grid item md={12} container spacing={8}>
-                <Grid item md={12}>
-                  <FormControl fullWidth sx={{ m: 0 }} size='small'>
-                    <InputLabel shrink htmlFor='outlined-geolocation'>
-                      Geo Location
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Finding</Typography>
                     </InputLabel>
-                    <OutlinedInput
-                      {...register('location')}
-                      onChange={e => {
-                        setLocation(e.target.value)
-                      }}
-                      value={location}
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('finding')}
+                        name={'finding'}
+                        initData={''}
+                        onCKChange={data => {
+                          setFinding(data)
+                          setValue('finding', data)
+                        }}
+                      />
+                      {errors.finding && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Risk</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('risk')}
+                        name={'risk'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRisk(data)
+                          setValue('risk', data)
+                        }}
+                      />
+                      {errors.risk && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.risk.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Recommendation</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('recommendation')}
+                        name={'recommendation'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRecommendation(data)
+                          setValue('recommendation', data)
+                        }}
+                      />
+                      {errors.recommendation && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.recommendation.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title={'Location'} />
+            <CardContent>
+              <Grid container spacing={8}>
+                <Grid item md={12} container spacing={8}>
+                  <Grid item md={12}>
+                    <FormControl fullWidth sx={{ m: 0 }} size='small'>
+                      <InputLabel shrink htmlFor='outlined-geolocation'>
+                        Geo Location
+                      </InputLabel>
+                      <OutlinedInput
+                        {...register('location')}
+                        onChange={e => {
+                          setLocation(e.target.value)
+                        }}
+                        value={location}
+                        fullWidth
+                        notched
+                        readOnly
+                        name='location'
+                        label='Geo Location'
+                        size='small'
+                        error={Boolean(errors.location)}
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <IconButton onClick={() => getLocation()}>
+                              <Icon icon={'akar-icons:location'} />
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={12}>
+                    <TextField
+                      {...register('description')}
+                      onChange={e => setDescription(e.target.value)}
                       fullWidth
-                      notched
-                      readOnly
-                      name='location'
-                      label='Geo Location'
+                      name='description'
+                      label='Description'
                       size='small'
-                      error={Boolean(errors.location)}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton onClick={() => getLocation()}>
-                            <Icon icon={'akar-icons:location'} />
-                          </IconButton>
-                        </InputAdornment>
-                      }
+                      value={description}
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.description)}
+                      helperText={errors.description && errors.description.message}
                     />
-                  </FormControl>
+                  </Grid>
+                  <Grid item md={12}>
+                    <Button
+                      component='label'
+                      role={undefined}
+                      variant='contained'
+                      tabIndex={-1}
+                      startIcon={<Icon icon={'lets-icons:upload'} />}
+                      size='small'
+                    >
+                      Upload file
+                      <input hidden type='file' accept='image/*' onChange={preview} />
+                    </Button>
+                    {' or '}
+                    <Button
+                      startIcon={<Icon icon={'bi:camera-fill'} />}
+                      variant='contained'
+                      color='warning'
+                      size='small'
+                      onClick={handleOpen}
+                    >
+                      Camera
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      startIcon={<Icon icon={'material-symbols:add'} />}
+                      type='button'
+                      variant='contained'
+                      size='small'
+                      onClick={() => addImage()}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item md={12}>
-                  <TextField
-                    {...register('description')}
-                    onChange={e => setDescription(e.target.value)}
-                    fullWidth
-                    name='description'
-                    label='Description'
-                    size='small'
-                    value={description}
-                    InputLabelProps={{ shrink: true }}
-                    error={Boolean(errors.description)}
-                    helperText={errors.description && errors.description.message}
-                  />
-                </Grid>
-                <Grid item md={12}>
-                  <Button
-                    component='label'
-                    role={undefined}
-                    variant='contained'
-                    tabIndex={-1}
-                    startIcon={<Icon icon={'lets-icons:upload'} />}
-                    size='small'
-                  >
-                    Upload file
-                    <input hidden type='file' accept='image/*' onChange={preview} />
-                  </Button>
-                  {' or '}
-                  <Button
-                    startIcon={<Icon icon={'bi:camera-fill'} />}
-                    variant='contained'
-                    color='warning'
-                    size='small'
-                    onClick={handleOpen}
-                  >
-                    Camera
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    startIcon={<Icon icon={'material-symbols:add'} />}
-                    type='button'
-                    variant='contained'
-                    size='small'
-                    onClick={() => addImage()}
-                  >
-                    Add
-                  </Button>
+                <Grid item md={6} spacing={8}>
+                  {imgSrc && <img style={{ width: '100%' }} src={imgSrc} alt='img' />}
                 </Grid>
               </Grid>
-              <Grid item md={6} spacing={8}>
-                {imgSrc && <img style={{ width: '100%' }} src={imgSrc} alt='img' />}
-              </Grid>
-            </Grid>
 
-            <TableContainer component={Paper} sx={{ marginTop: 5 }}>
-              <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Geo Location</TableCell>
-                    <TableCell>Foto</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{listImage}</TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title={null} />
-          <CardContent>
-            <Grid container spacing={8} sx={{ paddingTop: 2 }}>
-              <Grid container item md={6} xs={6} rowSpacing={8}>
-                <Button component={Link} href={'/surveillance'} variant='outlined' size='small'>
-                  Back
-                </Button>
+              <TableContainer component={Paper} sx={{ marginTop: 5 }}>
+                <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Geo Location</TableCell>
+                      <TableCell>Foto</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>{listImage}</TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title={null} />
+            <CardContent>
+              <Grid container spacing={8} sx={{ paddingTop: 2 }}>
+                <Grid container item md={6} xs={6} rowSpacing={8}>
+                  <Button component={Link} href={'/surveillance'} variant='outlined' size='small'>
+                    Back
+                  </Button>
+                </Grid>
+                <Grid container item md={6} xs={6} rowSpacing={8} sx={{ justifyContent: 'right' }}>
+                  <Button type='submit' variant='contained' size='small' disabled={isDisable}>
+                    Save
+                    {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid container item md={6} xs={6} rowSpacing={8} sx={{ justifyContent: 'right' }}>
-                <Button type='submit' variant='contained' size='small' disabled={isDisable}>
-                  Save
-                  {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-                </Button>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </form>
   )
