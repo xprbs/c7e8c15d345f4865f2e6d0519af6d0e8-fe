@@ -147,6 +147,14 @@ const SurveillancePage = () => {
     router.push(`/surveillance/follow-up/${e.project_uid}`)
   }
 
+  const handleClosed = e => {
+    router.push(`/surveillance/closed/${e.project_uid}`)
+  }
+
+  const handleHistorical = e => {
+    router.push(`/surveillance/historical/${e.project_uid}`)
+  }
+
   const RowOptions = ({ data }) => {
     // ** State
     const [anchorEl, setAnchorEl] = useState(null)
@@ -186,9 +194,25 @@ const SurveillancePage = () => {
             <Icon icon='bx:detail' fontSize={20} />
             Detail
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleFollowUp(data)}>
+          {data.is_she === 'SHE' && data.status_code === '10' ? (
+            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleFollowUp(data)}>
+              <Icon icon='hugeicons:recycle-03' fontSize={20} />
+              Follow Up
+            </MenuItem>
+          ) : (
+            ''
+          )}
+          {data.is_she === 'SHE' && data.status_code === '20' ? (
+            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleClosed(data)}>
+              <Icon icon='hugeicons:recycle-03' fontSize={20} />
+              Closed by SHE
+            </MenuItem>
+          ) : (
+            ''
+          )}
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleHistorical(data)}>
             <Icon icon='hugeicons:recycle-03' fontSize={20} />
-            Follow Up
+            Historical
           </MenuItem>
           <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='icon-park-outline:upload-logs' fontSize={20} />
