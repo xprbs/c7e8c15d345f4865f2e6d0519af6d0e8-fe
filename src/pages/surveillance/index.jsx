@@ -211,10 +211,6 @@ const SurveillancePage = () => {
             ''
           )}
           <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleHistorical(data)}>
-            <Icon icon='hugeicons:recycle-03' fontSize={20} />
-            Historical
-          </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='icon-park-outline:upload-logs' fontSize={20} />
             Historical
           </MenuItem>
