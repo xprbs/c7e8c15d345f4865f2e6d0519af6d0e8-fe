@@ -166,21 +166,29 @@ const NotificationDropdown = props => {
           </Box>
         </MenuItem>
         <ScrollWrapper hidden={hidden}>
-          {notifications.map((notification, index) => (
-            <MenuItem key={index} onClick={handleDropdownClose}>
-              <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                {/* <RenderAvatar notification={notification} /> */}
-                <Icon icon='ph:notification-fill' />
-                <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                  <MenuItemTitle>{notification.title}</MenuItemTitle>
-                  <MenuItemSubtitle variant='body2'>{notification.subtitle}</MenuItemSubtitle>
+          {notifications.length ? (
+            notifications.map((notification, index) => (
+              <MenuItem key={index} onClick={handleDropdownClose}>
+                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                  {/* <RenderAvatar notification={notification} /> */}
+                  <Icon icon='ph:notification-fill' />
+                  <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
+                    <MenuItemTitle>{notification.title}</MenuItemTitle>
+                    <MenuItemSubtitle variant='body2'>{notification.subtitle}</MenuItemSubtitle>
+                  </Box>
+                  <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                    {notification.meta}
+                  </Typography>
                 </Box>
-                <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  {notification.meta}
-                </Typography>
-              </Box>
-            </MenuItem>
-          ))}
+              </MenuItem>
+            ))
+          ) : (
+            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+              <Typography variant='subtitle2' sx={{ display: 'flex', p: 4 }}>
+                Not data found
+              </Typography>
+            </Box>
+          )}
         </ScrollWrapper>
         <MenuItem
           disableRipple

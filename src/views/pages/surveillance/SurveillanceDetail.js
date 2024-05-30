@@ -11,9 +11,14 @@ const SurveillanceDetail = props => {
           <img style={{ width: '100%' }} src={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.image} alt='img' />
           <Typography variant='h5'>{d.description}</Typography>
           <Typography variant='overline' color={'primary'}>
-            Location :
+            <a
+              href={'https://www.google.com/maps/search/?api=1&query=' + d.geo_location}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Location
+            </a>
           </Typography>
-          {d.geo_location}
         </Box>
       </Grid>
     )

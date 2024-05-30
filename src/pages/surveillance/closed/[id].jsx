@@ -78,7 +78,7 @@ const detailSurveillance = () => {
     form.append('dataAreaId', dataSurveillance.dataAreaId)
     form.append('project_uid', dataSurveillance.project_uid)
     form.append('file', file)
-    form.append('doc_type', 20)
+    form.append('doc_type', 30)
     form.append('note', followupNote)
 
     const myPromise = new Promise((resolve, reject) => {
@@ -123,7 +123,7 @@ const detailSurveillance = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <PageHeader title={<Typography variant='h5'>Surveillance Follow Up</Typography>} subtitle={null} />
+        <PageHeader title={<Typography variant='h5'>Surveillance Closed SHE</Typography>} subtitle={null} />
       </Grid>
       <Grid item xs={12}>
         {skeleton ? (
@@ -181,7 +181,7 @@ const detailSurveillance = () => {
                 Back
               </Button>
               <Button variant='contained' size='small' disabled={isDisable} onClick={createHandler}>
-                Follow Up
+                Close
                 {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
               </Button>
             </Box>
@@ -194,7 +194,7 @@ const detailSurveillance = () => {
 
 detailSurveillance.acl = {
   action: 'manage',
-  subject: 'surveillance-follow-up'
+  subject: 'surveillance-closed'
 }
 
 export default detailSurveillance

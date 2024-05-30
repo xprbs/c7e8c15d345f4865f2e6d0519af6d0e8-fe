@@ -86,15 +86,12 @@ const SurveillanceForm = props => {
   const [sheId, setSHE] = useState(null)
 
   const [dataSHE, setDataSHE] = useState([
-    { id: 'NON_SHE', label: 'NONE SHE' },
-    { id: 'SHE', label: 'SHE' }
+    { id: 0, label: 'NONE SHE' },
+    { id: 1, label: 'SHE' }
   ])
 
   const handleOpen = () => setIsCamera(true)
   const handleClose = () => setIsCamera(false)
-
-  const [skeleton, setSkeleton] = useState(true)
-  const [detail, setDetail] = useState([])
 
   const [fields, setFields] = useState({
     project_name: null,
