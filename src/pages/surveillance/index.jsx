@@ -190,6 +190,10 @@ const SurveillancePage = () => {
             <Icon icon='hugeicons:recycle-03' fontSize={20} />
             Follow Up
           </MenuItem>
+          <MenuItem sx={{ '& svg': { mr: 2 } }}>
+            <Icon icon='icon-park-outline:upload-logs' fontSize={20} />
+            Historical
+          </MenuItem>
           {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
             <Icon icon='mingcute:delete-2-line' fontSize={20} />
             Delete
