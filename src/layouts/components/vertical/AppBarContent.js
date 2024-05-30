@@ -13,20 +13,20 @@ import ShortcutsDropdown from 'src/@core/layouts/components/shared-components/Sh
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 
 const notifications = [
-  {
-    meta: '15.01',
-    avatarAlt: 'Approval',
-    title: 'Audit #202401000190',
-    avatarImg: '/images/avatars/4.png',
-    subtitle: 'Waiting for your approval'
-  },
-  {
-    meta: '13.38',
-    avatarAlt: 'Approval',
-    title: 'Audit #202401000191',
-    avatarImg: '/images/avatars/4.png',
-    subtitle: 'Waiting for your approval'
-  }
+  // {
+  //   meta: '15.01',
+  //   avatarAlt: 'Approval',
+  //   title: 'Audit #202401000190',
+  //   avatarImg: '/images/avatars/4.png',
+  //   subtitle: 'Waiting for your approval'
+  // },
+  // {
+  //   meta: '13.38',
+  //   avatarAlt: 'Approval',
+  //   title: 'Audit #202401000191',
+  //   avatarImg: '/images/avatars/4.png',
+  //   subtitle: 'Waiting for your approval'
+  // }
 ]
 
 const shortcuts = [
