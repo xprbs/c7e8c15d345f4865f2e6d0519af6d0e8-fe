@@ -129,7 +129,7 @@ const detailSurveillance = () => {
               size='small'
               InputLabelProps={{ shrink: true }}
               sx={{ minWidth: 350, mt: 2 }}
-              
+
               // onChange={e => handleChange(e, index)}
               // defaultValue={selectedDetail
               //   .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
@@ -143,7 +143,7 @@ const detailSurveillance = () => {
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'left',
-                marginTop:5
+                marginTop: 5
               }}
             >
               <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
