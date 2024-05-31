@@ -59,8 +59,7 @@ const detailSurveillance = () => {
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
-                justifyContent: 'left',
-                marginTop: 5
+                justifyContent: 'left'
               }}
             >
               <Button component={Link} href={'/surveillance'} variant='outlined' size='small'>

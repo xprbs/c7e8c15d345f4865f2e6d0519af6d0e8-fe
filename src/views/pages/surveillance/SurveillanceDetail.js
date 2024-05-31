@@ -25,7 +25,7 @@ const SurveillanceDetail = props => {
   })
 
   return (
-    <Grid container xs={12} spacing={6}>
+    <Grid item container xs={12} spacing={6}>
       <Grid item xs={12}>
         <Card>
           <CardHeader title={'Data Header'} />
