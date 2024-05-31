@@ -6,9 +6,7 @@ import { useState, useEffect } from 'react'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
-import {
-  Skeleton,
-} from '@mui/material'
+import { Button, Card, CardContent, Skeleton } from '@mui/material'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
@@ -20,6 +18,8 @@ import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
 import dynamic from 'next/dynamic'
 import SurveillanceDetail from 'src/views/pages/surveillance/SurveillanceDetail'
+import { Box } from '@mui/system'
+import Link from 'next/link'
 
 var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
   ssr: false
@@ -73,6 +73,8 @@ const detailSurveillance = () => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <PageHeader title={<Typography variant='h5'>Surveillance Detail</Typography>} subtitle={null} />
+      </Grid>
+      <Grid item container xs={12}>
         {skeleton ? (
           <Grid>
             <Skeleton variant='text' sx={{ fontSize: '1rem' }} />
@@ -81,6 +83,25 @@ const detailSurveillance = () => {
         ) : (
           <SurveillanceDetail detail={dataSurveillance} />
         )}
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                gap: 5,
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'left'
+              }}
+            >
+              <Button component={Link} href={'/surveillance'} variant='outlined' size='small'>
+                Back
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
       </Grid>
     </Grid>
   )
