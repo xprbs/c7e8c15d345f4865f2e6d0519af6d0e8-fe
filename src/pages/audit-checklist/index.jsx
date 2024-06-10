@@ -188,7 +188,7 @@ function AuditIsoPage() {
         >
           {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.audit_number}</MenuItem> */}
           {/* <Divider /> */}
-          {data.status === '0' || data.status === '10' ? (
+          {data.status === '0' || data.status === '10' || data.status === '40' ? (
             <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
               <Icon icon='icon-park-outline:checklist' fontSize={20} />
               Process Audit
