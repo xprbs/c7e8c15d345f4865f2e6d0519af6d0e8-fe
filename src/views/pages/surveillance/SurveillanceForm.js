@@ -23,7 +23,8 @@ import {
   TableCell,
   TableBody,
   Paper,
-  Modal
+  Modal,
+  Box
 } from '@mui/material'
 
 // ** Custom Components Imports
@@ -271,17 +272,18 @@ const SurveillanceForm = props => {
               minScreenshotHeight={180}
             />
             <br />
-            <Button
-              startIcon={<Icon icon={'bi:camera-fill'} />}
-              type='button'
-              variant='outlined'
-              size='small'
-              color='inherit'
-              onClick={capture}
-              sx={{ marginTop: -20 }}
-            >
-              Capture
-            </Button>
+            <Box sx={{ marginTop: -10, textAlign: 'center' }}>
+              <Button
+                startIcon={<Icon icon={'bi:camera-fill'} />}
+                type='button'
+                variant='contained'
+                size='small'
+                color='primary'
+                onClick={capture}
+              >
+                Capture
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Modal>

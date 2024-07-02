@@ -106,7 +106,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('webapi@samoragroup.co.id')
-  const [password, setPassword] = useState('api!@#')
+  const [password, setPassword] = useState('OwJYYOyxWyXFvBFJll')
 
   // ** Hooks
   const auth = useAuth()

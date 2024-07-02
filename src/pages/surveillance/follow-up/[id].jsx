@@ -155,7 +155,7 @@ const detailSurveillance = () => {
               role={undefined}
               variant='contained'
               tabIndex={-1}
-              startIcon={<Icon icon={'lets-icons:upload'} />}
+              startIcon={<Icon icon={'material-symbols:upload'} />}
               size='small'
               sx={{ marginTop: 5 }}
             >
