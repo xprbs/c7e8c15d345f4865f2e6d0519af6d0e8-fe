@@ -290,6 +290,113 @@ const SurveillanceForm = props => {
       <Grid container xs={12} spacing={6}>
         <Grid item xs={12}>
           <Card>
+            <CardHeader title={'Location'} />
+            <CardContent>
+              <Grid container spacing={8}>
+                <Grid item md={12} container spacing={8}>
+                  <Grid item md={12}>
+                    <FormControl fullWidth sx={{ m: 0 }} size='small'>
+                      <InputLabel shrink htmlFor='outlined-geolocation'>
+                        Geo Location
+                      </InputLabel>
+                      <OutlinedInput
+                        {...register('location')}
+                        onChange={e => {
+                          setLocation(e.target.value)
+                        }}
+                        value={location}
+                        fullWidth
+                        notched
+                        readOnly
+                        name='location'
+                        label='Geo Location'
+                        size='small'
+                        error={Boolean(errors.location)}
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <IconButton onClick={() => getLocation()}>
+                              <Icon icon={'akar-icons:location'} />
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={12}>
+                    <TextField
+                      {...register('description')}
+                      onChange={e => setDescription(e.target.value)}
+                      fullWidth
+                      name='description'
+                      label='Description'
+                      size='small'
+                      value={description}
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.description)}
+                      helperText={errors.description && errors.description.message}
+                    />
+                  </Grid>
+                  <Grid item md={12}>
+                    <Button
+                      component='label'
+                      role={undefined}
+                      variant='contained'
+                      tabIndex={-1}
+                      startIcon={<Icon icon={'lets-icons:upload'} />}
+                      size='small'
+                    >
+                      Upload file
+                      <input hidden type='file' accept='image/*' onChange={preview} />
+                    </Button>
+                    {' or '}
+                    <Button
+                      startIcon={<Icon icon={'bi:camera-fill'} />}
+                      variant='contained'
+                      color='warning'
+                      size='small'
+                      onClick={handleOpen}
+                    >
+                      Camera
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      startIcon={<Icon icon={'material-symbols:add'} />}
+                      type='button'
+                      variant='contained'
+                      size='small'
+                      onClick={() => addImage()}
+                    >
+                      Add
+                    </Button>
+                  </Grid>
+                </Grid>
+                <Grid item md={6} spacing={8}>
+                  {imgSrc && <img style={{ width: '100%' }} src={imgSrc} alt='img' />}
+                </Grid>
+              </Grid>
+
+              <TableContainer component={Paper} sx={{ marginTop: 5 }}>
+                <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Geo Location</TableCell>
+                      <TableCell>Foto</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>{listImage}</TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container xs={12} spacing={6} marginTop={2}>
+        <Grid item xs={12}>
+          <Card>
             <CardHeader title={null} />
             <CardContent>
               <Grid container spacing={8}>
@@ -472,111 +579,6 @@ const SurveillanceForm = props => {
                   </Grid>
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title={'Location'} />
-            <CardContent>
-              <Grid container spacing={8}>
-                <Grid item md={12} container spacing={8}>
-                  <Grid item md={12}>
-                    <FormControl fullWidth sx={{ m: 0 }} size='small'>
-                      <InputLabel shrink htmlFor='outlined-geolocation'>
-                        Geo Location
-                      </InputLabel>
-                      <OutlinedInput
-                        {...register('location')}
-                        onChange={e => {
-                          setLocation(e.target.value)
-                        }}
-                        value={location}
-                        fullWidth
-                        notched
-                        readOnly
-                        name='location'
-                        label='Geo Location'
-                        size='small'
-                        error={Boolean(errors.location)}
-                        endAdornment={
-                          <InputAdornment position='end'>
-                            <IconButton onClick={() => getLocation()}>
-                              <Icon icon={'akar-icons:location'} />
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={12}>
-                    <TextField
-                      {...register('description')}
-                      onChange={e => setDescription(e.target.value)}
-                      fullWidth
-                      name='description'
-                      label='Description'
-                      size='small'
-                      value={description}
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.description)}
-                      helperText={errors.description && errors.description.message}
-                    />
-                  </Grid>
-                  <Grid item md={12}>
-                    <Button
-                      component='label'
-                      role={undefined}
-                      variant='contained'
-                      tabIndex={-1}
-                      startIcon={<Icon icon={'lets-icons:upload'} />}
-                      size='small'
-                    >
-                      Upload file
-                      <input hidden type='file' accept='image/*' onChange={preview} />
-                    </Button>
-                    {' or '}
-                    <Button
-                      startIcon={<Icon icon={'bi:camera-fill'} />}
-                      variant='contained'
-                      color='warning'
-                      size='small'
-                      onClick={handleOpen}
-                    >
-                      Camera
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      startIcon={<Icon icon={'material-symbols:add'} />}
-                      type='button'
-                      variant='contained'
-                      size='small'
-                      onClick={() => addImage()}
-                    >
-                      Add
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Grid item md={6} spacing={8}>
-                  {imgSrc && <img style={{ width: '100%' }} src={imgSrc} alt='img' />}
-                </Grid>
-              </Grid>
-
-              <TableContainer component={Paper} sx={{ marginTop: 5 }}>
-                <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Description</TableCell>
-                      <TableCell>Geo Location</TableCell>
-                      <TableCell>Foto</TableCell>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>{listImage}</TableBody>
-                </Table>
-              </TableContainer>
             </CardContent>
           </Card>
         </Grid>
