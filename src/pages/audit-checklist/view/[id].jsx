@@ -3,6 +3,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
 import Link from 'next/link'
+import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
@@ -73,7 +74,7 @@ const AuditIsoViewPage = () => {
         .then(res => {
           resolve('success')
           setDetail(res.data.data)
-          getQuestionDetail(res.data.data.question_uid)
+          getQuestionDetail(res.data.data.question_uid, res.data.data.audit_uid)
           setTimeout(() => {
             getAuditAnswer(res.data.data.audit_uid, res.data.data.question_uid)
           }, [1000])
@@ -88,13 +89,14 @@ const AuditIsoViewPage = () => {
     })
   }
 
-  const getQuestionDetail = async param => {
+  const getQuestionDetail = async (param, param2) => {
     new Promise((resolve, reject) => {
       backendApi
         .post(
           '/web/master/question-template/question-detail-list',
           JSON.stringify({
-            question_uid: param ?? null
+            question_uid: param ?? null,
+            audit_uid: param2 ?? null
           })
         )
         .then(res => {
@@ -134,13 +136,6 @@ const AuditIsoViewPage = () => {
   const createHandler = async is_submit => {
     setIsDisable(true)
 
-    const dataForm = JSON.stringify({
-      audit_uid: detail.audit_uid,
-      question_uid: detail.question_uid,
-      is_submit: is_submit,
-      details: selectedDetail
-    })
-
     const formData = new FormData()
 
     formData.append('audit_uid', detail.audit_uid)
@@ -148,9 +143,9 @@ const AuditIsoViewPage = () => {
     formData.append('is_submit', is_submit)
 
     selectedDetail.forEach((d, i) => {
-      formData.append(`details[${i}][id]`, d.id)
-      formData.append(`details[${i}][answer]`, d.answer)
-      formData.append(`details[${i}][answer_description]`, d.answer_description)
+      formData.append(`details[${i}][id]`, d.id ?? '')
+      formData.append(`details[${i}][answer]`, d.answer ?? '')
+      formData.append(`details[${i}][answer_description]`, d.answer_description ?? '')
 
       if (d.file_uploads) {
         let idx = 0
@@ -179,6 +174,8 @@ const AuditIsoViewPage = () => {
           if (is_submit === 1) {
             router.push('/audit-checklist')
           }
+          getQuestionDetail(detail.question_uid, detail.audit_uid)
+          clearUploadFile()
           resolve('success')
         })
         .catch(error => {
@@ -193,6 +190,37 @@ const AuditIsoViewPage = () => {
     toast.promise(myPromise, {
       loading: 'Loading',
       success: 'Successfully saved',
+      error: error => {
+        // if (error.response.status === 500) return error.response.data.response
+
+        return 'Something error'
+      }
+    })
+  }
+
+  const removeFileAPI = async id => {
+    const myPromise = new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/delete-file',
+          JSON.stringify({
+            id: id ?? null
+          })
+        )
+        .then(res => {
+          getQuestionDetail(detail.question_uid, detail.audit_uid)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => setSkeleton2(false))
+    })
+
+    toast.promise(myPromise, {
+      loading: 'Loading',
+      success: 'Successfully delete',
       error: error => {
         if (error.response.status === 500) return error.response.data.response
 
@@ -238,8 +266,34 @@ const AuditIsoViewPage = () => {
     //   setImgsSrc(imgs => [...imgs, file])
     // }
 
+    const data = []
+    for (let i = 0; i < e.target.files.length; i++) {
+      data.push(e.target.files[i])
+    }
+
     const onChangeValue = [...selectedDetail]
-    onChangeValue[i]['file_uploads'] = e.target.files
+    onChangeValue[i]['file_uploads'] = [...(onChangeValue[i]['file_uploads'] || []), ...data]
+
+    setSelectedDetail(onChangeValue)
+    console.log(onChangeValue)
+  }
+
+  const clearUploadFile = () => {
+    const onChangeValue = [...selectedDetail]
+
+    const onChangeValues = onChangeValue.map(d => {
+      d.file_uploads = []
+
+      return d
+    })
+
+    setSelectedDetail(onChangeValues)
+  }
+
+  const removeFile = (index, i) => {
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[index]['file_uploads'] = onChangeValue[index]['file_uploads'].filter((d, ind) => ind !== i)
+
     setSelectedDetail(onChangeValue)
   }
 
@@ -355,35 +409,63 @@ const AuditIsoViewPage = () => {
                                           .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                           .join('')}
                                       />
-                                      <Grid item sx={{ mt: 2, border: 1 }}>
-                                        {/* <Card
-                                          title='Upload Files'
-                                          code={{
-                                            tsx: null,
-                                            jsx: source.FileUploaderRestrictionsJSXCode
-                                          }}
-                                          sx={{ border: 1 }}
+                                      <Grid item sx={{ textAlign: 'right' }}>
+                                        <Button
+                                          component='label'
+                                          role={undefined}
+                                          variant='contained'
+                                          tabIndex={-1}
+                                          startIcon={<Icon icon={'material-symbols:upload'} />}
+                                          size='small'
+                                          sx={{ marginTop: 5 }}
                                         >
-                                          <CardContent>
-                                            <FileUploaderRestrictions />
-                                          </CardContent>
-                                        </Card> */}
-
-                                        {/* <input onChange={onChange} type='file' name='file' multiple /> */}
-                                        <input
-                                          onChange={e => onChangeUploadFile(e, index)}
-                                          type='file'
-                                          name='file'
-                                          multiple
-                                        />
-
-                                        {/* {imgsSrc.map((link, index) => (
-                                          // eslint-disable-next-line jsx-a11y/alt-text
-                                          // <Image key={index} src={link} alt={index} />
-                                        ))} */}
-                                        {/* {imgsSrc.map((index, link) => (
-                                            <span key={index} src={link} />
-                                          ))} */}
+                                          Upload file
+                                          <input
+                                            hidden
+                                            onChange={e => onChangeUploadFile(e, index)}
+                                            type='file'
+                                            name='file'
+                                            multiple
+                                          />
+                                        </Button>
+                                        <Table cellpadding='3'>
+                                          {data.files &&
+                                            data.files.map((d, i) => (
+                                              <tr key={i}>
+                                                <td valign='middle'>
+                                                  <a
+                                                    href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                  >
+                                                    {d.filename}
+                                                  </a>
+                                                </td>
+                                                <td>
+                                                  <Icon
+                                                    onClick={() => removeFileAPI(d.id)}
+                                                    icon={'material-symbols:delete'}
+                                                    color='red'
+                                                    className='cursor-pointer'
+                                                  />
+                                                </td>
+                                              </tr>
+                                            ))}
+                                          {selectedDetail[index].file_uploads &&
+                                            selectedDetail[index].file_uploads.map((d, i) => (
+                                              <tr key={i}>
+                                                <td valign='middle'>{d.name}</td>
+                                                <td>
+                                                  <Icon
+                                                    onClick={() => removeFile(index, i)}
+                                                    icon={'material-symbols:delete'}
+                                                    color='orange'
+                                                    sx={{ cursor: 'pointer' }}
+                                                  />
+                                                </td>
+                                              </tr>
+                                            ))}
+                                        </Table>
                                       </Grid>
                                     </Box>
                                   ) : (
