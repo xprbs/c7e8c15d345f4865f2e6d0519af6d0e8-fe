@@ -206,15 +206,8 @@ const AuditIsoViewPage = () => {
 
   const handleCloseModal = () => setOpenModal(false)
 
-  const createHandler = async (audit_uid, question_uid, question_detail_uid, is_submit) => {
+  const createHandler = async () => {
     setIsDisable(true)
-
-    const dataForm = JSON.stringify({
-      audit_uid: audit_uid,
-      question_uid: question_uid,
-      question_detail_uid: question_detail_uid,
-      note: noteDescription
-    })
 
     const formData = new FormData()
 
@@ -243,36 +236,6 @@ const AuditIsoViewPage = () => {
 
     // formData.append('files', imgsSrc)
 
-    // const myPromise = new Promise((resolve, reject) => {
-    //   backendApi
-    //     .post('/web/audit-checklist/answer-store', formData, {
-    //       headers: {
-    //         'Content-Type': 'multipart/form-data'
-    //       }
-    //     })
-    //     .then(res => {
-    //       if (is_submit === 1) {
-    //         router.push('/audit-checklist')
-    //       }
-    //       getQuestionDetail(detail.question_uid, detail.audit_uid)
-    //       clearUploadFile()
-    //       resolve('success')
-    //     })
-
-    //     .post('/web/approval/approval-note-store', dataForm)
-    //     .then(res => {
-    //       resolve('success')
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //       reject(error)
-    //     })
-    //     .finally(e => {
-    //       setNoteDescription('')
-    //       setIsDisable(false)
-    //     })
-    // })
-
     const myPromise = new Promise((resolve, reject) => {
       backendApi
         .post('/web/audit-checklist/answer-store', formData, {
@@ -286,8 +249,44 @@ const AuditIsoViewPage = () => {
           }
           getQuestionDetail(detail.question_uid, detail.audit_uid)
           clearUploadFile()
-          return backendApi.post('/web/approval/approval-note-store', dataForm)
         })
+        .then(res => {
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(() => {
+          setNoteDescription('')
+          setIsDisable(false)
+        })
+    })
+
+    toast.promise(myPromise, {
+      loading: 'Loading',
+      success: 'Successfully saved',
+      error: error => {
+        // if (error.response.status === 500) return error.response.data.response
+
+        return 'Something error'
+      }
+    })
+  }
+
+  const createHandlerMassage = async (audit_uid, question_uid, question_detail_uid, is_submit) => {
+    setIsDisable(true)
+
+    const dataForm = JSON.stringify({
+      audit_uid: audit_uid,
+      question_uid: question_uid,
+      question_detail_uid: question_detail_uid,
+      note: noteDescription
+    })
+
+    const myPromise = new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/approval/approval-note-store', dataForm, {})
         .then(res => {
           resolve('success')
         })
@@ -699,7 +698,7 @@ const AuditIsoViewPage = () => {
                         }}
                       >
                         <Button
-                          onClick={e => createHandler(auditId, questionId, questionDetailId)}
+                          onClick={e => createHandlerMassage(auditId, questionId, questionDetailId)}
                           variant='contained'
                           size='small'
                           disabled={isDisable}
@@ -726,21 +725,11 @@ const AuditIsoViewPage = () => {
                       <Button component={Link} href={'/audit-checklist'} variant='outlined' size='small'>
                         Back
                       </Button>
-                      <Button
-                        onClick={e => createHandler(0, auditId, questionId, questionDetailId)}
-                        variant='contained'
-                        size='small'
-                        disabled={isDisable}
-                      >
+                      <Button onClick={e => createHandler(0)} variant='contained' size='small' disabled={isDisable}>
                         Save as Draft
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
-                      <Button
-                        onClick={e => createHandler(1, auditId, questionId, questionDetailId)}
-                        variant='contained'
-                        size='small'
-                        disabled={isDisable}
-                      >
+                      <Button onClick={e => createHandler(1)} variant='contained' size='small' disabled={isDisable}>
                         Submit for approval
                         {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
                       </Button>
