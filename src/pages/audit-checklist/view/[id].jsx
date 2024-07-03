@@ -206,7 +206,7 @@ const AuditIsoViewPage = () => {
 
   const handleCloseModal = () => setOpenModal(false)
 
-  const createHandler = async () => {
+  const createHandler = async is_submit => {
     setIsDisable(true)
 
     const formData = new FormData()
@@ -289,6 +289,8 @@ const AuditIsoViewPage = () => {
         .post('/web/approval/approval-note-store', dataForm, {})
         .then(res => {
           resolve('success')
+          handleCloseModal();
+          getQuestionDetail(question_uid, audit_uid)
         })
         .catch(error => {
           console.log(error)

@@ -49,15 +49,15 @@ var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
 })
 
 const schema = yup.object().shape({
-  project_name: yup.string().required('Project Name is a required field'),
+  project_name: yup.string().required('Finding is a required field'),
   company: yup.string().required('Company is a required field'),
   finding: yup.string().required('Finding is a required field'),
   recommendation: yup.string().required('Recommendation is a required field'),
   risk: yup.string().required('Risk is a required field'),
   due_date: yup.string().required('Due Date is a required field'),
   project_date: yup.string().required('Project Date is a required field'),
-  project_location: yup.string().required('Department is a required field'),
-  is_she: yup.string().required('SHE is a required field')
+  project_location: yup.string().required('Department is a required field')
+  // is_she: yup.string().required('SHE is a required field')
 })
 
 const videoConstraints = {
@@ -248,7 +248,8 @@ const SurveillanceForm = props => {
             risk,
             recommendation,
             finding,
-            is_she: sheId && sheId.id
+            // is_she: sheId && sheId.id
+            is_she: 1
           },
           dataImage
         )
@@ -407,7 +408,7 @@ const SurveillanceForm = props => {
                       onChange={fieldHandler}
                       fullWidth
                       name='project_name'
-                      label='Project Name'
+                      label='Finding'
                       size='small'
                       InputLabelProps={{ shrink: true }}
                       error={Boolean(errors.project_name)}
@@ -466,7 +467,8 @@ const SurveillanceForm = props => {
                       )}
                     </FormControl>
                   </Grid>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={6} xs={12}></Grid>
+                  {/* <Grid item md={6} xs={12}>
                     <FormControl fullWidth>
                       <Autocomplete
                         size='small'
@@ -491,7 +493,7 @@ const SurveillanceForm = props => {
                         <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
                       )}
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
                   <Grid item md={6} xs={12}>
                     <TextField
                       {...register('project_date')}
@@ -520,7 +522,7 @@ const SurveillanceForm = props => {
                       helperText={errors.due_date && errors.due_date.message}
                     />
                   </Grid>
-                  <Grid item md={6} xs={12}>
+                  {/* <Grid item md={6} xs={12}>
                     <InputLabel sx={{ mb: 2 }}>
                       <Typography variant='body1'>Finding</Typography>
                     </InputLabel>
@@ -538,7 +540,7 @@ const SurveillanceForm = props => {
                         <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
                       )}
                     </FormControl>
-                  </Grid>
+                  </Grid> */}
                   <Grid item md={6} xs={12}>
                     <InputLabel sx={{ mb: 2 }}>
                       <Typography variant='body1'>Risk</Typography>

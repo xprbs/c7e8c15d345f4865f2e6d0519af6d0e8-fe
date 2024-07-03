@@ -244,7 +244,7 @@ const SurveillancePage = () => {
       flex: 1,
       minWidth: 100,
       field: 'project_name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Name</Typography>
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Finding</Typography>
     },
     {
       flex: 0.5,
