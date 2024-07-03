@@ -289,7 +289,7 @@ const AuditIsoViewPage = () => {
         .post('/web/approval/approval-note-store', dataForm, {})
         .then(res => {
           resolve('success')
-          handleCloseModal();
+          handleCloseModal()
           getQuestionDetail(question_uid, audit_uid)
         })
         .catch(error => {
@@ -672,46 +672,50 @@ const AuditIsoViewPage = () => {
                         )}
                       </DialogContent>
                     )}
-                    <FormControl fullWidth>
-                      <TextField
-                        name={'note_description'}
-                        value={noteDescription}
-                        multiline
-                        rows={3}
-                        fullWidth
-                        label='Note'
-                        size='small'
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ minWidth: 320, mt: 2 }}
-                        onChange={e => {
-                          // console.log(e.target.value)
-                          setNoteDescription(e.target.value)
-                        }}
-                      />
-                    </FormControl>
-                    <Grid item sx={{ mt: 4, mb: 4, ml: 4 }}>
-                      <Box
-                        sx={{
-                          gap: 5,
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          alignItems: 'center',
-                          justifyContent: 'left'
-                        }}
-                      >
-                        <Button
-                          onClick={e => createHandlerMassage(auditId, questionId, questionDetailId)}
-                          variant='contained'
-                          size='small'
-                          disabled={isDisable}
-                        >
-                          Save
-                          {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-                        </Button>
-                        <Button size='small' onClick={handleCloseModal}>
-                          Cancel
-                        </Button>
-                      </Box>
+                    <Grid>
+                      <Grid sx={{ p: 4 }}>
+                        <FormControl fullWidth>
+                          <TextField
+                            name={'note_description'}
+                            value={noteDescription}
+                            multiline
+                            rows={3}
+                            fullWidth
+                            label='Note'
+                            size='small'
+                            InputLabelProps={{ shrink: true }}
+                            sx={{ minWidth: 320, mt: 2 }}
+                            onChange={e => {
+                              // console.log(e.target.value)
+                              setNoteDescription(e.target.value)
+                            }}
+                          />
+                        </FormControl>
+                        <Grid item sx={{ mt: 4 }}>
+                          <Box
+                            sx={{
+                              gap: 5,
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              alignItems: 'center',
+                              justifyContent: 'left'
+                            }}
+                          >
+                            <Button
+                              onClick={e => createHandlerMassage(auditId, questionId, questionDetailId)}
+                              variant='contained'
+                              size='small'
+                              disabled={isDisable}
+                            >
+                              Save
+                              {isDisable && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+                            </Button>
+                            <Button size='small' onClick={handleCloseModal}>
+                              Cancel
+                            </Button>
+                          </Box>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Dialog>
                   <Grid item sx={{ mt: 4 }}>
