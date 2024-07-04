@@ -49,15 +49,15 @@ var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
 })
 
 const schema = yup.object().shape({
-  project_name: yup.string().required('Project Name is a required field'),
+  project_name: yup.string().required('Finding is a required field'),
   company: yup.string().required('Company is a required field'),
   finding: yup.string().required('Finding is a required field'),
   recommendation: yup.string().required('Recommendation is a required field'),
   risk: yup.string().required('Risk is a required field'),
   due_date: yup.string().required('Due Date is a required field'),
   project_date: yup.string().required('Project Date is a required field'),
-  project_location: yup.string().required('Department is a required field'),
-  is_she: yup.string().required('SHE is a required field')
+  project_location: yup.string().required('Department is a required field')
+  // is_she: yup.string().required('SHE is a required field')
 })
 
 const videoConstraints = {
@@ -248,7 +248,8 @@ const SurveillanceForm = props => {
             risk,
             recommendation,
             finding,
-            is_she: sheId && sheId.id
+            // is_she: sheId && sheId.id
+            is_she: 1
           },
           dataImage
         )
@@ -288,193 +289,6 @@ const SurveillanceForm = props => {
         </Grid>
       </Modal>
       <Grid container xs={12} spacing={6}>
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title={null} />
-            <CardContent>
-              <Grid container spacing={8}>
-                <Grid container item md={12} xs={12} spacing={5}>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      {...register('project_name')}
-                      onChange={fieldHandler}
-                      fullWidth
-                      name='project_name'
-                      label='Project Name'
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.project_name)}
-                      helperText={errors.project_name && errors.project_name.message}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        size='small'
-                        options={company}
-                        fullWidth
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            {...register('company')}
-                            label='Company'
-                            InputLabelProps={{ shrink: true }}
-                            error={Boolean(errors.company)}
-                          />
-                        )}
-                        onChange={(event, newValue) => {
-                          setCompanyId(newValue)
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        value={companyId}
-                      />
-                      {errors.company && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        size='small'
-                        options={department}
-                        fullWidth
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            {...register('project_location')}
-                            label='PIC Department'
-                            InputLabelProps={{ shrink: true }}
-                            error={Boolean(errors.project_location)}
-                          />
-                        )}
-                        onChange={(event, newValue) => {
-                          setLocationId(newValue)
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        value={locationId}
-                      />
-                      {errors.project_location && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        size='small'
-                        options={dataSHE}
-                        fullWidth
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            {...register('is_she')}
-                            label='SHE'
-                            InputLabelProps={{ shrink: true }}
-                            error={Boolean(errors.is_she)}
-                          />
-                        )}
-                        onChange={(event, newValue) => {
-                          setSHE(newValue)
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        value={sheId}
-                      />
-                      {errors.is_she && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      {...register('project_date')}
-                      onChange={fieldHandler}
-                      fullWidth
-                      name='project_date'
-                      label='Project Date'
-                      size='small'
-                      type='date'
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.project_date)}
-                      helperText={errors.project_date && errors.project_date.message}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <TextField
-                      {...register('due_date')}
-                      onChange={fieldHandler}
-                      fullWidth
-                      name='due_date'
-                      label='Due Date'
-                      size='small'
-                      type='date'
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.due_date)}
-                      helperText={errors.due_date && errors.due_date.message}
-                    />
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <InputLabel sx={{ mb: 2 }}>
-                      <Typography variant='body1'>Finding</Typography>
-                    </InputLabel>
-                    <FormControl fullWidth>
-                      <Editor
-                        {...register('finding')}
-                        name={'finding'}
-                        initData={''}
-                        onCKChange={data => {
-                          setFinding(data)
-                          setValue('finding', data)
-                        }}
-                      />
-                      {errors.finding && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <InputLabel sx={{ mb: 2 }}>
-                      <Typography variant='body1'>Risk</Typography>
-                    </InputLabel>
-                    <FormControl fullWidth>
-                      <Editor
-                        {...register('risk')}
-                        name={'risk'}
-                        initData={''}
-                        onCKChange={data => {
-                          setRisk(data)
-                          setValue('risk', data)
-                        }}
-                      />
-                      {errors.risk && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.risk.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item md={6} xs={12}>
-                    <InputLabel sx={{ mb: 2 }}>
-                      <Typography variant='body1'>Recommendation</Typography>
-                    </InputLabel>
-                    <FormControl fullWidth>
-                      <Editor
-                        {...register('recommendation')}
-                        name={'recommendation'}
-                        initData={''}
-                        onCKChange={data => {
-                          setRecommendation(data)
-                          setValue('recommendation', data)
-                        }}
-                      />
-                      {errors.recommendation && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.recommendation.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
         <Grid item xs={12}>
           <Card>
             <CardHeader title={'Location'} />
@@ -577,6 +391,196 @@ const SurveillanceForm = props => {
                   <TableBody>{listImage}</TableBody>
                 </Table>
               </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container xs={12} spacing={6} marginTop={2}>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title={null} />
+            <CardContent>
+              <Grid container spacing={8}>
+                <Grid container item md={12} xs={12} spacing={5}>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('project_name')}
+                      onChange={fieldHandler}
+                      fullWidth
+                      name='project_name'
+                      label='Finding'
+                      size='small'
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.project_name)}
+                      helperText={errors.project_name && errors.project_name.message}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={company}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('company')}
+                            label='Company'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.company)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setCompanyId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={companyId}
+                      />
+                      {errors.company && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.company.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={department}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('project_location')}
+                            label='PIC Department'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.project_location)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setLocationId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={locationId}
+                      />
+                      {errors.project_location && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.project_location.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}></Grid>
+                  {/* <Grid item md={6} xs={12}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={dataSHE}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('is_she')}
+                            label='SHE'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.is_she)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setSHE(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={sheId}
+                      />
+                      {errors.is_she && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.is_she.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid> */}
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('project_date')}
+                      onChange={fieldHandler}
+                      fullWidth
+                      name='project_date'
+                      label='Project Date'
+                      size='small'
+                      type='date'
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.project_date)}
+                      helperText={errors.project_date && errors.project_date.message}
+                    />
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <TextField
+                      {...register('due_date')}
+                      onChange={fieldHandler}
+                      fullWidth
+                      name='due_date'
+                      label='Due Date'
+                      size='small'
+                      type='date'
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.due_date)}
+                      helperText={errors.due_date && errors.due_date.message}
+                    />
+                  </Grid>
+                  {/* <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Finding</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('finding')}
+                        name={'finding'}
+                        initData={''}
+                        onCKChange={data => {
+                          setFinding(data)
+                          setValue('finding', data)
+                        }}
+                      />
+                      {errors.finding && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.finding.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid> */}
+                  <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Risk</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('risk')}
+                        name={'risk'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRisk(data)
+                          setValue('risk', data)
+                        }}
+                      />
+                      {errors.risk && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.risk.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12}>
+                    <InputLabel sx={{ mb: 2 }}>
+                      <Typography variant='body1'>Recommendation</Typography>
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Editor
+                        {...register('recommendation')}
+                        name={'recommendation'}
+                        initData={''}
+                        onCKChange={data => {
+                          setRecommendation(data)
+                          setValue('recommendation', data)
+                        }}
+                      />
+                      {errors.recommendation && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.recommendation.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
