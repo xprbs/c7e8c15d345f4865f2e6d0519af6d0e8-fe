@@ -37,7 +37,7 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import MuiTimeline from '@mui/lab/Timeline'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
 import dynamic from 'next/dynamic'
@@ -49,6 +49,7 @@ const QuestionDetailView = props => {
   const { id } = props
 
   const [skeleton, setSkeleton] = useState(true)
+  const [skeleton2, setSkeleton2] = useState(true)
   const [questionDetail, setQuestionDetail] = useState([])
   const [auditId, setAuditId] = useState(null)
   const [questionId, setQuestionId] = useState(null)
@@ -131,6 +132,44 @@ const QuestionDetailView = props => {
     })
   }
 
+  const removeFileAPI = async id => {
+    const myPromise = new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/delete-file',
+          JSON.stringify({
+            id: id ?? null
+          })
+        )
+        .then(res => {
+          getQuestionDetail(detail.question_uid, detail.audit_uid)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+        .finally(e => setSkeleton2(false))
+    })
+
+    toast.promise(myPromise, {
+      loading: 'Loading',
+      success: 'Successfully delete',
+      error: error => {
+        if (error.response.status === 500) return error.response.data.response
+
+        return 'Something error'
+      }
+    })
+  }
+
+  const handleChange = (e, i) => {
+    const { name, value } = e.target
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[i][name] = value
+    setSelectedDetail(onChangeValue)
+  }
+
   useEffect(() => {
     setSelectedDetail([])
     questionDetail.map((row, i) => {
@@ -162,6 +201,42 @@ const QuestionDetailView = props => {
   var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
     ssr: false
   })
+
+  const onChangeUploadFile = (e, i) => {
+    // for (const file of e.target.files) {
+    //   setImgsSrc(imgs => [...imgs, file])
+    // }
+
+    const data = []
+    for (let i = 0; i < e.target.files.length; i++) {
+      data.push(e.target.files[i])
+    }
+
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[i]['file_uploads'] = [...(onChangeValue[i]['file_uploads'] || []), ...data]
+
+    setSelectedDetail(onChangeValue)
+    console.log(onChangeValue)
+  }
+
+  const clearUploadFile = () => {
+    const onChangeValue = [...selectedDetail]
+
+    const onChangeValues = onChangeValue.map(d => {
+      d.file_uploads = []
+
+      return d
+    })
+
+    setSelectedDetail(onChangeValues)
+  }
+
+  const removeFile = (index, i) => {
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[index]['file_uploads'] = onChangeValue[index]['file_uploads'].filter((d, ind) => ind !== i)
+
+    setSelectedDetail(onChangeValue)
+  }
 
   const handleClickOpenModal = (audit_uid, question_uid, question_detail_uid) => {
     setOpenModal(true)
@@ -322,6 +397,7 @@ const QuestionDetailView = props => {
                                           value={row.question_answer_key}
                                           label={row.question_answer_description}
                                           control={<Radio color={row.color} />}
+                                          onChange={e => handleChange(e, index)}
                                         />
                                       ))}
                                     </RadioGroup>
@@ -332,16 +408,16 @@ const QuestionDetailView = props => {
                                       fullWidth
                                       label='Note'
                                       size='small'
-                                      InputProps={{
-                                        readOnly: true
-                                      }}
+                                      // InputProps={{
+                                      //   readOnly: true
+                                      // }}
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
                                       defaultValue={selectedDetail
                                         .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
                                     />
-                                    <Grid sx={{ p: 2, py: 3 }}>
+                                    {/* <Grid sx={{ p: 2, py: 3 }}>
                                       <Badge
                                         badgeContent={data.count_note}
                                         color={'error'}
@@ -352,8 +428,8 @@ const QuestionDetailView = props => {
                                       >
                                         <Icon icon='tabler:message-dots' />
                                       </Badge>
-                                    </Grid>
-                                    {data.files.map((d, id) => (
+                                    </Grid> */}
+                                    {/* {data.files.map((d, id) => (
                                       <Grid sx={{ p: 2, py: 3 }} key={id}>
                                         <a
                                           href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
@@ -363,7 +439,77 @@ const QuestionDetailView = props => {
                                           {d.filename}
                                         </a>
                                       </Grid>
-                                    ))}
+                                    ))} */}
+                                    <Grid item sx={{ textAlign: 'right' }}>
+                                      {/* <Button
+                                        component='label'
+                                        role={undefined}
+                                        variant='contained'
+                                        tabIndex={-1}
+                                        startIcon={<Icon icon={'material-symbols:upload'} />}
+                                        size='small'
+                                        sx={{ marginTop: 5 }}
+                                      >
+                                        Upload file
+                                        <input
+                                          hidden
+                                          onChange={e => onChangeUploadFile(e, index)}
+                                          type='file'
+                                          name='file'
+                                          multiple
+                                        />
+                                      </Button> */}
+                                      <Grid sx={{ p: 2, py: 3 }}>
+                                        <Badge
+                                          badgeContent={data.count_note}
+                                          color={'error'}
+                                          onClick={() =>
+                                            handleClickOpenModal(auditId, questionId, data.question_detail_uid)
+                                          }
+                                          sx={{ cursor: 'pointer' }}
+                                        >
+                                          <Icon icon='tabler:message-dots' />
+                                        </Badge>
+                                      </Grid>
+                                      <Table cellpadding='3'>
+                                        {data.files &&
+                                          data.files.map((d, i) => (
+                                            <tr key={i}>
+                                              <td valign='middle'>
+                                                <a
+                                                  href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
+                                                  target='_blank'
+                                                  rel='noopener noreferrer'
+                                                >
+                                                  {d.filename}
+                                                </a>
+                                              </td>
+                                              {/* <td>
+                                                <Icon
+                                                  onClick={() => removeFileAPI(d.id)}
+                                                  icon={'material-symbols:delete'}
+                                                  color='red'
+                                                  className='cursor-pointer'
+                                                />
+                                              </td> */}
+                                            </tr>
+                                          ))}
+                                        {selectedDetail[index].file_uploads &&
+                                          selectedDetail[index].file_uploads.map((d, i) => (
+                                            <tr key={i}>
+                                              <td valign='middle'>{d.name}</td>
+                                              <td>
+                                                <Icon
+                                                  onClick={() => removeFile(index, i)}
+                                                  icon={'material-symbols:delete'}
+                                                  color='orange'
+                                                  sx={{ cursor: 'pointer' }}
+                                                />
+                                              </td>
+                                            </tr>
+                                          ))}
+                                      </Table>
+                                    </Grid>
                                   </Box>
                                 ) : (
                                   <Grid
