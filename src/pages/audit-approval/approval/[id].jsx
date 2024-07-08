@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
@@ -37,15 +37,40 @@ const AuditApproval = () => {
   const [isDisable, setIsDisable] = useState(false)
   const [isDisableReject, setIsDisableReject] = useState(false)
   const [isDisableApprove, setIsDisableApprove] = useState(false)
+  const [selectedDetail, setSelectedDetail] = useState([])
+  const [questionUid, setQuestionUid] = useState([])
   const [note, setNote] = useState()
 
-  const approveHandler = async => {
+  useEffect(() => {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post(
+          '/web/audit-checklist/get-detail',
+          JSON.stringify({
+            id: id
+          })
+        )
+        .then(res => {
+          resolve('success')
+          setQuestionUid(res.data.data.question_uid)
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const approveHandler = async () => {
     setIsDisable(true)
     setIsDisableApprove(true)
 
     const dataForm = JSON.stringify({
+      question_uid: questionUid,
       audit_uid: id,
-      note: note
+      note: note,
+      details: selectedDetail
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -76,13 +101,15 @@ const AuditApproval = () => {
     })
   }
 
-  const rejectHandler = async => {
+  const rejectHandler = async () => {
     setIsDisable(true)
     setIsDisableReject(true)
 
     const dataForm = JSON.stringify({
+      question_uid: questionUid,
       audit_uid: id,
-      note: note
+      note: note,
+      details: selectedDetail
     })
 
     const myPromise = new Promise((resolve, reject) => {
@@ -121,7 +148,12 @@ const AuditApproval = () => {
       <AuditInfo id={id} />
       <AuditorAuditee id={id} />
       <ApprovalList id={id} />
-      <QuestionDetailView id={id} />
+      <QuestionDetailView
+        id={id}
+        selectedDetail={selectedDetail}
+        setSelectedDetail={setSelectedDetail}
+        readonly={false}
+      />
 
       <Grid item md={12} xs={12}>
         <Card>
