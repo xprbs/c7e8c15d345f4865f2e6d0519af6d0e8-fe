@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
@@ -15,6 +15,7 @@ import AuditorAuditee from 'src/views/pages/audit/AuditorAuditee'
 const AuditResultView = () => {
   const router = useRouter()
   const { id } = router.query
+  const [selectedDetail, setSelectedDetail] = useState([])
 
   return (
     <Grid container spacing={6}>
@@ -24,7 +25,12 @@ const AuditResultView = () => {
       <AuditInfo id={id} />
       <AuditorAuditee id={id} />
       <ApprovalList id={id} />
-      <QuestionDetailView id={id} />
+      <QuestionDetailView
+        id={id}
+        readonly={true}
+        selectedDetail={selectedDetail}
+        setSelectedDetail={setSelectedDetail}
+      />
 
       <Grid item xs={12}>
         <Card>
