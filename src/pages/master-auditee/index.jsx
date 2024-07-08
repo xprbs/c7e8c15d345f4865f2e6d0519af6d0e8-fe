@@ -35,14 +35,14 @@ import {
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
+// ** Custom Components Imports
+import PageHeader from 'src/@core/components/page-header'
+import Link from 'next/link'
+
 // ** Third Party Imports
 import * as yup from 'yup'
 import { useForm, setValue, reset } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-
-// ** Custom Components Imports
-import PageHeader from 'src/@core/components/page-header'
-import Link from 'next/link'
 
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
@@ -50,11 +50,11 @@ import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
 
 const schema = yup.object().shape({
-  audit_category_ref: yup.string().required('Audit Category Reference is a required field'),
-  audit_category: yup.string().required('Audit Category is a required field')
+  auditee_name: yup.string().required('Auditee Name is a required field')
+  //   auditee_category: yup.string().required('Auditee Category is a required field')
 })
 
-const AuditCategoryRefPage = () => {
+const AuditCategoryPage = () => {
   const [data, setData] = useState({
     loading: true,
     rows: [],
@@ -68,26 +68,27 @@ const AuditCategoryRefPage = () => {
   })
 
   const [openDialogAdd, setOpenDialogAdd] = useState(false)
-  const [dataDelete, setDataDelete] = useState({})
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+  const [dataUpdate, setDataUpdate] = useState({})
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isLoadingCreate, setIsLoadingCreate] = useState(false)
   const [createData, setCreateData] = useState('')
-  const [isDisable, setIsDisable] = useState(false)
-  const [auditcategory, setAuditCategory] = useState([])
-  const [auditcategoryId, setAuditCategoryId] = useState(null)
+  //   const [auditeecategory, setAuditeeCategory] = useState(null)
+  //   const [auditeecategoryId, setAuditeeCategoryId] = useState(null)
+  const [auditeename, setAuditeeName] = useState(null)
+  const [auditeenameId, setAuditeeNameId] = useState(null)
 
   const router = useRouter()
 
   const updateData = (k, v) => setData(prev => ({ ...prev, [k]: v }))
 
-  const handleDialogToggleDelete = data => {
-    setDataDelete(data)
-    setIsLoadingDelete(false)
+  const handleDialogToggleUpdate = data => {
+    setDataUpdate(data)
+    setIsLoadingUpdate(false)
     setOpenDialogAdd(!openDialogAdd)
   }
 
-  const handleDialogToggleDeleteClose = () => {
-    setIsLoadingDelete(false)
+  const handleDialogToggleUpdateClose = () => {
+    setIsLoadingUpdate(false)
     setOpenDialogAdd(!openDialogAdd)
   }
 
@@ -96,31 +97,33 @@ const AuditCategoryRefPage = () => {
     updateData('page', 1)
   }, [])
 
-  const deleteHandler = e => {
+  const updateHandler = e => {
     e.preventDefault()
-    setIsLoadingDelete(true)
+      setIsLoadingUpdate(true)
+      
+      console.log('dataUpdate', dataUpdate);
 
     const dataForm = JSON.stringify({
-      row_id: dataDelete.row_id
+      row_id: dataUpdate.row_id
     })
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/audit-category-ref/delete', dataForm)
+        .post('/web/master/auditee/update', dataForm)
         .then(res => {
           resolve('success')
-          handleDialogToggleDeleteClose()
+          handleDialogToggleUpdateClose()
           updateData('reload', !data.reload)
         })
         .catch(error => {
           reject(error)
-          handleDialogToggleDeleteClose()
+          handleDialogToggleUpdateClose()
         })
     })
 
     toast.promise(myPromise, {
       loading: 'Loading',
-      success: 'Successfully delete data',
+      success: 'Successfully update data',
       error: error => {
         if (error.response.status === 500) return error.response.data.response
 
@@ -138,23 +141,24 @@ const AuditCategoryRefPage = () => {
     resolver: yupResolver(schema)
   })
 
-  async function createHandler() {
-    setIsDisable(true)
+  const createHandler = e => {
+    e.preventDefault()
+    setIsLoadingCreate(true)
 
     const dataForm = JSON.stringify({
-      audit_category_ref: createData,
-      audit_category: auditcategoryId?.id
+      auditee_name: auditeenameId?.id
+      //   auditee_category: auditeecategoryId?.id
     })
 
     const createPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/audit-category-ref/store', dataForm)
+        .post('/web/master/auditee/store', dataForm)
         .then(res => {
           resolve('success')
           updateData('reload', !data.reload)
-          setAuditCategoryId(null)
-          setCreateData(null)
-          reset()
+          setCreateData('')
+          //   setAuditeeCategoryId(null)
+          setAuditeeNameId(null)
         })
         .catch(error => {
           reject(error)
@@ -188,7 +192,7 @@ const AuditCategoryRefPage = () => {
       })
 
       await backendApi
-        .post('/web/master/audit-category-ref/list', dataForm)
+        .post('/web/master/auditee/list', dataForm)
         .then(response => {
           updateData('rowCount', response.data.total)
           setTimeout(() => {
@@ -220,8 +224,15 @@ const AuditCategoryRefPage = () => {
     {
       flex: 3,
       minWidth: 100,
-      field: 'value1',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Audit Category Reference</Typography>
+      field: 'username',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Auditee Name</Typography>
+    },
+    {
+      flex: 3,
+      minWidth: 100,
+      field: 'key2',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Is Active</Typography>,
+      renderCell: params => <Typography>{params.value === '1' ? 'Yes' : 'No'}</Typography>
     },
     {
       flex: 0.15,
@@ -233,20 +244,20 @@ const AuditCategoryRefPage = () => {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Actions</Typography>,
       renderCell: ({ row }) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={() => handleDialogToggleDelete(row)}>
-            <Icon icon='mdi:delete-outline' />
+          <IconButton onClick={() => handleDialogToggleUpdate(row)}>
+            <Icon icon='mdi:edit-outline' />
           </IconButton>
         </Box>
       )
     }
   ]
 
-  async function getInit() {
+  async function getInitName() {
     new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/get-audit-category')
+        .post('/web/master/auditee/userlist')
         .then(res => {
-          setAuditCategory(res.data.data)
+          setAuditeeName(res.data.data)
           resolve('success')
         })
         .catch(error => {
@@ -257,70 +268,99 @@ const AuditCategoryRefPage = () => {
   }
 
   useEffect(() => {
-    getInit()
+    getInitName()
   }, [])
+
+  //   async function getInitCategory() {
+  //     new Promise((resolve, reject) => {
+  //       backendApi
+  //         .post('/web/master/auditee/category')
+  //         .then(res => {
+  //           setAuditeeCategory(res.data.data)
+  //           resolve('success')
+  //         })
+  //         .catch(error => {
+  //           console.log(error)
+  //           reject(error)
+  //         })
+  //     })
+  //   }
+
+  //   useEffect(() => {
+  //     getInitCategory()
+  //   }, [])
 
   return (
     <>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <PageHeader title={<Typography variant='h5'>Master Audit Category Reference</Typography>} subtitle={null} />
+          <PageHeader title={<Typography variant='h5'>Master Auditee</Typography>} subtitle={null} />
         </Grid>
         <Grid item xs={12}>
           <Card sx={{ mb: 6 }}>
             <CardHeader title={<Typography variant='h6'>Create</Typography>}></CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit(createHandler)}>
-                <Grid container spacing={6}>
-                  <Grid item xs={9} lg={4}>
-                    <TextField
-                      {...register('audit_category_ref')}
-                      fullWidth
-                      name='audit_category_ref'
-                      placeholder='Audit Category Reference'
-                      label='Audit Category Reference'
+              <Grid container spacing={6}>
+                <Grid item xs={12} md={4}>
+                  <FormControl fullWidth>
+                    <Autocomplete
                       size='small'
-                      value={createData || ''}
-                      onChange={e => setCreateData(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      error={Boolean(errors.audit_category_ref)}
-                      helperText={errors.audit_category_ref && errors.audit_category_ref.message}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        size='small'
-                        options={auditcategory}
-                        fullWidth
-                        renderInput={params => (
-                          <TextField
-                            {...params}
-                            {...register('audit_category')}
-                            label='Audit Category'
-                            placeholder='Audit Category'
-                            InputLabelProps={{ shrink: true }}
-                            error={Boolean(errors.audit_category)}
-                          />
-                        )}
-                        onChange={(event, newValue) => {
-                          setAuditCategoryId(newValue)
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                        value={auditcategoryId}
-                      />
-                      {errors.audit_category && (
-                        <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_category.message}</FormHelperText>
+                      options={auditeename}
+                      fullWidth
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          {...register('auditee_name')}
+                          label='Auditee Name'
+                          placeholder='Auditee Name'
+                          InputLabelProps={{ shrink: true }}
+                          error={Boolean(errors.auditee_name)}
+                        />
                       )}
-                    </FormControl>
-                  </Grid>
-                  <Grid item={true}>
-                    <Button variant='outlined' onClick={createHandler} disabled={isLoadingCreate}>
-                      Create {isLoadingCreate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
-                    </Button>
-                  </Grid>
+                      onChange={(event, newValue) => {
+                        setAuditeeNameId(newValue)
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      value={auditeenameId}
+                    />
+                    {errors.auditee_name && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.auditee_name.message}</FormHelperText>
+                    )}
+                  </FormControl>
                 </Grid>
-              </form>
+                {/* <Grid item xs={12} md={4}>
+                  <FormControl fullWidth>
+                    <Autocomplete
+                      size='small'
+                      options={auditeecategory}
+                      fullWidth
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          {...register('auditee_category')}
+                          label='Auditee Category'
+                          placeholder='Auditee Category'
+                          InputLabelProps={{ shrink: true }}
+                          error={Boolean(errors.auditee_category)}
+                        />
+                      )}
+                      onChange={(event, newValue) => {
+                        setAuditeeCategoryId(newValue)
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      value={auditeecategoryId}
+                    />
+                    {errors.auditee_category && (
+                      <FormHelperText sx={{ color: 'error.main' }}>{errors.auditee_category.message}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid> */}
+                <Grid item={true}>
+                  <Button variant='outlined' onClick={createHandler} disabled={isLoadingCreate}>
+                    Create {isLoadingCreate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+                  </Button>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
           <Card>
@@ -383,40 +423,50 @@ const AuditCategoryRefPage = () => {
         </Grid>
       </Grid>
 
-      <Dialog fullWidth onClose={handleDialogToggleDeleteClose} open={openDialogAdd}>
+      <Dialog fullWidth onClose={handleDialogToggleUpdateClose} open={openDialogAdd}>
         <DialogTitle sx={{ pt: 6, mx: 'auto', textAlign: 'center' }}>
           <Typography variant='h5' component='span' sx={{ mb: 2 }}>
-            Are you sure to delete data ?
+            Are you sure to update data ?
           </Typography>
-          <Typography variant='body2'>After you delete, you can not undo this data.</Typography>
+          <Typography variant='body2'>After you update, you can update data again.</Typography>
         </DialogTitle>
         <DialogContent sx={{ pb: 6, mx: 'auto' }}>
-          <form onSubmit={deleteHandler}>
+          <form onSubmit={updateHandler}>
             <TableContainer sx={{ mb: 6 }}>
               <Table size='small'>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Description</TableCell>
+                    <TableCell>Auditee Name</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow key={dataDelete.row_id}>
-                    <TableCell>{dataDelete.value1}</TableCell>
+                  <TableRow key={dataUpdate.row_id}>
+                    <TableCell>{dataUpdate.username}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
             <Box className='demo-space-x' sx={{ '& > :last-child': { mr: '0 !important', mt: 2 } }}>
-              <Button size='large' type='submit' variant='contained' color='error' disabled={isLoadingDelete}>
-                Delete
-                {isLoadingDelete && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+              {/* <Button size='large' type='submit' variant='contained' color='error' disabled={isLoadingUpdate}>
+                Non Active
+                {isLoadingUpdate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+              </Button> */}
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+                color={dataUpdate.key2 === '1' ? 'error' : 'primary'}
+                disabled={isLoadingUpdate}
+              >
+                {dataUpdate.key2 === '1' ? 'Non Active' : 'Active'}
+                {isLoadingUpdate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
               </Button>
               <Button
                 type='reset'
                 size='large'
                 variant='outlined'
                 color='secondary'
-                onClick={handleDialogToggleDeleteClose}
+                onClick={handleDialogToggleUpdateClose}
               >
                 Cancel
               </Button>
@@ -428,9 +478,9 @@ const AuditCategoryRefPage = () => {
   )
 }
 
-AuditCategoryRefPage.acl = {
+AuditCategoryPage.acl = {
   action: 'manage',
-  subject: 'audit-category-ref'
+  subject: 'audit-category'
 }
 
-export default AuditCategoryRefPage
+export default AuditCategoryPage
