@@ -46,7 +46,7 @@ import dynamic from 'next/dynamic'
 import Icon from 'src/@core/components/icon'
 
 const QuestionDetailView = props => {
-  const { id } = props
+  const { id, selectedDetail, setSelectedDetail, readonly } = props
 
   const [skeleton, setSkeleton] = useState(true)
   const [skeleton2, setSkeleton2] = useState(true)
@@ -56,7 +56,6 @@ const QuestionDetailView = props => {
   const [questionDetailId, setQuestionDetailId] = useState(null)
   const [noteDescription, setNoteDescription] = useState('')
   const [auditAnswer, setAuditAnswer] = useState([])
-  const [selectedDetail, setSelectedDetail] = useState([])
   const [isDisable, setIsDisable] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [note, setNote] = useState([])
@@ -131,38 +130,7 @@ const QuestionDetailView = props => {
         .finally(e => setSkeleton(false))
     })
   }
-
-  const removeFileAPI = async id => {
-    const myPromise = new Promise((resolve, reject) => {
-      backendApi
-        .post(
-          '/web/audit-checklist/delete-file',
-          JSON.stringify({
-            id: id ?? null
-          })
-        )
-        .then(res => {
-          getQuestionDetail(detail.question_uid, detail.audit_uid)
-          resolve('success')
-        })
-        .catch(error => {
-          console.log(error)
-          reject(error)
-        })
-        .finally(e => setSkeleton2(false))
-    })
-
-    toast.promise(myPromise, {
-      loading: 'Loading',
-      success: 'Successfully delete',
-      error: error => {
-        if (error.response.status === 500) return error.response.data.response
-
-        return 'Something error'
-      }
-    })
-  }
-
+  
   const handleChange = (e, i) => {
     const { name, value } = e.target
     const onChangeValue = [...selectedDetail]
@@ -197,39 +165,6 @@ const QuestionDetailView = props => {
       }
     }
   })
-
-  var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
-    ssr: false
-  })
-
-  const onChangeUploadFile = (e, i) => {
-    // for (const file of e.target.files) {
-    //   setImgsSrc(imgs => [...imgs, file])
-    // }
-
-    const data = []
-    for (let i = 0; i < e.target.files.length; i++) {
-      data.push(e.target.files[i])
-    }
-
-    const onChangeValue = [...selectedDetail]
-    onChangeValue[i]['file_uploads'] = [...(onChangeValue[i]['file_uploads'] || []), ...data]
-
-    setSelectedDetail(onChangeValue)
-    console.log(onChangeValue)
-  }
-
-  const clearUploadFile = () => {
-    const onChangeValue = [...selectedDetail]
-
-    const onChangeValues = onChangeValue.map(d => {
-      d.file_uploads = []
-
-      return d
-    })
-
-    setSelectedDetail(onChangeValues)
-  }
 
   const removeFile = (index, i) => {
     const onChangeValue = [...selectedDetail]
@@ -397,7 +332,7 @@ const QuestionDetailView = props => {
                                           value={row.question_answer_key}
                                           label={row.question_answer_description}
                                           control={<Radio color={row.color} />}
-                                          onChange={e => handleChange(e, index)}
+                                          onChange={e => !readonly && handleChange(e, index)}
                                         />
                                       ))}
                                     </RadioGroup>
@@ -408,57 +343,17 @@ const QuestionDetailView = props => {
                                       fullWidth
                                       label='Note'
                                       size='small'
-                                      // InputProps={{
-                                      //   readOnly: true
-                                      // }}
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
+                                      onChange={e => handleChange(e, index)}
+                                      InputProps={{
+                                        readOnly: readonly
+                                      }}
                                       defaultValue={selectedDetail
                                         .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
                                     />
-                                    {/* <Grid sx={{ p: 2, py: 3 }}>
-                                      <Badge
-                                        badgeContent={data.count_note}
-                                        color={'error'}
-                                        onClick={() =>
-                                          handleClickOpenModal(auditId, questionId, data.question_detail_uid)
-                                        }
-                                        sx={{ cursor: 'pointer' }}
-                                      >
-                                        <Icon icon='tabler:message-dots' />
-                                      </Badge>
-                                    </Grid> */}
-                                    {/* {data.files.map((d, id) => (
-                                      <Grid sx={{ p: 2, py: 3 }} key={id}>
-                                        <a
-                                          href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
-                                          target='_blank'
-                                          rel='noopener noreferrer'
-                                        >
-                                          {d.filename}
-                                        </a>
-                                      </Grid>
-                                    ))} */}
                                     <Grid item sx={{ textAlign: 'right' }}>
-                                      {/* <Button
-                                        component='label'
-                                        role={undefined}
-                                        variant='contained'
-                                        tabIndex={-1}
-                                        startIcon={<Icon icon={'material-symbols:upload'} />}
-                                        size='small'
-                                        sx={{ marginTop: 5 }}
-                                      >
-                                        Upload file
-                                        <input
-                                          hidden
-                                          onChange={e => onChangeUploadFile(e, index)}
-                                          type='file'
-                                          name='file'
-                                          multiple
-                                        />
-                                      </Button> */}
                                       <Grid sx={{ p: 2, py: 3 }}>
                                         <Badge
                                           badgeContent={data.count_note}
@@ -484,14 +379,6 @@ const QuestionDetailView = props => {
                                                   {d.filename}
                                                 </a>
                                               </td>
-                                              {/* <td>
-                                                <Icon
-                                                  onClick={() => removeFileAPI(d.id)}
-                                                  icon={'material-symbols:delete'}
-                                                  color='red'
-                                                  className='cursor-pointer'
-                                                />
-                                              </td> */}
                                             </tr>
                                           ))}
                                         {selectedDetail[index].file_uploads &&
