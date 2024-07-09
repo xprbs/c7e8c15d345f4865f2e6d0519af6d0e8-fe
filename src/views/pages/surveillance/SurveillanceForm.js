@@ -57,7 +57,6 @@ const schema = yup.object().shape({
   due_date: yup.string().required('Due Date is a required field'),
   project_date: yup.string().required('Project Date is a required field'),
   project_location: yup.string().required('Department is a required field')
-  // is_she: yup.string().required('SHE is a required field')
 })
 
 const videoConstraints = {
@@ -248,7 +247,6 @@ const SurveillanceForm = props => {
             risk,
             recommendation,
             finding,
-            // is_she: sheId && sheId.id
             is_she: 1
           },
           dataImage

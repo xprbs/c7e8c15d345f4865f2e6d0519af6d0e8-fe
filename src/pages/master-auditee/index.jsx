@@ -51,7 +51,6 @@ import { backendApi } from 'src/configs/axios'
 
 const schema = yup.object().shape({
   auditee_name: yup.string().required('Auditee Name is a required field')
-  //   auditee_category: yup.string().required('Auditee Category is a required field')
 })
 
 const AuditCategoryPage = () => {
@@ -72,8 +71,6 @@ const AuditCategoryPage = () => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isLoadingCreate, setIsLoadingCreate] = useState(false)
   const [createData, setCreateData] = useState('')
-  //   const [auditeecategory, setAuditeeCategory] = useState(null)
-  //   const [auditeecategoryId, setAuditeeCategoryId] = useState(null)
   const [auditeename, setAuditeeName] = useState(null)
   const [auditeenameId, setAuditeeNameId] = useState(null)
 
@@ -147,7 +144,6 @@ const AuditCategoryPage = () => {
 
     const dataForm = JSON.stringify({
       auditee_name: auditeenameId?.id
-      //   auditee_category: auditeecategoryId?.id
     })
 
     const createPromise = new Promise((resolve, reject) => {
@@ -157,7 +153,6 @@ const AuditCategoryPage = () => {
           resolve('success')
           updateData('reload', !data.reload)
           setCreateData('')
-          //   setAuditeeCategoryId(null)
           setAuditeeNameId(null)
         })
         .catch(error => {
