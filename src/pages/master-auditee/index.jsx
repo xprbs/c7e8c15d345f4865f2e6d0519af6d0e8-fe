@@ -97,8 +97,6 @@ const AuditCategoryPage = () => {
   const updateHandler = e => {
     e.preventDefault()
       setIsLoadingUpdate(true)
-      
-      console.log('dataUpdate', dataUpdate);
 
     const dataForm = JSON.stringify({
       row_id: dataUpdate.row_id

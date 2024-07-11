@@ -45,6 +45,10 @@ import dynamic from 'next/dynamic'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
+
 const QuestionDetailView = props => {
   const { id, selectedDetail, setSelectedDetail, readonly } = props
 
@@ -130,7 +134,7 @@ const QuestionDetailView = props => {
         .finally(e => setSkeleton(false))
     })
   }
-  
+
   const handleChange = (e, i) => {
     const { name, value } = e.target
     const onChangeValue = [...selectedDetail]
@@ -336,6 +340,20 @@ const QuestionDetailView = props => {
                                         />
                                       ))}
                                     </RadioGroup>
+                                    {/* <Editor
+                                      name={'answer_description'}
+                                      initData={''}
+                                      onCKChange={data => {
+                                        console.log(data)
+                                        setNoteDescription('manual')
+                                      }}
+                                      InputProps={{
+                                        readOnly: readonly
+                                      }}
+                                      defaultValue={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                        .join('')}
+                                    /> */}
                                     <TextField
                                       name={'answer_description'}
                                       multiline
@@ -496,7 +514,6 @@ const QuestionDetailView = props => {
                   setNoteDescription('manual')
                 }}
               /> */}
-
               <TextField
                 name={'note_description'}
                 value={noteDescription}

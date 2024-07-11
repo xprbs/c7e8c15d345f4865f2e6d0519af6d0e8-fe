@@ -52,54 +52,43 @@ const QuestionTemplatePage = () => {
   })
 
   const [openDialogAdd, setOpenDialogAdd] = useState(false)
-  const [dataDelete, setDataDelete] = useState({})
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+  const [dataUpdate, setDataUpdate] = useState({})
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
 
   const router = useRouter()
 
   const updateData = (k, v) => setData(prev => ({ ...prev, [k]: v }))
-
-  const handleDialogToggleDelete = data => {
-    setDataDelete(data)
-    setIsLoadingDelete(false)
-    setOpenDialogAdd(!openDialogAdd)
-  }
-
-  const handleDialogToggleDeleteClose = () => {
-    setIsLoadingDelete(false)
-    setOpenDialogAdd(!openDialogAdd)
-  }
 
   const handleFilter = useCallback(val => {
     updateData('filterData', val)
     updateData('page', 1)
   }, [])
 
-  const deleteHandler = e => {
+  const updateHandler = e => {
     e.preventDefault()
-    setIsLoadingDelete(true)
+    setIsLoadingUpdate(true)
 
     const dataForm = JSON.stringify({
-      row_id: dataDelete.acl_subject
+      row_id: dataUpdate.row_id
     })
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/master/question-template/delete', dataForm)
+        .post('/web/master/question-template/update', dataForm)
         .then(res => {
           resolve('success')
-          handleDialogToggleDeleteClose()
+          handleDialogToggleUpdateClose()
           updateData('reload', !data.reload)
         })
         .catch(error => {
           reject(error)
-          handleDialogToggleDeleteClose()
+          handleDialogToggleUpdateClose()
         })
     })
 
     toast.promise(myPromise, {
       loading: 'Loading',
-      success: 'Successfully delete data',
+      success: 'Successfully update data',
       error: error => {
         if (error.response.status === 500) return error.response.data.response
 
@@ -142,6 +131,17 @@ const QuestionTemplatePage = () => {
     router.push(`/question-template/set-detail/${e.question_uid}`)
   }
 
+  const handleDialogToggleUpdate = e => {
+    setDataUpdate(e)
+    setIsLoadingUpdate(false)
+    setOpenDialogAdd(!openDialogAdd)
+  }
+
+  const handleDialogToggleUpdateClose = () => {
+    setIsLoadingUpdate(false)
+    setOpenDialogAdd(!openDialogAdd)
+  }
+
   const RowOptions = ({ data }) => {
     // ** State
     const [anchorEl, setAnchorEl] = useState(null)
@@ -181,13 +181,9 @@ const QuestionTemplatePage = () => {
             <Icon icon='lucide:settings-2' fontSize={20} />
             Set Detail Question
           </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='material-symbols:edit-document-outline' fontSize={20} />
-            Edit
-          </MenuItem>
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='mingcute:delete-2-line' fontSize={20} />
-            Delete
+          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleDialogToggleUpdate(data)}>
+            <Icon icon='mingcute:flag-1-fill' fontSize={20} />
+            Change Isactive
           </MenuItem>
         </Menu>
       </>
@@ -234,6 +230,13 @@ const QuestionTemplatePage = () => {
       minWidth: 100,
       field: 'question_ref',
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Refrence</Typography>
+    },
+    {
+      flex: 0.5,
+      minWidth: 100,
+      field: 'inactive',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Is Active</Typography>,
+      renderCell: params => <Typography>{params.value === '1' ? 'YES' : 'NO'}</Typography>
     },
     {
       flex: 0.15,
@@ -334,43 +337,46 @@ const QuestionTemplatePage = () => {
           </Card>
         </Grid>
       </Grid>
-
-      <Dialog fullWidth onClose={handleDialogToggleDeleteClose} open={openDialogAdd}>
+      <Dialog fullWidth onClose={handleDialogToggleUpdateClose} open={openDialogAdd}>
         <DialogTitle sx={{ pt: 6, mx: 'auto', textAlign: 'center' }}>
           <Typography variant='h5' component='span' sx={{ mb: 2 }}>
-            Are you sure to delete data ?
+            Are you sure to update data ?
           </Typography>
-          <Typography variant='body2'>After you delete, you can not undo this data.</Typography>
+          <Typography variant='body2'>After you update, you can update data again.</Typography>
         </DialogTitle>
         <DialogContent sx={{ pb: 6, mx: 'auto' }}>
-          <form onSubmit={deleteHandler}>
+          <form onSubmit={updateHandler}>
             <TableContainer sx={{ mb: 6 }}>
               <Table size='small'>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Menu Type</TableCell>
-                    <TableCell>Menu Name</TableCell>
+                    <TableCell>Question Template Master</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow key={dataDelete.row_id}>
-                    <TableCell>{dataDelete.menus_type}</TableCell>
-                    <TableCell>{dataDelete.menus_name}</TableCell>
+                  <TableRow key={dataUpdate.id}>
+                    <TableCell>{dataUpdate.question_name}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
             <Box className='demo-space-x' sx={{ '& > :last-child': { mr: '0 !important', mt: 2 } }}>
-              <Button size='large' type='submit' variant='contained' color='error' disabled={isLoadingDelete}>
-                Delete
-                {isLoadingDelete && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+              <Button
+                size='large'
+                type='submit'
+                variant='contained'
+                color={dataUpdate.inactive === '1' ? 'error' : 'primary'}
+                disabled={isLoadingUpdate}
+              >
+                {dataUpdate.inactive === '1' ? 'Non Active' : 'Active'}
+                {isLoadingUpdate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
               </Button>
               <Button
                 type='reset'
                 size='large'
                 variant='outlined'
                 color='secondary'
-                onClick={handleDialogToggleDeleteClose}
+                onClick={handleDialogToggleUpdateClose}
               >
                 Cancel
               </Button>
