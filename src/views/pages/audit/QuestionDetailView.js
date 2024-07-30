@@ -354,7 +354,7 @@ const QuestionDetailView = props => {
                                         .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
                                     /> */}
-                                    <TextField
+                                    {/* <TextField
                                       name={'answer_description'}
                                       multiline
                                       rows={3}
@@ -370,6 +370,15 @@ const QuestionDetailView = props => {
                                       defaultValue={selectedDetail
                                         .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
+                                    /> */}
+                                    <Editor
+                                      name={'answer_description'}
+                                      initData={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                        .join('')}
+                                      onCKChange={e =>
+                                        handleChange({ target: { value: e, name: 'answer_description' } }, index)
+                                      }
                                     />
                                     <Grid item sx={{ textAlign: 'right' }}>
                                       <Grid sx={{ p: 2, py: 3 }}>

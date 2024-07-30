@@ -61,6 +61,10 @@ import CardSnippet from 'src/@core/components/card-snippet'
 // ** Source code imports
 import * as source from 'src/views/file-uploader/FileUploaderSourceCode'
 
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
+
 const AuditIsoViewPage = () => {
   const router = useRouter()
   const { id } = router.query
@@ -167,10 +171,6 @@ const AuditIsoViewPage = () => {
         display: 'none'
       }
     }
-  })
-
-  var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
-    ssr: false
   })
 
   const handleClickOpenModal = (audit_uid, question_uid, question_detail_uid) => {
@@ -509,7 +509,16 @@ const AuditIsoViewPage = () => {
                                           />
                                         ))}
                                       </RadioGroup>
-                                      <TextField
+                                      <Editor
+                                        name={'answer_description'}
+                                        initData={selectedDetail
+                                          .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                          .join('')}
+                                        onCKChange={e =>
+                                          handleChange({ target: { value: e, name: 'answer_description' } }, index)
+                                        }
+                                      />
+                                      {/* <TextField
                                         name={'answer_description'}
                                         multiline
                                         rows={3}
@@ -522,7 +531,7 @@ const AuditIsoViewPage = () => {
                                         defaultValue={selectedDetail
                                           .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                           .join('')}
-                                      />
+                                      /> */}
                                       <Grid item sx={{ textAlign: 'right' }}>
                                         <Button
                                           component='label'
