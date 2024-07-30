@@ -54,7 +54,7 @@ const schema = yup.object().shape({
   audit_category: yup.string().required('Audit Category is a required field')
 })
 
-const AuditCategoryRefPage = () => {
+const AuditCategoryPage = () => {
   const [data, setData] = useState({
     loading: true,
     rows: [],
@@ -428,9 +428,9 @@ const AuditCategoryRefPage = () => {
   )
 }
 
-AuditCategoryRefPage.acl = {
+AuditCategoryPage.acl = {
   action: 'manage',
-  subject: 'audit-category-ref'
+  subject: 'audit-ref'
 }
 
-export default AuditCategoryRefPage
+export default AuditCategoryPage
