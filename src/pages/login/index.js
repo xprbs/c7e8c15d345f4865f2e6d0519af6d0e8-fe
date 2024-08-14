@@ -106,7 +106,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('webapi@samoragroup.co.id')
-  const [password, setPassword] = useState('api!@#')
+  const [password, setPassword] = useState('')
 
   // ** Hooks
   const auth = useAuth()
@@ -224,6 +224,7 @@ const LoginPage = () => {
                   error={Boolean(errors.email)}
                   helperText={errors.email && errors.email.message}
                   name='email'
+                  value={email}
                 />
               </FormControl>
               <FormControl fullWidth>
@@ -236,6 +237,7 @@ const LoginPage = () => {
                   type={showPassword ? 'text' : 'password'}
                   name='password'
                   placeholder='Password'
+                  value={password}
                   endAdornment={
                     <InputAdornment position='end'>
                       <IconButton
@@ -257,10 +259,10 @@ const LoginPage = () => {
               <Box
                 sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
               >
-                <FormControlLabel
+                {/* <FormControlLabel
                   label='Remember Me'
                   control={<Checkbox checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />}
-                />
+                /> */}
                 <Typography
                   variant='body2'
                   component={Link}

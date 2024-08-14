@@ -37,7 +37,7 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import MuiTimeline from '@mui/lab/Timeline'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { backendApi } from 'src/configs/axios'
 import dynamic from 'next/dynamic'
@@ -45,17 +45,21 @@ import dynamic from 'next/dynamic'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
+var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
+  ssr: false
+})
+
 const QuestionDetailView = props => {
-  const { id } = props
+  const { id, selectedDetail, setSelectedDetail, readonly } = props
 
   const [skeleton, setSkeleton] = useState(true)
+  const [skeleton2, setSkeleton2] = useState(true)
   const [questionDetail, setQuestionDetail] = useState([])
   const [auditId, setAuditId] = useState(null)
   const [questionId, setQuestionId] = useState(null)
   const [questionDetailId, setQuestionDetailId] = useState(null)
   const [noteDescription, setNoteDescription] = useState('')
   const [auditAnswer, setAuditAnswer] = useState([])
-  const [selectedDetail, setSelectedDetail] = useState([])
   const [isDisable, setIsDisable] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [note, setNote] = useState([])
@@ -131,6 +135,13 @@ const QuestionDetailView = props => {
     })
   }
 
+  const handleChange = (e, i) => {
+    const { name, value } = e.target
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[i][name] = value
+    setSelectedDetail(onChangeValue)
+  }
+
   useEffect(() => {
     setSelectedDetail([])
     questionDetail.map((row, i) => {
@@ -159,9 +170,12 @@ const QuestionDetailView = props => {
     }
   })
 
-  var Editor = dynamic(() => import('src/views/editor/cke-editor'), {
-    ssr: false
-  })
+  const removeFile = (index, i) => {
+    const onChangeValue = [...selectedDetail]
+    onChangeValue[index]['file_uploads'] = onChangeValue[index]['file_uploads'].filter((d, ind) => ind !== i)
+
+    setSelectedDetail(onChangeValue)
+  }
 
   const handleClickOpenModal = (audit_uid, question_uid, question_detail_uid) => {
     setOpenModal(true)
@@ -322,48 +336,94 @@ const QuestionDetailView = props => {
                                           value={row.question_answer_key}
                                           label={row.question_answer_description}
                                           control={<Radio color={row.color} />}
+                                          onChange={e => !readonly && handleChange(e, index)}
                                         />
                                       ))}
                                     </RadioGroup>
-                                    <TextField
+                                    {/* <Editor
+                                      name={'answer_description'}
+                                      initData={''}
+                                      onCKChange={data => {
+                                        console.log(data)
+                                        setNoteDescription('manual')
+                                      }}
+                                      InputProps={{
+                                        readOnly: readonly
+                                      }}
+                                      defaultValue={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                        .join('')}
+                                    /> */}
+                                    {/* <TextField
                                       name={'answer_description'}
                                       multiline
                                       rows={3}
                                       fullWidth
                                       label='Note'
                                       size='small'
-                                      InputProps={{
-                                        readOnly: true
-                                      }}
                                       InputLabelProps={{ shrink: true }}
                                       sx={{ minWidth: 350, mt: 2 }}
+                                      onChange={e => handleChange(e, index)}
+                                      InputProps={{
+                                        readOnly: readonly
+                                      }}
                                       defaultValue={selectedDetail
                                         .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
                                         .join('')}
+                                    /> */}
+                                    <Editor
+                                      name={'answer_description'}
+                                      initData={selectedDetail
+                                        .map(e => (e.id === data.question_detail_uid ? e.answer_description : null))
+                                        .join('')}
+                                      onCKChange={e =>
+                                        handleChange({ target: { value: e, name: 'answer_description' } }, index)
+                                      }
                                     />
-                                    <Grid sx={{ p: 2, py: 3 }}>
-                                      <Badge
-                                        badgeContent={data.count_note}
-                                        color={'error'}
-                                        onClick={() =>
-                                          handleClickOpenModal(auditId, questionId, data.question_detail_uid)
-                                        }
-                                        sx={{ cursor: 'pointer' }}
-                                      >
-                                        <Icon icon='tabler:message-dots' />
-                                      </Badge>
-                                    </Grid>
-                                    {data.files.map((d, id) => (
-                                      <Grid sx={{ p: 2, py: 3 }} key={id}>
-                                        <a
-                                          href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
-                                          target='_blank'
-                                          rel='noopener noreferrer'
+                                    <Grid item sx={{ textAlign: 'right' }}>
+                                      <Grid sx={{ p: 2, py: 3 }}>
+                                        <Badge
+                                          badgeContent={data.count_note}
+                                          color={'error'}
+                                          onClick={() =>
+                                            handleClickOpenModal(auditId, questionId, data.question_detail_uid)
+                                          }
+                                          sx={{ cursor: 'pointer' }}
                                         >
-                                          {d.filename}
-                                        </a>
+                                          <Icon icon='tabler:message-dots' />
+                                        </Badge>
                                       </Grid>
-                                    ))}
+                                      <Table cellpadding='3'>
+                                        {data.files &&
+                                          data.files.map((d, i) => (
+                                            <tr key={i}>
+                                              <td valign='middle'>
+                                                <a
+                                                  href={process.env.NEXT_PUBLIC_URL_BACKEND_PATH + d.filepath}
+                                                  target='_blank'
+                                                  rel='noopener noreferrer'
+                                                >
+                                                  {d.filename}
+                                                </a>
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        {selectedDetail[index].file_uploads &&
+                                          selectedDetail[index].file_uploads.map((d, i) => (
+                                            <tr key={i}>
+                                              <td valign='middle'>{d.name}</td>
+                                              <td>
+                                                <Icon
+                                                  onClick={() => removeFile(index, i)}
+                                                  icon={'material-symbols:delete'}
+                                                  color='orange'
+                                                  sx={{ cursor: 'pointer' }}
+                                                />
+                                              </td>
+                                            </tr>
+                                          ))}
+                                      </Table>
+                                    </Grid>
                                   </Box>
                                 ) : (
                                   <Grid
@@ -463,7 +523,6 @@ const QuestionDetailView = props => {
                   setNoteDescription('manual')
                 }}
               /> */}
-
               <TextField
                 name={'note_description'}
                 value={noteDescription}

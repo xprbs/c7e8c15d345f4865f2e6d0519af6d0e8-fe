@@ -24,11 +24,21 @@ import {
   CircularProgress,
   MenuItem,
   Divider,
-  Menu
+  Menu,
+  CardHeader,
+  CardContent,
+  FormControl,
+  Autocomplete,
+  FormHelperText
 } from '@mui/material'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+
+// ** Third Party Imports
+import * as yup from 'yup'
+import { useForm, setValue, reset } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Custom Components Imports
 import PageHeader from 'src/@core/components/page-header'
@@ -39,7 +49,12 @@ import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { backendApi } from 'src/configs/axios'
 
-const SurveillancePage = () => {
+const schema = yup.object().shape({
+  audit_category_ref: yup.string().required('Audit Category Reference is a required field'),
+  audit_category: yup.string().required('Audit Category is a required field')
+})
+
+const AuditCategoryPage = () => {
   const [data, setData] = useState({
     loading: true,
     rows: [],
@@ -55,6 +70,11 @@ const SurveillancePage = () => {
   const [openDialogAdd, setOpenDialogAdd] = useState(false)
   const [dataDelete, setDataDelete] = useState({})
   const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+  const [isLoadingCreate, setIsLoadingCreate] = useState(false)
+  const [createData, setCreateData] = useState('')
+  const [isDisable, setIsDisable] = useState(false)
+  const [auditcategory, setAuditCategory] = useState([])
+  const [auditcategoryId, setAuditCategoryId] = useState(null)
 
   const router = useRouter()
 
@@ -81,12 +101,12 @@ const SurveillancePage = () => {
     setIsLoadingDelete(true)
 
     const dataForm = JSON.stringify({
-      row_id: dataDelete.acl_subject
+      row_id: dataDelete.row_id
     })
 
     const myPromise = new Promise((resolve, reject) => {
       backendApi
-        .post('/web/surveillance/delete', dataForm)
+        .post('/web/master/audit-category-ref/delete', dataForm)
         .then(res => {
           resolve('success')
           handleDialogToggleDeleteClose()
@@ -109,6 +129,53 @@ const SurveillancePage = () => {
     })
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema)
+  })
+
+  async function createHandler() {
+    setIsDisable(true)
+
+    const dataForm = JSON.stringify({
+      audit_category_ref: createData,
+      audit_category: auditcategoryId?.id
+    })
+
+    const createPromise = new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/audit-category-ref/store', dataForm)
+        .then(res => {
+          resolve('success')
+          updateData('reload', !data.reload)
+          setAuditCategoryId(null)
+          setCreateData(null)
+          reset()
+        })
+        .catch(error => {
+          reject(error)
+        })
+        .finally(() => {
+          setIsLoadingCreate(false)
+        })
+    })
+
+    toast.promise(createPromise, {
+      loading: 'Loading',
+      success: 'Successfully Create data',
+      error: error => {
+        if (error.response.status === 400) return error.response.data.permissions_name
+        if (error.response.status === 500) return error.response.data.response
+
+        return 'Something error'
+      }
+    })
+  }
+
   useEffect(() => {
     const initData = async () => {
       updateData('loading', true)
@@ -121,7 +188,7 @@ const SurveillancePage = () => {
       })
 
       await backendApi
-        .post('/web/surveillance/list', dataForm)
+        .post('/web/master/audit-category-ref/list', dataForm)
         .then(response => {
           updateData('rowCount', response.data.total)
           setTimeout(() => {
@@ -139,90 +206,6 @@ const SurveillancePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.page, data.pageSize, data.sort, data.filterData, data.reload])
 
-  const handleSetDetail = e => {
-    router.push(`/surveillance/detail/${e.project_uid}`)
-  }
-
-  const handleFollowUp = e => {
-    router.push(`/surveillance/follow-up/${e.project_uid}`)
-  }
-
-  const handleClosed = e => {
-    router.push(`/surveillance/closed/${e.project_uid}`)
-  }
-
-  const handleHistorical = e => {
-    router.push(`/surveillance/historical/${e.project_uid}`)
-  }
-
-  const RowOptions = ({ data }) => {
-    // ** State
-    const [anchorEl, setAnchorEl] = useState(null)
-    const rowOptionsOpen = Boolean(anchorEl)
-
-    const handleRowOptionsClick = e => {
-      setAnchorEl(e.currentTarget)
-    }
-
-    const handleRowOptionsClose = () => {
-      setAnchorEl(null)
-    }
-
-    return (
-      <>
-        <IconButton size='small' onClick={handleRowOptionsClick}>
-          <Icon icon='basil:settings-adjust-solid' />
-        </IconButton>
-        <Menu
-          keepMounted
-          anchorEl={anchorEl}
-          open={rowOptionsOpen}
-          onClose={handleRowOptionsClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          PaperProps={{ style: { minWidth: '8rem' } }}
-        >
-          <MenuItem sx={{ '& svg': { mr: 2 } }}>{data.project_name}</MenuItem>
-          <Divider />
-          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleSetDetail(data)}>
-            <Icon icon='bx:detail' fontSize={20} />
-            Detail
-          </MenuItem>
-          {data.is_she === 'SHE' && data.status_code === '10' ? (
-            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleFollowUp(data)}>
-              <Icon icon='hugeicons:recycle-03' fontSize={20} />
-              Follow Up
-            </MenuItem>
-          ) : (
-            ''
-          )}
-          {data.is_she === 'SHE' && data.status_code === '20' ? (
-            <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleClosed(data)}>
-              <Icon icon='hugeicons:recycle-03' fontSize={20} />
-              Closed by SHE
-            </MenuItem>
-          ) : (
-            ''
-          )}
-          <MenuItem sx={{ '& svg': { mr: 2 } }} onClick={() => handleHistorical(data)}>
-            <Icon icon='icon-park-outline:upload-logs' fontSize={20} />
-            Historical
-          </MenuItem>
-          {/* <MenuItem sx={{ '& svg': { mr: 2 } }}>
-            <Icon icon='mingcute:delete-2-line' fontSize={20} />
-            Delete
-          </MenuItem> */}
-        </Menu>
-      </>
-    )
-  }
-
   const columns = [
     {
       field: 'id',
@@ -235,34 +218,10 @@ const SurveillancePage = () => {
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>#</Typography>
     },
     {
-      flex: 0.4,
+      flex: 3,
       minWidth: 100,
-      field: 'project_number',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Project Number</Typography>
-    },
-    {
-      flex: 1,
-      minWidth: 100,
-      field: 'project_name',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Finding</Typography>
-    },
-    {
-      flex: 0.5,
-      minWidth: 100,
-      field: 'project_location',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Location </Typography>
-    },
-    {
-      flex: 0.5,
-      minWidth: 100,
-      field: 'status',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Status</Typography>
-    },
-    {
-      flex: 0.5,
-      minWidth: 100,
-      field: 'is_she',
-      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Category</Typography>
+      field: 'value1',
+      renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Audit Category Reference</Typography>
     },
     {
       flex: 0.15,
@@ -272,17 +231,98 @@ const SurveillancePage = () => {
       field: 'actions',
       disableColumnMenu: true,
       renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Actions</Typography>,
-      renderCell: ({ row }) => <RowOptions data={row} />
+      renderCell: ({ row }) => (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={() => handleDialogToggleDelete(row)}>
+            <Icon icon='mdi:delete-outline' />
+          </IconButton>
+        </Box>
+      )
     }
   ]
+
+  async function getInit() {
+    new Promise((resolve, reject) => {
+      backendApi
+        .post('/web/master/get-audit-category')
+        .then(res => {
+          setAuditCategory(res.data.data)
+          resolve('success')
+        })
+        .catch(error => {
+          console.log(error)
+          reject(error)
+        })
+    })
+  }
+
+  useEffect(() => {
+    getInit()
+  }, [])
 
   return (
     <>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <PageHeader title={<Typography variant='h5'>Surveillance</Typography>} subtitle={null} />
+          <PageHeader title={<Typography variant='h5'>Master Audit Category Reference</Typography>} subtitle={null} />
         </Grid>
         <Grid item xs={12}>
+          <Card sx={{ mb: 6 }}>
+            <CardHeader title={<Typography variant='h6'>Create</Typography>}></CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit(createHandler)}>
+                <Grid container spacing={6}>
+                  <Grid item xs={9} lg={4}>
+                    <TextField
+                      {...register('audit_category_ref')}
+                      fullWidth
+                      name='audit_category_ref'
+                      placeholder='Audit Category Reference'
+                      label='Audit Category Reference'
+                      size='small'
+                      value={createData || ''}
+                      onChange={e => setCreateData(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      error={Boolean(errors.audit_category_ref)}
+                      helperText={errors.audit_category_ref && errors.audit_category_ref.message}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        size='small'
+                        options={auditcategory}
+                        fullWidth
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            {...register('audit_category')}
+                            label='Audit Category'
+                            placeholder='Audit Category'
+                            InputLabelProps={{ shrink: true }}
+                            error={Boolean(errors.audit_category)}
+                          />
+                        )}
+                        onChange={(event, newValue) => {
+                          setAuditCategoryId(newValue)
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        value={auditcategoryId}
+                      />
+                      {errors.audit_category && (
+                        <FormHelperText sx={{ color: 'error.main' }}>{errors.audit_category.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item={true}>
+                    <Button variant='outlined' onClick={createHandler} disabled={isLoadingCreate}>
+                      Create {isLoadingCreate && <CircularProgress size={24} sx={{ position: 'absolute' }} />}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+            </CardContent>
+          </Card>
           <Card>
             <Box
               sx={{
@@ -291,24 +331,9 @@ const SurveillancePage = () => {
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'flex-end'
               }}
             >
-              <Grid>
-                <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/surveillance/create' size='small'>
-                  Create
-                </Button>
-                <Button
-                  sx={{ mb: 2.5, ml: 2.5 }}
-                  component={Link}
-                  variant='contained'
-                  href='#'
-                  size='small'
-                  color='warning'
-                >
-                  Import
-                </Button>
-              </Grid>
               <TextField
                 type={'search'}
                 size='small'
@@ -371,14 +396,12 @@ const SurveillancePage = () => {
               <Table size='small'>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Menu Type</TableCell>
-                    <TableCell>Menu Name</TableCell>
+                    <TableCell>Description</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow key={dataDelete.row_id}>
-                    <TableCell>{dataDelete.menus_type}</TableCell>
-                    <TableCell>{dataDelete.menus_name}</TableCell>
+                    <TableCell>{dataDelete.value1}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -405,9 +428,9 @@ const SurveillancePage = () => {
   )
 }
 
-SurveillancePage.acl = {
+AuditCategoryPage.acl = {
   action: 'manage',
-  subject: 'surveillance'
+  subject: 'audit-ref'
 }
 
-export default SurveillancePage
+export default AuditCategoryPage
