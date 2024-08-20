@@ -95,6 +95,7 @@ const App = props => {
         <meta name='description' content={`${themeConfig.templateName}`} />
         <meta name='keywords' content={`${themeConfig.templateName}`} />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
       </Head>
 
       <AuthProvider>
