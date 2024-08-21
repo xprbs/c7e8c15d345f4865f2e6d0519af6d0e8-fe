@@ -120,8 +120,8 @@ const SUJRegistration = () => {
                 const token = await getDynamicApiToken();
                 const response = await fetchUom(token)
 
-                setTypeOptions(typeResponse.data.data || []);
-                setCategoryOptions(typeResponse.data.data || []);
+                setTypeOptions(response.data.data || []);
+                setCategoryOptions(response.data.data || []);
             } catch (error) {
                 console.error("Failed to fetch options", error);
             }
