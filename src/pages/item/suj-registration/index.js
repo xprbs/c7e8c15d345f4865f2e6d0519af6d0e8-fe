@@ -27,6 +27,7 @@ import PageHeader from 'src/@core/components/page-header';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { backendApi } from 'src/configs/axios';
+import dynamicApi, { fetchUom, getDynamicApiToken } from 'src/helpers/dynamicApi';
 
 const SUJRegistration = () => {
     const [data, setData] = useState({
@@ -116,15 +117,11 @@ const SUJRegistration = () => {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const typeResponse = await backendApi.post('http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategoriesGet', {
-                    ParentProductCategoryCode: ""
-                });
-                setTypeOptions(typeResponse.data.data || []);
+                const token = await getDynamicApiToken();
+                const response = await fetchUom(token)
 
-                const categoryResponse = await backendApi.post('http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategoriesGet', {
-                    ParentProductCategoryCode: ""
-                });
-                setCategoryOptions(categoryResponse.data.data || []);
+                setTypeOptions(response.data.data || []);
+                setCategoryOptions(response.data.data || []);
             } catch (error) {
                 console.error("Failed to fetch options", error);
             }
@@ -254,25 +251,25 @@ const SUJRegistration = () => {
             <Grid item xs={12}>
                 <Card>
                     <Box
-                    sx={{
-                        p: 5,
-                        pb: 3,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}
+                        sx={{
+                            p: 5,
+                            pb: 3,
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                        }}
                     >
-                    <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/item/suj-registration/form' size='small'>
-                        Create Menu
-                    </Button>
-                    <TextField
-                        type={'search'}
-                        size='small'
-                        sx={{ mr: 4, mb: 2.5 }}
-                        placeholder='Search'
-                        onChange={e => handleFilter(e.target.value)}
-                    />
+                        <Button sx={{ mb: 2.5 }} component={Link} variant='contained' href='/item/suj-registration/form' size='small'>
+                            Create Menu
+                        </Button>
+                        <TextField
+                            type={'search'}
+                            size='small'
+                            sx={{ mr: 4, mb: 2.5 }}
+                            placeholder='Search'
+                            onChange={e => handleFilter(e.target.value)}
+                        />
                     </Box>
                     <DataGrid
                         autoHeight

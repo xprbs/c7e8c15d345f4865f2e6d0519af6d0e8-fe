@@ -34,6 +34,7 @@ import toast from 'react-hot-toast';
 import Router, { useRouter } from 'next/router';
 import { backendApi } from 'src/configs/axios';
 import axios from 'axios';
+import { fetchProductCategories, getDynamicApiToken } from 'src/helpers/dynamicApi';
 
 const SUJRegistration = () => {
     const [data, setData] = useState({
@@ -81,48 +82,24 @@ const SUJRegistration = () => {
     const [errorSubmitApproval, setErrorSubmitApproval] = useState(null)
 
     const getToken = async () => {
-        const url = 'http://apidev.samora.co.id/api/samora-srv2/auth/login';
         try {
-            const body = {
-                username: 'samora-api',
-                password: 'SamoraBer1',
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch token');
+            if (!token) {
+                const response = await getDynamicApiToken();
+                setToken(response)
+                return response
+            } else {
+                return token;
             }
-            const data = await response.json();
-            return data.access_token;
-        } catch (error) {
-            console.log('Error fetching data', error.message);
+        } catch (err) {
+            console.log('Failed to fetch dynamic api token')
         }
     };
 
     const fetchType = async (token) => {
         try {
-            const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories';
-            const response = await axios(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            const response = await fetchProductCategories(token)
+            const data = response.raw;
 
-            if (response.status !== 200) {
-                throw new Error('Failed to fetch types');
-            }
-            const data = response.data.data;
             const uniqueParentCodes = new Set();
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
@@ -420,35 +397,40 @@ const SUJRegistration = () => {
     };
 
     const handleFindIm = async (value) => {
-        console.log(value)
+        console.log(value);
         if (value.length >= 3) {
-            setImLoading(true)
-            const url = `http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/FinancialDimension?dataAreaId=suj&fin_dim_code=${value}&fin_dim_desc`;
-            const fetchImData = await axios.get(url, {
-                'method': 'GET',
-                'headers': {
-                    'Authorization': `Bearer ${token}`
-                },
-            }).then((response) => {
-                const data = response.data.data;
-                const temp = [];
-                data.forEach(value => {
-                    temp.push({
-                        label: value.fin_dim_code + " - " + value.fin_dim_desc,
-                        value: value.fin_dim_code
-                    })
-                });
-                console.log('TEMP', temp)
-                console.log('IM DATA', response)
-                setImData(temp)
-            }).catch((err) => {
-                console.log('error im data', err)
-            }).finally(() => {
-                setImLoading(false)
-            })
+            setImLoading(true);
 
+            const response = await backendApi
+                .get("/web/dynamic/financial-dimension", {
+                    params: {
+                        token: token,
+                        dataAreaId: "suj",
+                        fin_dim_code: value,
+                        fin_dim_desc: "",
+                    },
+                })
+                .then((response) => {
+                    const data = response.data.data;
+                    const temp = [];
+                    data.forEach((value) => {
+                        temp.push({
+                            label: value.fin_dim_code + " - " + value.fin_dim_desc,
+                            value: value.fin_dim_code,
+                        });
+                    });
+                    console.log("TEMP", temp);
+                    console.log("FINDIM", response);
+                    setImData(temp);
+                })
+                .catch((err) => {
+                    console.log("error im data", err);
+                })
+                .finally(() => {
+                    setImLoading(false);
+                });
         }
-    }
+    };
 
     const renderStatusBadge = (params) => {
         const status = statusMapping[params.value] || {};

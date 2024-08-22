@@ -16,6 +16,7 @@ import {
 import { useRouter } from 'next/router';
 import { backendApi } from 'src/configs/axios';
 import axios from 'axios';
+import { fetchProductCategories, fetchUom, getDynamicApiToken } from 'src/helpers/dynamicApi';
 
 const MSIFormRegistration = () => {
     const router = useRouter();
@@ -106,53 +107,18 @@ const MSIFormRegistration = () => {
         return isValid;
     };
 
+
     const getToken = async () => {
-        const url = 'http://apidev.samora.co.id/api/samora-srv2/auth/login';
         try {
-            const body = {
-                username: 'samora-api',
-                password: 'SamoraBer1',
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch token');
+            if (!token) {
+                const response = await getDynamicApiToken();
+                setToken(response)
+                return response
+            } else {
+                return token;
             }
-            const data = await response.json();
-            return data.access_token;
-        } catch (error) {
-            console.log('Error fetching data', error.message);
-        }
-    };
-
-    const fetchUom = async (token) => {
-        try {
-            const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/UnitOfMeasure';
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch UOM');
-            }
-
-            const data = await response.json();
-            return data.data;
-        } catch (error) {
-            console.log('Failed to fetch UOM', error.message);
+        } catch (err) {
+            console.log('Failed to fetch dynamic api token')
         }
     };
 
@@ -168,20 +134,8 @@ const MSIFormRegistration = () => {
 
     const fetchType = async (token, currentData = null) => {
         try {
-            const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories';
-            const response = await axios(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.status !== 200) {
-                throw new Error('Failed to fetch types');
-            }
-            const data = response.data.data;
+            const response = await fetchProductCategories(token)
+            const data = response.raw;
             const uniqueParentCodes = new Set();
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
