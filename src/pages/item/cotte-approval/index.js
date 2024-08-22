@@ -197,6 +197,7 @@ const SUJRegistration = () => {
                 const filteredData = typeData.filter(item => item.ParentProductCategoryCode == dataApproval.ditem_type);
 
                 console.log('filtered', filteredData)
+                setItemCode(dataApproval.item_code)
                 setCategoryOptions(filteredData)
                 setSelectedType(dataApproval.ditem_type)
                 setSelectedCategory(dataApproval.dcategory)
@@ -744,8 +745,9 @@ const SUJRegistration = () => {
                             <TextField
                                 label="Item Code"
                                 fullWidth
-                                value={dataApproval.item_code}
-                                onChange={e => setItemCode(e.target.value)}
+
+                                value={itemCode}
+                                onChange={(e) => setItemCode(e.target.value)}
                                 margin="normal"
                             />
                         </Grid>
