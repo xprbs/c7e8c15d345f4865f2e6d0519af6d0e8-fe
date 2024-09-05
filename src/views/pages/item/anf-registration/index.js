@@ -141,7 +141,8 @@ const AFRegistration = () => {
 
     const renderStatusBadge = (params) => {
         const status = statusMapping[params.value] || {};
-        return (
+        
+return (
             <Box
                 display="flex"
                 justifyContent="center"
@@ -369,6 +370,7 @@ const AFRegistration = () => {
                         <Table>
                             <TableBody>
                                 {Object.entries(dataApproval).map(([key, value]) => (
+
                                     // Menggunakan pemetaan untuk mendapatkan nama kolom yang sesuai
                                     columnMapping[key] ? (
                                         <TableRow key={key}>

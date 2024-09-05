@@ -770,6 +770,7 @@ const detailQuestion = () => {
                         }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         value={masterAnswer_Id || null}
+
                         // value={masterAnswerId}
                       />
                       {errors.question_answer_uid && (
@@ -789,6 +790,7 @@ const detailQuestion = () => {
                       <Editor
                         {...register('question_answer_description')}
                         name={'question_answer_description'}
+
                         // initData={''}
                         initData={questionEditDetail.question_answer_description}
                         onCKChange={data => {
@@ -811,6 +813,7 @@ const detailQuestion = () => {
                       <Editor
                         {...register('control_point')}
                         name={'control_point'}
+
                         // initData={''}
                         initData={questionEditDetail.control_point}
                         onCKChange={data => {

@@ -86,7 +86,8 @@ const Registration = () => {
             success: 'Successfully delete data',
             error: error => {
                 if (error.response.status === 500) return error.response.data.response;
-                return 'Something error';
+                
+return 'Something error';
             }
         });
     };

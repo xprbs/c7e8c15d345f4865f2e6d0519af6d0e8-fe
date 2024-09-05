@@ -87,7 +87,8 @@ const SUJRegistration = () => {
                 throw new Error('Failed to fetch token');
             }
             const data = await response.json();
-            return data.access_token;
+            
+return data.access_token;
         } catch (error) {
             console.log('Error fetching data', error.message);
         }
@@ -96,6 +97,7 @@ const SUJRegistration = () => {
     const fetchType = async (token) => {
         try {
             const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories';
+
             const response = await axios(url, {
                 method: 'GET',
                 headers: {
@@ -110,15 +112,19 @@ const SUJRegistration = () => {
             }
             const data = response.data.data;
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
             setRawTypeOptions(data);
-            return uniqueData;
+            
+return uniqueData;
         } catch (error) {
             console.log('Failed to fetch types', error.message);
         }
@@ -133,6 +139,7 @@ const SUJRegistration = () => {
 
         try {
             const response = await backendApi.post('/web/log-items', { id_item: rowData.id_item });
+
             // Set data history ke state
             setDummyDataHistory(response.data); // Update dengan data history yang sebenarnya
         } catch (error) {
@@ -202,7 +209,8 @@ const SUJRegistration = () => {
             success: 'Successfully delete data',
             error: error => {
                 if (error.response && error.response.status === 500) return error.response.data.response;
-                return 'Something error';
+                
+return 'Something error';
             }
         });
     };
@@ -224,10 +232,12 @@ const SUJRegistration = () => {
                 setSelectedType(dataApproval.ditem_type)
                 setSelectedCategory(dataApproval.dcategory)
             }
-            return; // Prevent further execution
+            
+return; // Prevent further execution
         }
 
         setIsLoadingApproval(true);
+
         const dataForm = JSON.stringify({
             item_id: dataApproval.id_item,
             status_cotte: action === 'approve' ? 1 : 2,
@@ -358,7 +368,8 @@ const SUJRegistration = () => {
 
     const renderStatusBadge = (params) => {
         const status = statusMapping[params.value] || {};
-        return (
+        
+return (
             <Box
                 display="flex"
                 justifyContent="center"
@@ -402,7 +413,8 @@ const SUJRegistration = () => {
                     SUJD: 'SUJ',
                     MSID: 'MSI'
                 };
-                return companyMapping[params.row.company] || params.row.company;
+                
+return companyMapping[params.row.company] || params.row.company;
             },
             renderHeader: () => <Typography sx={{ fontWeight: 'bold' }}>Company</Typography>
         },
@@ -481,7 +493,8 @@ const SUJRegistration = () => {
         if (type == 'approve') {
             if (!itemCode || !selectedType || !selectedCategory) {
                 setIsLoadingApproval(false)
-                return alert('Semua kolom wajib di isi')
+                
+return alert('Semua kolom wajib di isi')
             }
             const categoryName = data.filter(item => item.ParentProductCategoryCode === selectedType && item.CategoryCode === selectedCategory)[0]['CategoryName'];
             itemForm = JSON.stringify({
@@ -495,7 +508,8 @@ const SUJRegistration = () => {
         } else {
             if (!rejectReason) {
                 setIsLoadingApproval(false)
-                return alert('Kolom reason wajib di isi')
+                
+return alert('Kolom reason wajib di isi')
             }
             itemForm = JSON.stringify({
                 status_cotte: 2,
@@ -537,7 +551,8 @@ const SUJRegistration = () => {
             success: 'Successfully update data',
             error: error => {
                 if (error.response && error.response.status === 500) return error.response.data.response;
-                return 'Something error';
+                
+return 'Something error';
             }
         });
 
@@ -706,6 +721,7 @@ const SUJRegistration = () => {
                         <Table>
                             <TableBody>
                                 {Object.entries(dataApproval).map(([key, value]) => (
+
                                     // Menggunakan pemetaan untuk mendapatkan nama kolom yang sesuai
                                     columnMapping[key] ? (
                                         <TableRow key={key}>

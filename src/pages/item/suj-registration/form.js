@@ -101,7 +101,8 @@ const SUJFormRegistration = () => {
         }
 
         setFormErrors(errors);
-        return isValid;
+        
+return isValid;
     };
 
     const getToken = async () => {
@@ -109,7 +110,8 @@ const SUJFormRegistration = () => {
             if (!token) {
                 const response = await getDynamicApiToken();
                 setToken(response)
-                return response
+                
+return response
             } else {
                 return token;
             }
@@ -122,7 +124,8 @@ const SUJFormRegistration = () => {
         try {
             const response = await backendApi.get('/web/storages');
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch Storage', error.message);
         }
@@ -134,7 +137,8 @@ const SUJFormRegistration = () => {
             // Simulated API request based on storage value
             const response = await backendApi.get(`/api/reservations?storage=${storage}`);
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch reservations', error.message);
         }
@@ -230,6 +234,7 @@ const SUJFormRegistration = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
+
             const updatedFormData = {
                 ...formData,
                 company: 'SUJD',
@@ -310,6 +315,7 @@ const SUJFormRegistration = () => {
                         <Grid item xs={12} md={4}>
                             <TextField
                                 label='Product ID'
+
                                 // name='productId'
                                 value={formData.productId}
                                 onChange={handleInputChange}

@@ -100,7 +100,8 @@ const AFFormRegistration = () => {
         }
 
         setFormErrors(errors);
-        return isValid;
+        
+return isValid;
     };
 
     const getToken = async () => {
@@ -124,7 +125,8 @@ const AFFormRegistration = () => {
                 throw new Error('Failed to fetch token');
             }
             const data = await response.json();
-            return data.access_token;
+            
+return data.access_token;
         } catch (error) {
             console.log('Error fetching data', error.message);
         }
@@ -133,6 +135,7 @@ const AFFormRegistration = () => {
     const fetchUom = async (token) => {
         try {
             const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/UnitOfMeasure';
+
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -147,7 +150,8 @@ const AFFormRegistration = () => {
             }
 
             const data = await response.json();
-            return data.data;
+            
+return data.data;
         } catch (error) {
             console.log('Failed to fetch UOM', error.message);
         }
@@ -157,7 +161,8 @@ const AFFormRegistration = () => {
         try {
             const response = await backendApi.get('/web/storages');
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch Storage', error.message);
         }
@@ -166,6 +171,7 @@ const AFFormRegistration = () => {
     const fetchType = async (token) => {
         try {
             const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories';
+
             const response = await axios(url, {
                 method: 'GET',
                 headers: {
@@ -180,15 +186,19 @@ const AFFormRegistration = () => {
             }
             const data = response.data.data;
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
             setRawTypeOptions(data);
-            return uniqueData;
+            
+return uniqueData;
         } catch (error) {
             console.log('Failed to fetch types', error.message);
         }
@@ -200,7 +210,8 @@ const AFFormRegistration = () => {
             // Simulated API request based on storage value
             const response = await backendApi.get(`/api/reservations?storage=${storage}`);
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch reservations', error.message);
         }
@@ -295,6 +306,7 @@ const AFFormRegistration = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
+
             const updatedFormData = {
                 ...formData,
                 company: 'AFD',
@@ -375,6 +387,7 @@ const AFFormRegistration = () => {
                         <Grid item xs={12} md={4}>
                             <TextField
                                 label='Product ID'
+
                                 // name='productId'
                                 value={formData.productId}
                                 onChange={handleInputChange}

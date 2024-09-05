@@ -101,7 +101,8 @@ const MSIFormRegistration = () => {
         }
 
         setFormErrors(errors);
-        return isValid;
+        
+return isValid;
     };
 
 
@@ -110,7 +111,8 @@ const MSIFormRegistration = () => {
             if (!token) {
                 const response = await getDynamicApiToken();
                 setToken(response)
-                return response
+                
+return response
             } else {
                 return token;
             }
@@ -123,7 +125,8 @@ const MSIFormRegistration = () => {
         try {
             const response = await backendApi.get('/web/storages');
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch Storage', error.message);
         }
@@ -135,15 +138,19 @@ const MSIFormRegistration = () => {
             const data = response.raw;
 
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
             setRawTypeOptions(data);
-            return uniqueData;
+            
+return uniqueData;
         } catch (error) {
             console.log('Failed to fetch types', error.message);
         }
@@ -155,7 +162,8 @@ const MSIFormRegistration = () => {
             // Simulated API request based on storage value
             const response = await backendApi.get(`/api/reservations?storage=${storage}`);
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch reservations', error.message);
         }
@@ -250,6 +258,7 @@ const MSIFormRegistration = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
+
             const updatedFormData = {
                 ...formData,
                 company: 'MSID',
@@ -330,6 +339,7 @@ const MSIFormRegistration = () => {
                         <Grid item xs={12} md={4}>
                             <TextField
                                 label='Product ID'
+
                                 // name='productId'
                                 value={formData.productId}
                                 onChange={handleInputChange}

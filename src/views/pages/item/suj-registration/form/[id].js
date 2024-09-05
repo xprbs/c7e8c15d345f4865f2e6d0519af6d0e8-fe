@@ -24,6 +24,7 @@ const SUJFormRegistration = () => {
 
     const [formData, setFormData] = useState({
         productId: '',
+
         // id_item: '',
         item_type: '',
         uom: '',
@@ -104,7 +105,8 @@ const SUJFormRegistration = () => {
         }
 
         setFormErrors(errors);
-        return isValid;
+        
+return isValid;
     };
 
     const getToken = async () => {
@@ -128,7 +130,8 @@ const SUJFormRegistration = () => {
                 throw new Error('Failed to fetch token');
             }
             const data = await response.json();
-            return data.access_token;
+            
+return data.access_token;
         } catch (error) {
             console.log('Error fetching data', error.message);
         }
@@ -137,6 +140,7 @@ const SUJFormRegistration = () => {
     const fetchUom = async (token) => {
         try {
             const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/UnitOfMeasure';
+
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -151,7 +155,8 @@ const SUJFormRegistration = () => {
             }
 
             const data = await response.json();
-            return data.data;
+            
+return data.data;
         } catch (error) {
             console.log('Failed to fetch UOM', error.message);
         }
@@ -161,7 +166,8 @@ const SUJFormRegistration = () => {
         try {
             const response = await backendApi.get('/web/storages');
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch Storage', error.message);
         }
@@ -170,6 +176,7 @@ const SUJFormRegistration = () => {
     const fetchType = async (token, currentData = null) => {
         try {
             const url = 'http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories';
+
             const response = await axios(url, {
                 method: 'GET',
                 headers: {
@@ -184,12 +191,15 @@ const SUJFormRegistration = () => {
             }
             const data = response.data.data;
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
 
 
@@ -213,7 +223,8 @@ const SUJFormRegistration = () => {
             // Simulated API request based on storage value
             const response = await backendApi.get(`/api/reservations?storage=${storage}`);
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch reservations', error.message);
         }
@@ -223,6 +234,7 @@ const SUJFormRegistration = () => {
         setLoading(true);
         try {
             const token = await getToken();
+
             const itemResponse = await backendApi.post(`/web/items/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -335,10 +347,12 @@ const SUJFormRegistration = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
+
             const updatedFormData = {
                 ...formData,
                 company: 'SUJD',
                 created_by: user.name,
+
                 // trans_type: 'SUBMIT',
                 ditem_product: formData.item_description,
             };
@@ -367,6 +381,7 @@ const SUJFormRegistration = () => {
 
     const handleSaveAndSubmit = async (event) => {
         event.preventDefault();
+
         // if (!validateForm()) return;
         setLoading(true);
 
@@ -378,6 +393,7 @@ const SUJFormRegistration = () => {
                 status_cotte: 3,
                 company: 'SUJD',
                 created_by: user.name,
+
                 // trans_type: 'SUBMIT',
                 ditem_product: formData.item_description,
             };
@@ -415,6 +431,7 @@ const SUJFormRegistration = () => {
                         <Grid item xs={12} md={4}>
                             <TextField
                                 label='Product ID'
+
                                 //name='id_item'
                                 //value={formData.id_item}
                                 onChange={handleInputChange}

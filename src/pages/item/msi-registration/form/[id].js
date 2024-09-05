@@ -25,6 +25,7 @@ const MSIFormRegistration = () => {
 
     const [formData, setFormData] = useState({
         productId: '',
+
         // id_item: '',
         item_type: '',
         uom: '',
@@ -104,7 +105,8 @@ const MSIFormRegistration = () => {
         }
 
         setFormErrors(errors);
-        return isValid;
+        
+return isValid;
     };
 
 
@@ -113,7 +115,8 @@ const MSIFormRegistration = () => {
             if (!token) {
                 const response = await getDynamicApiToken();
                 setToken(response)
-                return response
+                
+return response
             } else {
                 return token;
             }
@@ -126,7 +129,8 @@ const MSIFormRegistration = () => {
         try {
             const response = await backendApi.get('/web/storages');
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch Storage', error.message);
         }
@@ -137,12 +141,15 @@ const MSIFormRegistration = () => {
             const response = await fetchProductCategories(token)
             const data = response.raw;
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
 
             if (currentData != null) {
@@ -165,7 +172,8 @@ const MSIFormRegistration = () => {
             // Simulated API request based on storage value
             const response = await backendApi.get(`/api/reservations?storage=${storage}`);
             const data = response.data;
-            return data;
+            
+return data;
         } catch (error) {
             console.log('Failed to fetch reservations', error.message);
         }
@@ -175,6 +183,7 @@ const MSIFormRegistration = () => {
         setLoading(true);
         try {
             const token = await getToken();
+
             const itemResponse = await backendApi.post(`/web/items/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -286,6 +295,7 @@ const MSIFormRegistration = () => {
 
         try {
             const user = JSON.parse(localStorage.getItem('userData'));
+
             const updatedFormData = {
                 ...formData,
                 company: 'MSID',
@@ -329,6 +339,7 @@ const MSIFormRegistration = () => {
                 status_cotte: 3,
                 company: 'MSID',
                 created_by: user.name,
+
                 // trans_type: 'SUBMIT',
                 ditem_product: formData.item_description,
             };
@@ -366,6 +377,7 @@ const MSIFormRegistration = () => {
                         <Grid item xs={12} md={4}>
                             <TextField
                                 label='Product ID'
+
                                 //name='id_item'
                                 //value={formData.id_item}
                                 onChange={handleInputChange}

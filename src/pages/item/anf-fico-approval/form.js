@@ -48,7 +48,8 @@ const SUJFormRegistration = () => {
             if (!token) {
                 const response = await getDynamicApiToken();
                 setToken(response)
-                return response
+                
+return response
             } else {
                 return token;
             }
@@ -63,15 +64,19 @@ const SUJFormRegistration = () => {
             const data = response.raw;
 
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
             setRawTypeOptions(data);
-            return uniqueData;
+            
+return uniqueData;
         } catch (error) {
             console.log('Failed to fetch types', error.message);
         }
@@ -122,6 +127,7 @@ const SUJFormRegistration = () => {
             const data = rawTypeOptions;
             const filteredData = data.filter(item => item.ParentProductCategoryCode == value)
             console.log(filteredData)
+
             // const categories = await fetchCategories(token, value)
             // setCategoryOptions(categories);
             setCategoryOptions(filteredData)

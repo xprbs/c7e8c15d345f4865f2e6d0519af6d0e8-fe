@@ -47,7 +47,8 @@ const SUJFormRegistration = () => {
             if (!token) {
                 const response = await getDynamicApiToken();
                 setToken(response)
-                return response
+                
+return response
             } else {
                 return token;
             }
@@ -62,15 +63,19 @@ const SUJFormRegistration = () => {
             const data = response.raw;
 
             const uniqueParentCodes = new Set();
+
             const uniqueData = data.filter(item => {
                 if (!uniqueParentCodes.has(item.ParentProductCategoryCode)) {
                     uniqueParentCodes.add(item.ParentProductCategoryCode);
-                    return true;
+                    
+return true;
                 }
-                return false;
+                
+return false;
             });
             setRawTypeOptions(data)
-            return uniqueData;
+            
+return uniqueData;
 
         } catch (error) {
             console.log('Failed to fetch UOM', error.message)
@@ -81,6 +86,7 @@ const SUJFormRegistration = () => {
     const fetchCategories = async (token, parentCode) => {
         try {
             const url = `http://apidev.samora.co.id/api/samora-srv2/dynamic/master-data/ProductCategories`
+
             const response = await axios(url, {
                 method: 'GET',
                 headers: {
@@ -97,7 +103,8 @@ const SUJFormRegistration = () => {
             }
 
             const data = await response.json();
-            return data.data;
+            
+return data.data;
 
         } catch (error) {
             console.log('Failed to fetch UOM', error.message)
@@ -147,6 +154,7 @@ const SUJFormRegistration = () => {
             const data = rawTypeOptions;
             const filteredData = data.filter(item => item.ParentProductCategoryCode == value)
             console.log(filteredData)
+
             // const categories = await fetchCategories(token, value)
             // setCategoryOptions(categories);
             setCategoryOptions(filteredData)
